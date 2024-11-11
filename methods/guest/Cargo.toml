@@ -1,0 +1,12 @@
+[package]
+name = "pricing_calculator"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2", default-features = false, features = ['std'] }
+eth-rlp-types = { path = "../../../eth-rlp-verify/crates/eth-rlp-types"}
+eyre = "0.6"
+chrono = { version = "0.4", features = ["serde"] }
