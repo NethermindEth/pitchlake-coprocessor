@@ -4,16 +4,15 @@ use methods::PRICING_CALCULATOR_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use db_access::DbConnection;
 use db_access::queries::get_block_headers_by_block_range;
-use eth_rlp_types::block_header::BlockHeader;
 
 
-async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Option<f64>), sqlx::Error> {
+async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Option<f64>, Option<f64>), sqlx::Error> {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
     let db = DbConnection::new().await?;
-    let block_headers: Vec<BlockHeader> = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
+    let block_headers = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
 
     let env = ExecutorEnv::builder()
         .write(&block_headers)
@@ -29,9 +28,9 @@ async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Opti
 
     let receipt = prove_info.receipt;
 
-    let (volatility, twap): (Option<f64>, Option<f64>) = receipt.journal.decode().unwrap();
+    let (volatility, twap, reserve_price): (Option<f64>, Option<f64>, Option<f64>) = receipt.journal.decode().unwrap();
 
-    Ok((volatility, twap))
+    Ok((volatility, twap, reserve_price))
 }
 
 

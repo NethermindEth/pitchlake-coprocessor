@@ -1,6 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["host", "methods"]
+members = ["host", "methods", "db-access", "db-models"]
+
+[workspace.package]
+edition = "2021"
 
 # Always optimize; building and running the guest takes much longer without optimization.
 [profile.dev]

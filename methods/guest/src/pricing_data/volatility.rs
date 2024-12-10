@@ -1,4 +1,4 @@
-use eth_rlp_types::block_header::BlockHeader;
+use eth_rlp_types::BlockHeader;
 use eyre::Result;
 
 use super::utils::hex_string_to_f64;
