@@ -1,6 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["host", "methods", "db-access", "db-models"]
+members = [
+    "host", 
+    "methods", 
+    "db-access", 
+    "db-models"
+]
 
 [workspace.package]
 edition = "2021"

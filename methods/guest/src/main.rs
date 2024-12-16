@@ -1,5 +1,5 @@
 use risc0_zkvm::guest::env;
-use db_models::BlockHeader;
+use eth_rlp_types::BlockHeader;
 
 mod pricing_data;
 

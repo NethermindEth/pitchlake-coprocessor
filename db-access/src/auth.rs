@@ -1,4 +1,4 @@
-use crate::models::ApiKey;
+use db_models::ApiKey;
 use sqlx::PgPool;
 
 pub async fn add_api_key(pool: &PgPool, api_key: String, name: String) -> Result<(), sqlx::Error> {

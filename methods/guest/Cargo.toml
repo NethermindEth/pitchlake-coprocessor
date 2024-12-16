@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 risc0-zkvm = { version = "1.1.2", default-features = false, features = ['std'] }
-db-models = { path = "../../db-models" }
 eyre = "0.6"
 chrono = { version = "0.4", features = ["serde"] }
 # Reserve price dependencies
@@ -21,3 +20,4 @@ ndarray-rand = "0.15.0"
 uuid = { version = "1.10.0", features = ["v4"] }
 nalgebra = "0.33.2"
 lstsq = "0.6.0"
+eth-rlp-types = { git = "https://github.com/piwonskp/eth-rlp-verify.git" }

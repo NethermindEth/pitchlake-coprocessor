@@ -1,5 +1,4 @@
 use eth_rlp_types::BlockHeader;
-// use chrono::{prelude::*, Duration};
 use eyre::{anyhow as err, Result};
 use nalgebra::{DMatrix, OVector};
 use ndarray::{prelude::*, OwnedRepr, ViewRepr};
@@ -10,8 +9,6 @@ use rand::prelude::*;
 use rand_distr::Distribution;
 use statrs::distribution::Binomial;
 use std::f64::consts::PI;
-// use std::error::Error;
-// use chrono::{DateTime};
 
 use super::utils::hex_string_to_f64;
 
