@@ -13,7 +13,7 @@ chrono = { version = "0.4", features = ["serde"] }
 ndarray = "0.15"
 # NOTE: as ndarray-linalg only builds for x86 arch, we must build our images in that arch as long as we use this lib.
 statrs = { version = "0.17", default-features = false}
-optimization = { path = "../../../optimization-rust" }
+optimization = { git = "https://github.com/piwonskp/optimization-rust" }
 rand = "0.8.5"
 rand_distr = "0.4.3"
 ndarray-rand = "0.15.0"
