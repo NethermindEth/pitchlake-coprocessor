@@ -6,12 +6,11 @@ edition = "2021"
 [workspace]
 
 [dependencies]
-risc0-zkvm = { version = "1.1.2", default-features = false, features = ['std'] }
+risc0-zkvm = { version = "1.1.2", default-features = false, features = ['std', 'getrandom'] }
 eyre = "0.6"
 chrono = { version = "0.4", features = ["serde"] }
 # Reserve price dependencies
 ndarray = "0.15"
-# NOTE: as ndarray-linalg only builds for x86 arch, we must build our images in that arch as long as we use this lib.
 statrs = { version = "0.17", default-features = false}
 optimization = { git = "https://github.com/piwonskp/optimization-rust" }
 rand = "0.8.5"
