@@ -22,7 +22,7 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
     let mut data = Vec::new();
 
     for header in block_headers {
-        let timestamp: i64 = header.timestamp.ok_or_else(|| err!("No timestamp in header"))?.parse().expect("Unable to parse timestamp");
+        let timestamp: i64 = i64::from_str_radix(header.timestamp.ok_or_else(|| err!("No timestamp in header"))?.strip_prefix("0x").unwrap(), 16).expect("Unable to parse timestamp");
         let base_fee = hex_string_to_f64(
             &header.base_fee_per_gas.ok_or_else(|| err!("No base fee in header"))?,
         )?;
