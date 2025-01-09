@@ -28,21 +28,17 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
         data.push((timestamp * 1000, base_fee));
     }
 
-    println!("Data length: {}", data.len());
-    data.sort_by(|a, b| a.0.cmp(&b.0));
+        data.sort_by(|a, b| a.0.cmp(&b.0));
     let twap_7d = add_twap_7d(&data)?;
     let strike = twap_7d.last().ok_or_else(|| err!("The series is empty"))?;
-    println!("Strike price: {}", strike);
-
-    let num_paths = 15000;
+    
+    let num_paths = 4000;
     let n_periods = 720;
-    println!("Simulation parameters - num_paths: {}, n_periods: {}", num_paths, n_periods);
-
+    
     let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
     let log_base_fee = compute_log_of_base_fees(&fees)?;
     let (slope, intercept, trend_values) = discover_trend(&log_base_fee)?;
-    println!("Trend analysis - slope: {}, intercept: {}", slope, intercept);
-
+    
     let detrended_log_base_fee: DVector<f64> = DVector::from_iterator(
         log_base_fee.len(),
         log_base_fee.iter().zip(&trend_values).map(|(log_base_fee, trend)| log_base_fee - trend),
@@ -52,20 +48,17 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
         &detrended_log_base_fee,
         &data,
     )?;
-    println!("Seasonality parameters length: {}", season_param.len());
-
+    
     let (de_seasonalized_detrended_simulated_prices, _params) = simulate_prices(
         &de_seasonalised_detrended_log_base_fee,
         n_periods,
         num_paths,
     )?;
-    println!("Simulated prices matrix dimensions: {}x{}", de_seasonalized_detrended_simulated_prices.nrows(), de_seasonalized_detrended_simulated_prices.ncols());
-
+    
     let period_start_timestamp = data[0].0;
     let period_end_timestamp = data.last().ok_or_else(|| err!("Missing end timestamp"))?.0;
     let total_hours = (period_end_timestamp - period_start_timestamp) / 3600 / 1000;
-    println!("Total hours in analysis: {}", total_hours);
-
+    
     let sim_hourly_times = DVector::from_iterator(
         n_periods,
         (0..n_periods).map(|i| total_hours as f64 + i as f64),
@@ -74,8 +67,9 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
     let c = season_matrix(sim_hourly_times);
     let season = &c * &season_param;
     let season_matrix = season.reshape_generic(nalgebra::Dyn(n_periods), nalgebra::Const::<1>);
+    let season_matrix_shaped = DMatrix::from_fn(n_periods, num_paths, |row, _| season_matrix[(row, 0)]);
 
-    let detrended_simulated_prices = &de_seasonalized_detrended_simulated_prices + &season_matrix;
+    let detrended_simulated_prices = &de_seasonalized_detrended_simulated_prices + &season_matrix_shaped;
 
     let log_twap_7d: Vec<f64> = twap_7d.iter().map(|x| x.ln()).collect();
     let returns: Vec<f64> = log_twap_7d.windows(2).map(|window| window[1] - window[0]).collect();
@@ -83,14 +77,11 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
     let mu = 0.05 / 52.0;
     let sigma = standard_deviation(&returns) * f64::sqrt(24.0 * 7.0);
     let dt = 1.0 / 24.0;
-    println!("Stochastic parameters - mu: {}, sigma: {}, dt: {}", mu, sigma, dt);
-
+    
     let mut stochastic_trend = DMatrix::zeros(n_periods, num_paths);
     let normal = Normal::new(0.0, sigma * f64::sqrt(dt))?;
-    println!("Normal distribution created");
-    let mut rng = thread_rng();
-    println!("Random number generator created");
-
+        let mut rng = thread_rng();
+    
     for i in 0..num_paths {
         let random_shocks: Vec<f64> = (0..n_periods).map(|_| normal.sample(&mut rng)).collect();
         let mut cumsum = 0.0;
@@ -101,8 +92,7 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
     }
 
     let final_trend_value = slope * (log_base_fee.len() - 1) as f64 + intercept;
-    println!("Final trend value: {}", final_trend_value);
-    let mut simulated_log_prices = DMatrix::zeros(n_periods, num_paths);
+        let mut simulated_log_prices = DMatrix::zeros(n_periods, num_paths);
 
     for i in 0..n_periods {
         let trend = final_trend_value;
@@ -113,8 +103,7 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
 
     let simulated_prices = simulated_log_prices.map(f64::exp);
     let twap_start = n_periods.saturating_sub(24 * 7);
-    println!("TWAP calculation start period: {}", twap_start);
-    
+        
     let final_prices_twap = simulated_prices
         .rows(twap_start, n_periods - twap_start)
         .column_mean();
@@ -122,11 +111,9 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
     let capped_price = (1.0 + 0.3) * strike;
     let payoffs = final_prices_twap.map(|price| (price.min(capped_price) - strike).max(0.0));
     let average_payoff = payoffs.mean();
-    println!("Capped price: {}, Average payoff: {}", capped_price, average_payoff);
-
+    
     let reserve_price = f64::exp(-0.05) * average_payoff;
-    println!("Final reserve price: {}", reserve_price);
-
+    
     Ok(reserve_price)
 }
 
@@ -149,8 +136,7 @@ fn simulate_prices(
 
     // Perform the minimization
     let var_pt = pt.iter().map(|&x| x * x).sum::<f64>() / pt.len() as f64;
-    println!("Initial variance: {}", var_pt);
-    
+        
     let solution = minimizer.minimize(
         &function,
         vec![-3.928e-02, 2.873e-04, 4.617e-02, var_pt, var_pt, 0.2],
@@ -166,10 +152,7 @@ fn simulate_prices(
     let sigma_j = params[4].sqrt();
     let lambda_ = params[5] / dt;
 
-    println!("Optimized parameters:");
-    println!("alpha: {}, kappa: {}, mu_j: {}", alpha, kappa, mu_j);
-    println!("sigma: {}, sigma_j: {}, lambda: {}", sigma, sigma_j, lambda_);
-
+            
     // RNG for stochastic processes
     let mut rng = thread_rng();
 
@@ -185,29 +168,21 @@ fn simulate_prices(
     // Initialize simulated prices
     let mut simulated_prices = DMatrix::zeros(n_periods, num_paths);
     let initial_price = de_seasonalised_detrended_log_base_fee[de_seasonalised_detrended_log_base_fee.len() - 1];
-    println!("Initial price: {}", initial_price);
-    for j in 0..num_paths {
+        for j in 0..num_paths {
         simulated_prices[(0, j)] = initial_price;
     }
-    println!("Initial prices set for all paths");
-
-    println!("Generating standard normal variables...");
-    // Generate standard normal variables
+    
+        // Generate standard normal variables
     let normal = Normal::new(0.0, 1.0).unwrap();
-    println!("Normal distribution initialized");
-    let mut n1 = DMatrix::zeros(n_periods, num_paths);
-    println!("n1 matrix initialized with zeros");
-    let mut n2 = DMatrix::zeros(n_periods, num_paths);
-    println!("n2 matrix initialized with zeros");
-    for i in 0..n_periods {
+        let mut n1 = DMatrix::zeros(n_periods, num_paths);
+        let mut n2 = DMatrix::zeros(n_periods, num_paths);
+        for i in 0..n_periods {
         for j in 0..num_paths {
             n1[(i, j)] = normal.sample(&mut rng);
             n2[(i, j)] = normal.sample(&mut rng);
         }
-        println!("Generated normal variables for period {}", i);
     }
-    println!("Starting price simulation for {} periods and {} paths", n_periods, num_paths);
-    // Simulate prices over time
+        // Simulate prices over time
     for i in 1..n_periods {
         for j in 0..num_paths {
             let prev_price = simulated_prices[(i-1, j)];
@@ -222,8 +197,7 @@ fn simulate_prices(
         }
     }
 
-    println!("Simulation completed");
-    Ok((simulated_prices, params.to_vec()))
+        Ok((simulated_prices, params.to_vec()))
 }
 
 fn fit_linear_regression(x: &[f64], y: &[f64]) -> Result<(f64, f64)> {
@@ -267,16 +241,6 @@ fn compute_log_of_base_fees(base_fees: &Vec<&f64>) -> Result<Vec<f64>> {
     Ok(base_fees.iter().map(|&x| x.ln()).collect())
 }
 
-// fn least_squares(detrended_log_base_fee: &DVector<f64>, c: &DMatrix<f64>) -> Result<DVector<f64>> {
-//     let solution = (c.transpose() * c)
-//         .try_inverse()
-//         .ok_or_else(|| eyre::eyre!("Singular matrix in least squares"))?
-//         * c.transpose()
-//         * detrended_log_base_fee;
-    
-//     Ok(solution)
-// }
-
 fn remove_seasonality(
     detrended_log_base_fee: &DVector<f64>,
     data: &Vec<(i64, f64)>,
@@ -288,10 +252,13 @@ fn remove_seasonality(
         data.iter().map(|(timestamp, _)| (*timestamp - start_timestamp) as f64 / 1000.0 / 3600.0)
     );
     
-    let c = season_matrix(t_series);
-    // let season_param = least_squares(detrended_log_base_fee, &c)?;
-    let epsilon = 1e-14;
-    let season_param = lstsq::lstsq(&c, &detrended_log_base_fee, epsilon).unwrap().solution;
+    let c = season_matrix(t_series.clone());
+    
+    let epsilon = 1e-300;
+    let season_param = lstsq::lstsq(&c, &detrended_log_base_fee, epsilon)
+        .unwrap()
+        .solution;
+    
     let season = &c * &season_param;
     
     let de_seasonalised_detrended_log_base_fee = detrended_log_base_fee - season;
@@ -357,13 +324,13 @@ fn add_twap_7d(data: &Vec<(i64, f64)>) -> Result<Vec<f64>> {
     let required_window_size = 24 * 7;
     let n = data.len();
     
-    // if n < required_window_size {
-    //     return Err(err!(
-    //         "Insufficient data: At least {} data points are required, but only {} provided.",
-    //         required_window_size,
-    //         n
-    //     ));
-    // }
+    if n < required_window_size {
+        return Err(err!(
+            "Insufficient data: At least {} data points are required, but only {} provided.",
+            required_window_size,
+            n
+        ));
+    }
 
     let values = DVector::from_iterator(n, data.iter().map(|&(_, value)| value));
     let mut twap_values = Vec::with_capacity(n);
