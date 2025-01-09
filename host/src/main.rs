@@ -4,7 +4,6 @@ use methods::PRICING_CALCULATOR_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use db_access::DbConnection;
 use db_access::queries::get_block_headers_by_block_range;
-use eth_rlp_types::BlockHeader;
 
 
 async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Option<f64>, Option<f64>), sqlx::Error> {
@@ -14,16 +13,6 @@ async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Opti
 
     let db = DbConnection::new().await?;
     let block_headers = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
-    // let block_headers = vec![BlockHeader {number: 3}];
-    // let block_headers = vec![BlockHeader {a: 1, b: 5}];
-    // let block_header = BlockHeader { block_hash: "0xd24fd73f794058a3807db926d8898c6481e902b7edb91ce0d479d6760f276183", number: 20000000, gas_limit: 30000000, gas_used: 11089692, nonce: "0x0000000000000000", transaction_root: Some("0xf0280ae7fd02f2b9684be8d740830710cd62e4869c891c3a0ead32ea757e70a3"), receipts_root: Some("0xb39f9f7a13a342751bd2c575eca303e224393d4e11d715866b114b7e824da608"), state_root: Some("0x68421c2c599dc31396a09772a073fb421c4bd25ef1462914ef13e5dfa2d31c23"), base_fee_per_gas: Some("0x12643ff14"), parent_hash: Some("0xb390d63aac03bbef75de888d16bd56b91c9291c2a7e38d36ac24731351522bd1"), ommers_hash: Some("0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347"), miner: Some("0x95222290dd7278aa3ddd389cc1e1d165cc4bafe5"), logs_bloom: Some("0x94a9480614840b245a1a2148e2100e2070472151b44c3020280930809a20c011609520bc10080074a61c782411e34713ee19c560ca02208f4770080013bc5d302d84743dd0008c5d089d5b1c95940de80809888ba7ed68512d426c048934c8cc0a08dd440b461265001ee50909a26d0213000a7411242c72a648c87e104c0097a0aaba477628508533c5924867341dd11305aa372350b019244034dc849419968b00fd2dda39ecff042639c43923f0d48495d2a40468524bce13a86444c82071ca9c431208870b33f5320f680f3991c2349e2433c80440b0832016820e1070a4405aadcc40050a5006c24504f0098c4391e0f04047c824d1d88ca8021d240510"), difficulty: Some("0x0"), totaldifficulty: Some("0xc70d815d562d3cfa955"), sha3_uncles: Some("0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347"), timestamp: Some("0x665ba27f"), extra_data: Some("0x6265617665726275696c642e6f7267"), mix_hash: Some("0x85175443c2889afcb52288e0fa8804b671e582f9fd416071a70642d90c7dc0db"), withdrawals_root: Some("0xf0747de0368fb967ede9b81320a5b01a4d85b3d427e8bc8e96ff371478d80e76"), blob_gas_used: Some("0x20000"), excess_blob_gas: Some("0x0"), parent_beacon_block_root: Some("0xec0befcffe8b2792fc5e7b67dac85ee3bbb09bc56b0ea5d9a698ec3b402d296f") };
-
-    // let serialized = to_vec(&block_headers[0]);
-    // println!("BLOCK HEADER: {:?}", block_headers[0]);
-    // println!("SERIALIZED:");
-    // println!("{:?}", serialized);
-    // let b: Result<BlockHeader, risc0_zkvm::serde::Error> = from_slice(&serialized.unwrap());
-    // println!("DESERIALIZED:\n{:?}", b);
 
     let env = ExecutorEnv::builder()
         .write(&block_headers)
@@ -41,15 +30,17 @@ async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Opti
 
     let (volatility, twap, reserve_price): (Option<f64>, Option<f64>, Option<f64>) = receipt.journal.decode().unwrap();
 
+    println!("HOST");
+    println!("Volatility: {:?}", volatility);
+    println!("TWAP: {:?}", twap);
+    println!("Reserve Price: {:?}", reserve_price);
+
     Ok((volatility, twap, reserve_price))
 }
 
 
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
-    run_host(20000000, 20000002).await?;
-// fn main() -> Result<(), sqlx::Error> {
-    // run_host(20000000, 20000002);
-    // run_host(20000000, 20000001);
+    run_host(20000000, 20000170).await?;
     Ok(())
 }
