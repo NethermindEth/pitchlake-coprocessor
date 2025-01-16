@@ -4,9 +4,12 @@ use methods::PRICING_CALCULATOR_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use db_access::DbConnection;
 use db_access::queries::get_block_headers_by_block_range;
+use dotenv::dotenv;
+use tokio::task;
 
 
 async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Option<f64>, Option<f64>), sqlx::Error> {
+    dotenv().ok();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
@@ -14,18 +17,16 @@ async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Opti
     let db = DbConnection::new().await?;
     let block_headers = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
 
-    let env = ExecutorEnv::builder()
-        .write(&block_headers)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    let prover = default_prover();
-
-    let prove_info = prover
-        .prove(env, PRICING_CALCULATOR_ELF)
-        .unwrap();
-
+    let prove_info = task::spawn_blocking(move || {
+        let env = ExecutorEnv::builder()
+            .write(&block_headers)
+            .unwrap()
+            .build()
+            .unwrap();
+        let prover = default_prover();
+        prover.prove(env, PRICING_CALCULATOR_ELF).unwrap()
+        }).await.unwrap();
+        
     let receipt = prove_info.receipt;
 
     let (volatility, twap, reserve_price): (Option<f64>, Option<f64>, Option<f64>) = receipt.journal.decode().unwrap();
@@ -42,5 +43,7 @@ async fn run_host(start_block: i64, end_block: i64) -> Result<(Option<f64>, Opti
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
     run_host(20000000, 20000170).await?;
+    // 3 months data
+    // run_host(20000000, 20700000).await?;
     Ok(())
 }
