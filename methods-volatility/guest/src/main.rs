@@ -6,29 +6,6 @@ fn main() {
     let base_fee_per_gases: Vec<Option<f64>> = inputs.base_fee_per_gases;
     let ln_results: Vec<f64> = inputs.ln_results;
 
-    // let base_fee_per_gases: Vec<Option<f64>> = env::read();
-
-    // // Calculate log returns
-    // let mut ln_results: Vec<f64> = Vec::new();
-    // for i in 1..base_fee_per_gases.len() {
-    //     if let (Some(ref basefee_current), Some(ref basefee_previous)) =
-    //         (&base_fee_per_gases[i], &base_fee_per_gases[i - 1])
-    //     {
-    //         // If the previous base fee is zero, skip to the next iteration
-    //         if *basefee_previous == 0.0 {
-    //             continue;
-    //         }
-
-    //         // Calculate log return and add it to the returns vector
-    //         ln_results.push((*basefee_current / *basefee_previous).ln());
-
-    //         // // approach 2: 4528 cycles
-    //         // let a = (&input_and_result.result.exp() * denominator);
-    //         // let diff = a - numerator;
-    //         // assert!(diff < 0.00001);
-    //     }
-    // }
-
     let mut ln_result_counter = 0;
     for i in 1..base_fee_per_gases.len() {
         if let (Some(ref basefee_current), Some(ref basefee_previous)) =
