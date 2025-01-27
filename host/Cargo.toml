@@ -15,3 +15,4 @@ eth-rlp-types = { git = "https://github.com/piwonskp/eth-rlp-verify.git" }
 sqlx = "0.8.2"
 dotenv = "0.15.0"
 eyre = "0.6"
+core = { path = "../core" }

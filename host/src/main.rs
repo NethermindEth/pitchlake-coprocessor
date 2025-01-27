@@ -8,6 +8,7 @@ use methods::PRICING_CALCULATOR_ELF;
 use methods_volatility::GUEST_VOLATILITY_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use tokio::task;
+use core::VolatilityInputs;
 
 async fn run_host(
     start_block: i64,
@@ -76,9 +77,33 @@ async fn run_host_volatility(start_block: i64, end_block: i64) -> Result<Option<
         })
         .collect();
 
+    let mut results: Vec<f64> = Vec::new();
+    for i in 1..base_fee_per_gases.len() {
+        if let (Some(ref basefee_current), Some(ref basefee_previous)) =
+            (&base_fee_per_gases[i], &base_fee_per_gases[i - 1])
+        {
+            // Convert base fees from hex string to f64
+            // let basefee_current = hex_string_to_f64(basefee_current).unwrap();
+            // let basefee_previous = hex_string_to_f64(basefee_previous).unwrap();
+
+            // If the previous base fee is zero, skip to the next iteration
+            if *basefee_previous == 0.0 {
+                continue;
+            }
+
+            // Calculate log return and add it to the returns vector
+            results.push((*basefee_current / *basefee_previous).ln());
+        }
+    }
+
+    let volatility_inputs = VolatilityInputs {
+        base_fee_per_gases: base_fee_per_gases.clone(),
+        ln_results: results,
+    };
+
     let prove_info = task::spawn_blocking(move || {
         let env = ExecutorEnv::builder()
-            .write(&base_fee_per_gases)
+            .write(&volatility_inputs)
             .unwrap()
             .build()
             .unwrap();
