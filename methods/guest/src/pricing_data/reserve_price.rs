@@ -1,6 +1,6 @@
 use eth_rlp_types::BlockHeader;
 use eyre::{anyhow as err, Result};
-use nalgebra::{DMatrix, DVector, Matrix, MatrixView};
+use nalgebra::{DMatrix, DVector};
 use rand::prelude::*;
 use rand_distr::{Distribution, Normal};
 use statrs::distribution::Binomial;
@@ -28,7 +28,7 @@ pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
         data.push((timestamp * 1000, base_fee));
     }
 
-        data.sort_by(|a, b| a.0.cmp(&b.0));
+    data.sort_by(|a, b| a.0.cmp(&b.0));
     let twap_7d = add_twap_7d(&data)?;
     let strike = twap_7d.last().ok_or_else(|| err!("The series is empty"))?;
     

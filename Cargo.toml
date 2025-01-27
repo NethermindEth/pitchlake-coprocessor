@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "host", 
     "methods", 
+    "methods-volatility",
     "db-access", 
     "db-models"
 ]
