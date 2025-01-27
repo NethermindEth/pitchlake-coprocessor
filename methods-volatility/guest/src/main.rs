@@ -1,23 +1,34 @@
+use core::{VolatilityInputsFixedPoint, VolatilityInputsFixedPointSimba};
+use fixed::types::I48F16;
+use num_traits::Zero;
 use risc0_zkvm::guest::env;
-use core::VolatilityInputs;
+use simba::scalar::{ComplexField, FixedI48F16, RealField};
+
+fn powi(x: FixedI48F16, y: usize) -> FixedI48F16 {
+    let mut result = FixedI48F16::from_num(1);
+    for _ in 0..y {
+        result = result * x;
+    }
+    result
+}
 
 fn main() {
-    let inputs: VolatilityInputs = env::read();
-    let base_fee_per_gases: Vec<Option<f64>> = inputs.base_fee_per_gases;
-    let ln_results: Vec<f64> = inputs.ln_results;
+    let inputs: VolatilityInputsFixedPointSimba = env::read();
+    let base_fee_per_gases: Vec<Option<FixedI48F16>> = inputs.base_fee_per_gases;
+    let ln_results: Vec<FixedI48F16> = inputs.ln_results;
 
     let mut ln_result_counter = 0;
     for i in 1..base_fee_per_gases.len() {
         if let (Some(ref basefee_current), Some(ref basefee_previous)) =
             (&base_fee_per_gases[i], &base_fee_per_gases[i - 1])
         {
-            if *basefee_previous == 0.0 {
+            if basefee_previous.is_zero() {
                 continue;
             }
 
             let a = ln_results[ln_result_counter].exp() * *basefee_previous;
             let diff = a - *basefee_current;
-            assert!(diff < 0.00001);
+            assert!(diff < FixedI48F16::from_num(0.00001));
 
             ln_result_counter += 1;
         }
@@ -25,19 +36,22 @@ fn main() {
 
     // If there are no returns the volatility is 0
     if ln_results.is_empty() {
-        env::commit(&0f64);
+        env::commit(&FixedI48F16::zero());
         return;
     }
 
-    // Calculate average returns
-    let mean_return: f64 = ln_results.iter().sum::<f64>() / ln_results.len() as f64;
+    let mean_return: FixedI48F16 = ln_results
+        .iter()
+        .fold(FixedI48F16::from_num(0), |acc, &x| acc + x)
+        / FixedI48F16::from_num(ln_results.len());
 
     // Calculate variance of average returns
-    let variance: f64 = ln_results
+    let variance: FixedI48F16 = ln_results
         .iter()
-        .map(|&r| (r - mean_return).powi(2))
-        .sum::<f64>()
-        / ln_results.len() as f64;
+        .map(|&r| powi(r - mean_return, 2))
+        .fold(FixedI48F16::from_num(0), |acc, x| acc + x)
+        / FixedI48F16::from_num(ln_results.len());
 
-    env::commit(&(variance.sqrt() * 10_000.0).round());
+    let volatility: FixedI48F16 = variance.sqrt() * FixedI48F16::from_num(10000).round();
+    env::commit(&volatility);
 }

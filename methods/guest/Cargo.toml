@@ -18,3 +18,4 @@ uuid = { version = "1.10.0", features = ["v4"] }
 nalgebra = "0.33.2"
 lstsq = "0.6.0"
 eth-rlp-types = { git = "https://github.com/piwonskp/eth-rlp-verify.git" }
+fixed = "1.28.0"
