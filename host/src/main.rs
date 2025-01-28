@@ -6,11 +6,42 @@ use db_access::DbConnection;
 use dotenv::dotenv;
 use eyre::Result;
 use methods::PRICING_CALCULATOR_ELF;
+use methods_twap::GUEST_TWAP_ELF;
 use methods_volatility::GUEST_VOLATILITY_ELF;
 use num_traits::Zero;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::{FixedI48F16, RealField};
 use tokio::task;
+
+fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
+    let stripped = hex_str.trim_start_matches("0x");
+    u128::from_str_radix(stripped, 16)
+        .map(|value| value as f64)
+        .map_err(|e| eyre::eyre!("Error converting hex string '{}' to f64: {}", hex_str, e))
+}
+
+// todo: accept generic fixed point type with trait bound
+fn natural_log(x: FixedI48F16) -> Result<FixedI48F16> {
+    if x <= FixedI48F16::zero() {
+        return Err(eyre::eyre!("Cannot take logarithm of non-positive number"));
+    }
+    let mut power = 0i32;
+    let two = FixedI48F16::from_num(2);
+    let one = FixedI48F16::from_num(1);
+    let mut val = x;
+    while val >= two {
+        val = val / two;
+        power += 1;
+    }
+    while val < one {
+        val = val * two;
+        power -= 1;
+    }
+    let base_ln = FixedI48F16::ln_2() * FixedI48F16::from_num(power);
+    let frac = val - one;
+    let frac_contribution = frac * FixedI48F16::ln_2();
+    Ok(base_ln + frac_contribution)
+}
 
 async fn run_host(
     start_block: i64,
@@ -49,42 +80,37 @@ async fn run_host(
     Ok((volatility, twap, reserve_price))
 }
 
-fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
-    let stripped = hex_str.trim_start_matches("0x");
-    u128::from_str_radix(stripped, 16)
-        .map(|value| value as f64)
-        .map_err(|e| eyre::eyre!("Error converting hex string '{}' to f64: {}", hex_str, e))
-}
+async fn run_host_twap(start_block: i64, end_block: i64) -> Result<f64, sqlx::Error> {
+    dotenv().ok();
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
+        .init();
 
-// todo: accept generic fixed point type with trait bound
-fn natural_log(x: FixedI48F16) -> Result<FixedI48F16> {
-    if x <= FixedI48F16::zero() {
-        return Err(eyre::eyre!("Cannot take logarithm of non-positive number"));
-    }
-    let mut power = 0i32;
-    let two = FixedI48F16::from_num(2);
-    let one = FixedI48F16::from_num(1);
-    let mut val = x;
-    while val >= two {
-        val = val / two;
-        power += 1;
-    }
-    while val < one {
-        val = val * two;
-        power -= 1;
-    }
-    let base_ln = FixedI48F16::ln_2() * FixedI48F16::from_num(power);
-    let frac = val - one;
-    let frac_contribution = frac * FixedI48F16::ln_2();
-    Ok(base_ln + frac_contribution)
-}
+    let db = DbConnection::new().await?;
+    let block_headers = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
 
-fn powi(x: FixedI48F16, y: usize) -> FixedI48F16 {
-    let mut result = FixedI48F16::from_num(1);
-    for _ in 0..y {
-        result = result * x;
-    }
-    result
+    let base_fee_per_gases_hex: Vec<Option<String>> = block_headers
+        .iter()
+        .map(|header| header.base_fee_per_gas.clone())
+        .collect();
+
+    let prove_info = task::spawn_blocking(move || {
+        let env = ExecutorEnv::builder()
+            .write(&block_headers)
+            .unwrap()
+            .build()
+            .unwrap();
+        let prover = default_prover();
+        prover.prove(env, GUEST_TWAP_ELF).unwrap()
+    })
+    .await
+    .unwrap();
+
+    let receipt = prove_info.receipt;
+
+    let twap: f64 = receipt.journal.decode().unwrap();
+
+    Ok(twap)
 }
 
 async fn run_host_volatility_fixed_point(
@@ -119,11 +145,6 @@ async fn run_host_volatility_fixed_point(
         if let (Some(ref basefee_current), Some(ref basefee_previous)) =
             (&base_fee_per_gases[i], &base_fee_per_gases[i - 1])
         {
-            // Convert base fees from hex string to f64
-            // let basefee_current = hex_string_to_f64(basefee_current).unwrap();
-            // let basefee_previous = hex_string_to_f64(basefee_previous).unwrap();
-
-            // If the previous base fee is zero, skip to the next iteration
             if basefee_previous.is_zero() {
                 continue;
             }
@@ -161,6 +182,7 @@ async fn main() -> Result<(), sqlx::Error> {
     // run_host(20000000, 20000200).await?;
     // 3 months data
     // run_host(20000000, 20700000).await?;
-    run_host_volatility_fixed_point(20000000, 20002000).await?;
+    // run_host_volatility_fixed_point(20000000, 20002000).await?;
+    run_host_twap(20000000, 20002000).await?;
     Ok(())
 }
