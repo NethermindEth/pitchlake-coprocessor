@@ -1,0 +1,10 @@
+[package]
+name = "db-models"
+edition.workspace = true
+
+[dependencies]
+sqlx = { version = "0.8.2", default-features = false, features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+eth-rlp-types = { git = "https://github.com/piwonskp/eth-rlp-verify.git" }
+chrono = "0.4.38"
+serde_json = "1.0"
