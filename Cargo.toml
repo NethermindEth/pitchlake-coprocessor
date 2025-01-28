@@ -5,6 +5,7 @@ members = [
     "host", 
     "methods", 
     "methods-volatility",
+    "methods-reserve-price",
     "methods-twap",
     "db-access", 
     "db-models"

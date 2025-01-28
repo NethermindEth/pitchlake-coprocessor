@@ -8,6 +8,7 @@ use eyre::Result;
 use methods::PRICING_CALCULATOR_ELF;
 use methods_twap::GUEST_TWAP_ELF;
 use methods_volatility::GUEST_VOLATILITY_ELF;
+use methods_reserve_price::GUEST_RESERVE_PRICE_ELF;
 use num_traits::Zero;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::{FixedI48F16, RealField};
@@ -78,6 +79,39 @@ async fn run_host(
     println!("Reserve Price: {:?}", reserve_price);
 
     Ok((volatility, twap, reserve_price))
+}
+
+async fn run_host_reserve_price(start_block: i64, end_block: i64) -> Result<(), sqlx::Error> {
+    dotenv().ok();
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
+        .init();
+
+    let db = DbConnection::new().await?;
+    let block_headers = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
+
+    let base_fee_per_gases_hex: Vec<Option<String>> = block_headers
+        .iter()
+        .map(|header| header.base_fee_per_gas.clone())
+        .collect();
+
+        let prove_info = task::spawn_blocking(move || {
+            let env = ExecutorEnv::builder()
+                .write(&block_headers)
+                .unwrap()
+                .build()
+                .unwrap();
+            let prover = default_prover();
+            prover.prove(env, GUEST_RESERVE_PRICE_ELF).unwrap()
+        })
+        .await
+        .unwrap();
+    
+        let receipt = prove_info.receipt;
+    
+        // let twap: FixedI48F16 = receipt.journal.decode().unwrap();
+
+    Ok(())
 }
 
 async fn run_host_twap(start_block: i64, end_block: i64) -> Result<FixedI48F16, sqlx::Error> {
@@ -193,6 +227,7 @@ async fn main() -> Result<(), sqlx::Error> {
     // 3 months data
     // run_host(20000000, 20700000).await?;
     // run_host_volatility_fixed_point(20000000, 20002000).await?;
-    run_host_twap(20000000, 20002000).await?;
+    // run_host_twap(20000000, 20002000).await?;
+    run_host_reserve_price(20000000, 20002000).await?;
     Ok(())
 }
