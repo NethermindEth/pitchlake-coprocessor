@@ -1,4 +1,3 @@
-use fixed::types::I48F16;
 use serde::{Deserialize, Serialize};
 use simba::scalar::FixedI48F16;
 
