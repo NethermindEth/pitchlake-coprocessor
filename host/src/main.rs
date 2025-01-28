@@ -93,10 +93,21 @@ async fn run_host_twap(start_block: i64, end_block: i64) -> Result<f64, sqlx::Er
         .iter()
         .map(|header| header.base_fee_per_gas.clone())
         .collect();
+    let base_fee_per_gases: Vec<f64> = base_fee_per_gases_hex
+        .iter()
+        .map(|hexes| {
+            if let Some(hex) = hexes {
+                return hex_string_to_f64(hex).unwrap();
+                // return Some(FixedI48F16::from_num(hex_string_to_f64(hex).unwrap()));
+            } else {
+                return 0.0;
+            }
+        })
+        .collect();
 
     let prove_info = task::spawn_blocking(move || {
         let env = ExecutorEnv::builder()
-            .write(&block_headers)
+            .write(&base_fee_per_gases)
             .unwrap()
             .build()
             .unwrap();
@@ -133,7 +144,6 @@ async fn run_host_volatility_fixed_point(
         .map(|hexes| {
             if let Some(hex) = hexes {
                 return Some(FixedI48F16::from_num(hex_string_to_f64(hex).unwrap()));
-                // return Some(hex_string_to_f64(hex).unwrap());
             } else {
                 return None;
             }
