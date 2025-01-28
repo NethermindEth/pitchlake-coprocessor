@@ -16,36 +16,22 @@ fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
         .map_err(|e| eyre::eyre!("Error converting hex string '{}' to f64: {}", hex_str, e))
 }
 
+fn check_sorted(data: &Vec<(i64, f64)>) -> Result<()> {
+    for i in 1..data.len() {
+        if data[i].0 < data[i - 1].0 {
+            return Err(err!("Data is not sorted by timestamp in ascending order"));
+        }
+    }
+    Ok(())
+}
+
 fn main() {
-    let block_headers: Vec<BlockHeader> = env::read();
-    if block_headers.is_empty() {
-        // return Err(eyre::eyre!("No block headers provided."));
-        return;
-    }
+    let mut data: Vec<(i64, f64)> = env::read();
 
-    let mut data = Vec::new();
-    for header in block_headers {
-        let timestamp = i64::from_str_radix(
-            header
-                .timestamp
-                .ok_or_else(|| err!("No timestamp in header"))
-                .unwrap()
-                .strip_prefix("0x")
-                .unwrap(),
-            16,
-        )
-        .unwrap();
-        let base_fee = hex_string_to_f64(
-            &header
-                .base_fee_per_gas
-                .ok_or_else(|| err!("No base fee in header"))
-                .unwrap(),
-        )
-        .unwrap();
-        data.push((timestamp * 1000, base_fee));
-    }
+    // assert sorting data here instead of running the sorting algorithm here
+    // data.sort_by(|a, b| a.0.cmp(&b.0));
+    check_sorted(&data).unwrap();
 
-    data.sort_by(|a, b| a.0.cmp(&b.0));
     let twap_7d = add_twap_7d(&data).unwrap();
     let strike = twap_7d
         .last()
@@ -55,194 +41,98 @@ fn main() {
     let num_paths = 4000;
     let n_periods = 720;
 
-    //     let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
-    //     let log_base_fee = compute_log_of_base_fees(&fees)?;
-    //     let (slope, intercept, trend_values) = discover_trend(&log_base_fee)?;
+    let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
+    let log_base_fee = compute_log_of_base_fees(&fees).unwrap();
+    let (slope, intercept, trend_values) = discover_trend(&log_base_fee).unwrap();
 
-    //     let detrended_log_base_fee: DVector<f64> = DVector::from_iterator(
-    //         log_base_fee.len(),
-    //         log_base_fee.iter().zip(&trend_values).map(|(log_base_fee, trend)| log_base_fee - trend),
-    //     );
+    let detrended_log_base_fee: DVector<f64> = DVector::from_iterator(
+        log_base_fee.len(),
+        log_base_fee
+            .iter()
+            .zip(&trend_values)
+            .map(|(log_base_fee, trend)| log_base_fee - trend),
+    );
 
-    //     let (de_seasonalised_detrended_log_base_fee, season_param) = remove_seasonality(
-    //         &detrended_log_base_fee,
-    //         &data,
-    //     )?;
+    let (de_seasonalised_detrended_log_base_fee, season_param) =
+        remove_seasonality(&detrended_log_base_fee, &data).unwrap();
 
-    //     let (de_seasonalized_detrended_simulated_prices, _params) = simulate_prices(
-    //         &de_seasonalised_detrended_log_base_fee,
-    //         n_periods,
-    //         num_paths,
-    //     )?;
+    let (de_seasonalized_detrended_simulated_prices, _params) = simulate_prices(
+        &de_seasonalised_detrended_log_base_fee,
+        n_periods,
+        num_paths,
+    )
+    .unwrap();
 
-    //     let period_start_timestamp = data[0].0;
-    //     let period_end_timestamp = data.last().ok_or_else(|| err!("Missing end timestamp"))?.0;
-    //     let total_hours = (period_end_timestamp - period_start_timestamp) / 3600 / 1000;
+    let period_start_timestamp = data[0].0;
+    let period_end_timestamp = data
+        .last()
+        .ok_or_else(|| err!("Missing end timestamp"))
+        .unwrap()
+        .0;
+    let total_hours = (period_end_timestamp - period_start_timestamp) / 3600 / 1000;
 
-    //     let sim_hourly_times = DVector::from_iterator(
-    //         n_periods,
-    //         (0..n_periods).map(|i| total_hours as f64 + i as f64),
-    //     );
+    let sim_hourly_times = DVector::from_iterator(
+        n_periods,
+        (0..n_periods).map(|i| total_hours as f64 + i as f64),
+    );
 
-    //     let c = season_matrix(sim_hourly_times);
-    //     let season = &c * &season_param;
-    //     let season_matrix = season.reshape_generic(nalgebra::Dyn(n_periods), nalgebra::Const::<1>);
-    //     let season_matrix_shaped = DMatrix::from_fn(n_periods, num_paths, |row, _| season_matrix[(row, 0)]);
+    let c = season_matrix(sim_hourly_times);
+    let season = &c * &season_param;
+    let season_matrix = season.reshape_generic(nalgebra::Dyn(n_periods), nalgebra::Const::<1>);
+    let season_matrix_shaped =
+        DMatrix::from_fn(n_periods, num_paths, |row, _| season_matrix[(row, 0)]);
 
-    //     let detrended_simulated_prices = &de_seasonalized_detrended_simulated_prices + &season_matrix_shaped;
+    let detrended_simulated_prices =
+        &de_seasonalized_detrended_simulated_prices + &season_matrix_shaped;
 
-    //     let log_twap_7d: Vec<f64> = twap_7d.iter().map(|x| x.ln()).collect();
-    //     let returns: Vec<f64> = log_twap_7d.windows(2).map(|window| window[1] - window[0]).collect();
+    let log_twap_7d: Vec<f64> = twap_7d.iter().map(|x| x.ln()).collect();
+    let returns: Vec<f64> = log_twap_7d
+        .windows(2)
+        .map(|window| window[1] - window[0])
+        .collect();
 
-    //     let mu = 0.05 / 52.0;
-    //     let sigma = standard_deviation(&returns) * f64::sqrt(24.0 * 7.0);
-    //     let dt = 1.0 / 24.0;
+    let mu = 0.05 / 52.0;
+    let sigma = standard_deviation(&returns) * f64::sqrt(24.0 * 7.0);
+    let dt = 1.0 / 24.0;
 
-    //     let mut stochastic_trend = DMatrix::zeros(n_periods, num_paths);
-    //     let normal = Normal::new(0.0, sigma * f64::sqrt(dt))?;
-    //         let mut rng = thread_rng();
+    let mut stochastic_trend = DMatrix::zeros(n_periods, num_paths);
+    let normal = Normal::new(0.0, sigma * f64::sqrt(dt)).unwrap();
+    let mut rng = thread_rng();
 
-    //     for i in 0..num_paths {
-    //         let random_shocks: Vec<f64> = (0..n_periods).map(|_| normal.sample(&mut rng)).collect();
-    //         let mut cumsum = 0.0;
-    //         for j in 0..n_periods {
-    //             cumsum += (mu - 0.5 * sigma.powi(2)) * dt + random_shocks[j];
-    //             stochastic_trend[(j, i)] = cumsum;
-    //         }
-    //     }
+    for i in 0..num_paths {
+        let random_shocks: Vec<f64> = (0..n_periods).map(|_| normal.sample(&mut rng)).collect();
+        let mut cumsum = 0.0;
+        for j in 0..n_periods {
+            cumsum += (mu - 0.5 * sigma.powi(2)) * dt + random_shocks[j];
+            stochastic_trend[(j, i)] = cumsum;
+        }
+    }
 
-    //     let final_trend_value = slope * (log_base_fee.len() - 1) as f64 + intercept;
-    //         let mut simulated_log_prices = DMatrix::zeros(n_periods, num_paths);
+    let final_trend_value = slope * (log_base_fee.len() - 1) as f64 + intercept;
+    let mut simulated_log_prices = DMatrix::zeros(n_periods, num_paths);
 
-    //     for i in 0..n_periods {
-    //         let trend = final_trend_value;
-    //         for j in 0..num_paths {
-    //             simulated_log_prices[(i, j)] = detrended_simulated_prices[(i, j)] + trend + stochastic_trend[(i, j)];
-    //         }
-    //     }
+    for i in 0..n_periods {
+        let trend = final_trend_value;
+        for j in 0..num_paths {
+            simulated_log_prices[(i, j)] =
+                detrended_simulated_prices[(i, j)] + trend + stochastic_trend[(i, j)];
+        }
+    }
 
-    //     let simulated_prices = simulated_log_prices.map(f64::exp);
-    //     let twap_start = n_periods.saturating_sub(24 * 7);
+    let simulated_prices = simulated_log_prices.map(f64::exp);
+    let twap_start = n_periods.saturating_sub(24 * 7);
 
-    //     let final_prices_twap = simulated_prices
-    //         .rows(twap_start, n_periods - twap_start)
-    //         .column_mean();
+    let final_prices_twap = simulated_prices
+        .rows(twap_start, n_periods - twap_start)
+        .column_mean();
 
-    //     let capped_price = (1.0 + 0.3) * strike;
-    //     let payoffs = final_prices_twap.map(|price| (price.min(capped_price) - strike).max(0.0));
-    //     let average_payoff = payoffs.mean();
+    let capped_price = (1.0 + 0.3) * strike;
+    let payoffs = final_prices_twap.map(|price| (price.min(capped_price) - strike).max(0.0));
+    let average_payoff = payoffs.mean();
 
-    //     let reserve_price = f64::exp(-0.05) * average_payoff;
-
-    //     Ok(reserve_price)
+    let reserve_price = f64::exp(-0.05) * average_payoff;
+    env::commit(&reserve_price);
 }
-// use super::utils::hex_string_to_f64;
-
-// pub fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
-//     if block_headers.is_empty() {
-//         return Err(eyre::eyre!("No block headers provided."));
-//     }
-
-//     let mut data = Vec::new();
-//     for header in block_headers {
-//         let timestamp = i64::from_str_radix(
-//             header.timestamp.ok_or_else(|| err!("No timestamp in header"))?.strip_prefix("0x").unwrap(),
-//             16,
-//         )?;
-//         let base_fee = hex_string_to_f64(
-//             &header.base_fee_per_gas.ok_or_else(|| err!("No base fee in header"))?,
-//         )?;
-//         data.push((timestamp * 1000, base_fee));
-//     }
-
-//     data.sort_by(|a, b| a.0.cmp(&b.0));
-//     let twap_7d = add_twap_7d(&data)?;
-//     let strike = twap_7d.last().ok_or_else(|| err!("The series is empty"))?;
-
-//     let num_paths = 4000;
-//     let n_periods = 720;
-
-//     let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
-//     let log_base_fee = compute_log_of_base_fees(&fees)?;
-//     let (slope, intercept, trend_values) = discover_trend(&log_base_fee)?;
-
-//     let detrended_log_base_fee: DVector<f64> = DVector::from_iterator(
-//         log_base_fee.len(),
-//         log_base_fee.iter().zip(&trend_values).map(|(log_base_fee, trend)| log_base_fee - trend),
-//     );
-
-//     let (de_seasonalised_detrended_log_base_fee, season_param) = remove_seasonality(
-//         &detrended_log_base_fee,
-//         &data,
-//     )?;
-
-//     let (de_seasonalized_detrended_simulated_prices, _params) = simulate_prices(
-//         &de_seasonalised_detrended_log_base_fee,
-//         n_periods,
-//         num_paths,
-//     )?;
-
-//     let period_start_timestamp = data[0].0;
-//     let period_end_timestamp = data.last().ok_or_else(|| err!("Missing end timestamp"))?.0;
-//     let total_hours = (period_end_timestamp - period_start_timestamp) / 3600 / 1000;
-
-//     let sim_hourly_times = DVector::from_iterator(
-//         n_periods,
-//         (0..n_periods).map(|i| total_hours as f64 + i as f64),
-//     );
-
-//     let c = season_matrix(sim_hourly_times);
-//     let season = &c * &season_param;
-//     let season_matrix = season.reshape_generic(nalgebra::Dyn(n_periods), nalgebra::Const::<1>);
-//     let season_matrix_shaped = DMatrix::from_fn(n_periods, num_paths, |row, _| season_matrix[(row, 0)]);
-
-//     let detrended_simulated_prices = &de_seasonalized_detrended_simulated_prices + &season_matrix_shaped;
-
-//     let log_twap_7d: Vec<f64> = twap_7d.iter().map(|x| x.ln()).collect();
-//     let returns: Vec<f64> = log_twap_7d.windows(2).map(|window| window[1] - window[0]).collect();
-
-//     let mu = 0.05 / 52.0;
-//     let sigma = standard_deviation(&returns) * f64::sqrt(24.0 * 7.0);
-//     let dt = 1.0 / 24.0;
-
-//     let mut stochastic_trend = DMatrix::zeros(n_periods, num_paths);
-//     let normal = Normal::new(0.0, sigma * f64::sqrt(dt))?;
-//         let mut rng = thread_rng();
-
-//     for i in 0..num_paths {
-//         let random_shocks: Vec<f64> = (0..n_periods).map(|_| normal.sample(&mut rng)).collect();
-//         let mut cumsum = 0.0;
-//         for j in 0..n_periods {
-//             cumsum += (mu - 0.5 * sigma.powi(2)) * dt + random_shocks[j];
-//             stochastic_trend[(j, i)] = cumsum;
-//         }
-//     }
-
-//     let final_trend_value = slope * (log_base_fee.len() - 1) as f64 + intercept;
-//         let mut simulated_log_prices = DMatrix::zeros(n_periods, num_paths);
-
-//     for i in 0..n_periods {
-//         let trend = final_trend_value;
-//         for j in 0..num_paths {
-//             simulated_log_prices[(i, j)] = detrended_simulated_prices[(i, j)] + trend + stochastic_trend[(i, j)];
-//         }
-//     }
-
-//     let simulated_prices = simulated_log_prices.map(f64::exp);
-//     let twap_start = n_periods.saturating_sub(24 * 7);
-
-//     let final_prices_twap = simulated_prices
-//         .rows(twap_start, n_periods - twap_start)
-//         .column_mean();
-
-//     let capped_price = (1.0 + 0.3) * strike;
-//     let payoffs = final_prices_twap.map(|price| (price.min(capped_price) - strike).max(0.0));
-//     let average_payoff = payoffs.mean();
-
-//     let reserve_price = f64::exp(-0.05) * average_payoff;
-
-//     Ok(reserve_price)
-// }
 
 fn simulate_prices(
     de_seasonalised_detrended_log_base_fee: &DVector<f64>,

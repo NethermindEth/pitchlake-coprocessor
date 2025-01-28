@@ -6,9 +6,9 @@ use db_access::DbConnection;
 use dotenv::dotenv;
 use eyre::Result;
 use methods::PRICING_CALCULATOR_ELF;
+use methods_reserve_price::GUEST_RESERVE_PRICE_ELF;
 use methods_twap::GUEST_TWAP_ELF;
 use methods_volatility::GUEST_VOLATILITY_ELF;
-use methods_reserve_price::GUEST_RESERVE_PRICE_ELF;
 use num_traits::Zero;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::{FixedI48F16, RealField};
@@ -81,7 +81,7 @@ async fn run_host(
     Ok((volatility, twap, reserve_price))
 }
 
-async fn run_host_reserve_price(start_block: i64, end_block: i64) -> Result<(), sqlx::Error> {
+async fn run_host_reserve_price(start_block: i64, end_block: i64) -> Result<f64, sqlx::Error> {
     dotenv().ok();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
@@ -95,23 +95,43 @@ async fn run_host_reserve_price(start_block: i64, end_block: i64) -> Result<(), 
         .map(|header| header.base_fee_per_gas.clone())
         .collect();
 
-        let prove_info = task::spawn_blocking(move || {
-            let env = ExecutorEnv::builder()
-                .write(&block_headers)
-                .unwrap()
-                .build()
-                .unwrap();
-            let prover = default_prover();
-            prover.prove(env, GUEST_RESERVE_PRICE_ELF).unwrap()
-        })
-        .await
-        .unwrap();
-    
-        let receipt = prove_info.receipt;
-    
-        // let twap: FixedI48F16 = receipt.journal.decode().unwrap();
+    let mut reserve_price_inputs: Vec<(i64, f64)> = block_headers
+        .iter()
+        .map(|header| {
+            let timestamp = i64::from_str_radix(
+                header
+                    .timestamp
+                    .clone()
+                    .unwrap()
+                    .strip_prefix("0x")
+                    .unwrap(),
+                16,
+            )
+            .unwrap();
 
-    Ok(())
+            let base_fee = hex_string_to_f64(&header.base_fee_per_gas.clone().unwrap()).unwrap();
+
+            return (timestamp * 1000, base_fee);
+        })
+        .collect();
+
+    reserve_price_inputs.sort_by(|a, b| a.0.cmp(&b.0));
+
+    let prove_info = task::spawn_blocking(move || {
+        let env = ExecutorEnv::builder()
+            .write(&reserve_price_inputs)
+            .unwrap()
+            .build()
+            .unwrap();
+        let prover = default_prover();
+        prover.prove(env, GUEST_RESERVE_PRICE_ELF).unwrap()
+    })
+    .await
+    .unwrap();
+
+    let receipt = prove_info.receipt;
+    let reserve_price: f64 = receipt.journal.decode().unwrap();
+    Ok(reserve_price)
 }
 
 async fn run_host_twap(start_block: i64, end_block: i64) -> Result<FixedI48F16, sqlx::Error> {
@@ -228,6 +248,6 @@ async fn main() -> Result<(), sqlx::Error> {
     // run_host(20000000, 20700000).await?;
     // run_host_volatility_fixed_point(20000000, 20002000).await?;
     // run_host_twap(20000000, 20002000).await?;
-    run_host_reserve_price(20000000, 20002000).await?;
+    run_host_reserve_price(20000000, 20000168).await?;
     Ok(())
 }
