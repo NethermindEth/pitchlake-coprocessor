@@ -80,7 +80,7 @@ async fn run_host(
     Ok((volatility, twap, reserve_price))
 }
 
-async fn run_host_twap(start_block: i64, end_block: i64) -> Result<f64, sqlx::Error> {
+async fn run_host_twap(start_block: i64, end_block: i64) -> Result<FixedI48F16, sqlx::Error> {
     dotenv().ok();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
@@ -93,14 +93,14 @@ async fn run_host_twap(start_block: i64, end_block: i64) -> Result<f64, sqlx::Er
         .iter()
         .map(|header| header.base_fee_per_gas.clone())
         .collect();
-    let base_fee_per_gases: Vec<f64> = base_fee_per_gases_hex
+    let base_fee_per_gases: Vec<FixedI48F16> = base_fee_per_gases_hex
         .iter()
         .map(|hexes| {
             if let Some(hex) = hexes {
-                return hex_string_to_f64(hex).unwrap();
-                // return Some(FixedI48F16::from_num(hex_string_to_f64(hex).unwrap()));
+                // return hex_string_to_f64(hex).unwrap();
+                return FixedI48F16::from_num(hex_string_to_f64(hex).unwrap());
             } else {
-                return 0.0;
+                return FixedI48F16::zero();
             }
         })
         .collect();
@@ -119,7 +119,7 @@ async fn run_host_twap(start_block: i64, end_block: i64) -> Result<f64, sqlx::Er
 
     let receipt = prove_info.receipt;
 
-    let twap: f64 = receipt.journal.decode().unwrap();
+    let twap: FixedI48F16 = receipt.journal.decode().unwrap();
 
     Ok(twap)
 }
