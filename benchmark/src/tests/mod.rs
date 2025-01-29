@@ -10,7 +10,7 @@ mod tests {
         let xxx = 1;
         let yyy = 1;
         let zzz = xxx + yyy;
-        assert_eq!(zzz, 3);
+        assert_eq!(zzz, 2);
     }
 
     #[test]
