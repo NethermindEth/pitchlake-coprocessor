@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["mrjpdf-fixed"]
+members = ["mrjpdf-fixed", "mrjpdf-floating"]
 
 # Always optimize; otherwise tests take excessively long.
 [profile.dev]
