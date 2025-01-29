@@ -384,8 +384,8 @@ async fn main() -> Result<(), String> {
     .unwrap();
 
     let receipt = prove_info.receipt;
-    // let reserve_price: f64 = receipt.journal.decode().unwrap();
+    let res: DVector<FixedI48F16> = receipt.journal.decode().unwrap();
 
-    println!("test");
+    println!("res: {:?}", res);
     Ok(())
 }
