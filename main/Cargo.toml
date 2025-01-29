@@ -10,7 +10,6 @@ members = [
     "methods-twap",
     "db-access",
     "db-models",
-    "benchmark-risc0/mrjpdf-floating", "benchmark-risc0/mrjpdf-fixed",
 ]
 
 [workspace.package]
