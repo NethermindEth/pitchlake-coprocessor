@@ -3,6 +3,7 @@ use num_traits::Zero;
 use risc0_zkvm::guest::env;
 use simba::scalar::{ComplexField, FixedI48F16};
 
+// TODO: to import from the `benchmark` crate
 fn powi(x: FixedI48F16, y: usize) -> FixedI48F16 {
     let mut result = FixedI48F16::from_num(1);
     for _ in 0..y {
