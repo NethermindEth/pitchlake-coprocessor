@@ -48,7 +48,7 @@ pub fn mrjpdf(
     let term1 = numerator / denom;
 
     let term2_rhs =
-        (-diff2.map(|x| x.powi(2)) / (FixedI48F16::from_num(2) * sigma_sq)).map(FixedI48F16::exp);
+        (-diff2.map(|x| powi(x, 2)) / (FixedI48F16::from_num(2) * sigma_sq)).map(FixedI48F16::exp);
     let numerator = mul(FixedI48F16::from_num(1) - lambda, &term2_rhs);
     let denom = (FixedI48F16::from_num(2) * FixedI48F16::pi() * sigma_sq).sqrt();
     let term2 = numerator / denom;

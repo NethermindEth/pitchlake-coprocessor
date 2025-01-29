@@ -7,3 +7,4 @@ edition = "2021"
 serde = { version = "1.0", default-features = false }
 fixed = { version = "1.28.0", features = ["serde"] }
 simba = { version = "0.9.0", features = ["partial_fixed_point_support", "serde_serialize"] }
+

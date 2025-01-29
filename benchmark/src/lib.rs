@@ -1,2 +1,3 @@
-mod floating_point;
-mod fixed_point;
+pub mod fixed_point;
+pub mod floating_point;
+mod tests;
