@@ -382,6 +382,7 @@ mod tests {
         println!("{:?}", result);
     }
 
+    #[test]
     fn test_neg_log_likelihood_floating() {
         let (params, pt_data, pt1_data) = generate_inputs();
 
@@ -416,5 +417,30 @@ mod tests {
 
         let result = mrjpdf_fixed(&params, &pt, &pt1);
         println!("{:?}", result);
+    }
+
+    #[test]
+    fn test_neg_log_likelihood_fixed() {
+        let (params, pt_data, pt1_data) = generate_inputs();
+        let params = params
+            .iter()
+            .map(|x| FixedI48F16::from_num(*x))
+            .collect::<Vec<_>>();
+
+        let pt_data = pt_data
+            .iter()
+            .map(|x| FixedI48F16::from_num(*x))
+            .collect::<Vec<_>>();
+
+        let pt1_data = pt1_data
+            .iter()
+            .map(|x| FixedI48F16::from_num(*x))
+            .collect::<Vec<_>>();
+
+        let pt = DVector::from_vec(pt_data);
+        let pt1 = DVector::from_vec(pt1_data);
+
+        let result = neg_log_likelihood_fixed(&params, &pt, &pt1);
+        println!("result: {}", result);
     }
 }
