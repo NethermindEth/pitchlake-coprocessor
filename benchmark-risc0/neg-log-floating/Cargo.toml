@@ -1,0 +1,11 @@
+[package]
+name = "neg-log-floating"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2" }
+tokio = { version = "1.41.0", features = ["macros", "rt-multi-thread"] }
+neg-log-floating-core = { path = "core" }
+neg-log-floating-methods = { path = "methods" }
+nalgebra = "0.33.2"
