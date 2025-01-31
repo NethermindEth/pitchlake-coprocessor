@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+eyre = "0.6"
 nalgebra = "0.33.2"
 # nalgebra = { path = "../../nalgebra" }
 fixed = { version = "1.28.0", features = ["serde"] }

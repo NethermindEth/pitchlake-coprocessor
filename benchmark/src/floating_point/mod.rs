@@ -17,3 +17,8 @@ pub fn mrjpdf(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> DVector
 
     term1 + term2
 }
+
+pub fn neg_log_likelihood(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
+    let pdf_vals = mrjpdf(params, pt, pt_1);
+    -(pdf_vals.map(|x| x + 1e-10).map(f64::ln).sum())
+}

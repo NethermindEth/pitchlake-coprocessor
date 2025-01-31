@@ -1,4 +1,6 @@
+use eyre::Result;
 use nalgebra::{DVector, RealField};
+use num_traits::Zero;
 use simba::scalar::{ComplexField, FixedI48F16};
 
 // Copy pasted from `left_scalar_mul_impl` in `nalgebra/src/base/ops.rs`
@@ -20,6 +22,28 @@ pub fn powi(x: FixedI48F16, y: usize) -> FixedI48F16 {
         result = result * x;
     }
     result
+}
+
+pub fn natural_log(x: FixedI48F16) -> Result<FixedI48F16> {
+    if x <= FixedI48F16::zero() {
+        return Err(eyre::eyre!("Cannot take logarithm of non-positive number"));
+    }
+    let mut power = 0i32;
+    let two = FixedI48F16::from_num(2);
+    let one = FixedI48F16::from_num(1);
+    let mut val = x;
+    while val >= two {
+        val = val / two;
+        power += 1;
+    }
+    while val < one {
+        val = val * two;
+        power -= 1;
+    }
+    let base_ln = FixedI48F16::ln_2() * FixedI48F16::from_num(power);
+    let frac = val - one;
+    let frac_contribution = frac * FixedI48F16::ln_2();
+    Ok(base_ln + frac_contribution)
 }
 
 pub fn mrjpdf(
@@ -54,4 +78,16 @@ pub fn mrjpdf(
     let term2 = numerator / denom;
 
     term1 + term2
+}
+
+pub fn neg_log_likelihood(
+    params: &[FixedI48F16],
+    pt: &DVector<FixedI48F16>,
+    pt_1: &DVector<FixedI48F16>,
+) -> FixedI48F16 {
+    let pdf_vals = mrjpdf(params, pt, pt_1);
+    -(pdf_vals
+        .map(|x| x + FixedI48F16::from_num(1e-10))
+        .map(|x| natural_log(x).unwrap())
+        .sum())
 }

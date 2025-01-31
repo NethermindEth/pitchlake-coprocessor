@@ -22,6 +22,7 @@ fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
 }
 
 // todo: accept generic fixed point type with trait bound
+// todo: import from benchmark/fixed_point crate
 fn natural_log(x: FixedI48F16) -> Result<FixedI48F16> {
     if x <= FixedI48F16::zero() {
         return Err(eyre::eyre!("Cannot take logarithm of non-positive number"));
