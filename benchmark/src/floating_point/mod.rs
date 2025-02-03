@@ -1,5 +1,7 @@
 use nalgebra::DVector;
 
+pub mod gradient_descent;
+
 pub fn mrjpdf(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> DVector<f64> {
     let (a, phi, mu_j, sigma_sq, sigma_sq_j, lambda) = (
         params[0], params[1], params[2], params[3], params[4], params[5],

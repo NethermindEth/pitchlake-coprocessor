@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use nalgebra::DVector;
 use neg_log_floating_core::NegLogFloatingInput;
 use neg_log_floating_methods::NEG_LOG_FLOATING_GUEST_ELF;

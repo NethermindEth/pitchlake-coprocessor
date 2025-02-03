@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 use nalgebra::DVector;
 use neg_log_fixed_core::NegLogFixedInput;
 use neg_log_fixed_methods::NEG_LOG_FIXED_GUEST_ELF;
@@ -5,6 +6,7 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::FixedI48F16;
 use tokio::{main, task};
 
+#[allow(dead_code)]
 fn generate_inputs_168() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
     let params = vec![
         -0.006246375006242974,
@@ -355,6 +357,7 @@ fn generate_inputs_168() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         0.05652593401608641,
         0.003129724678494483,
         0.0002000479649879594,
+        -0.017731740736298462,
     ];
 
     return (params, pt_data, pt1_data);
@@ -1374,6 +1377,7 @@ fn generate_inputs_500() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         0.07428894161926891,
         0.05041537866572199,
         0.0042120182394675965,
+        -0.003978276851395179,
     ];
 
     (params, pt_data, pt1_data)
@@ -2389,7 +2393,6 @@ fn generate_inputs_1000() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         0.014387799764993048,
         -0.001014130841294758,
         0.0051869719598727215,
-        0.05006193309635165,
     ];
 
     let pt1_data = vec![
