@@ -1,0 +1,6 @@
+[package]
+name = "reserve-price-floating-composition-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
