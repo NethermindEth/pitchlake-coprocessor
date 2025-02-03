@@ -1,6 +1,11 @@
-use nalgebra::DVector;
+use std::f64::consts::PI;
 
-pub mod gradient_descent;
+use nalgebra::{DMatrix, DVector};
+
+pub mod remove_seasonality;
+pub mod reserve_price;
+pub mod simulate_price;
+pub mod add_twap;
 
 pub fn mrjpdf(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> DVector<f64> {
     let (a, phi, mu_j, sigma_sq, sigma_sq_j, lambda) = (
@@ -23,4 +28,27 @@ pub fn mrjpdf(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> DVector
 pub fn neg_log_likelihood(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
     let pdf_vals = mrjpdf(params, pt, pt_1);
     -(pdf_vals.map(|x| x + 1e-10).map(f64::ln).sum())
+}
+
+pub fn season_matrix(t: DVector<f64>) -> DMatrix<f64> {
+    let n = t.len();
+    let mut result = DMatrix::zeros(n, 12);
+
+    for i in 0..n {
+        let time = t[i];
+        result[(i, 0)] = (2.0 * PI * time / 24.0).sin();
+        result[(i, 1)] = (2.0 * PI * time / 24.0).cos();
+        result[(i, 2)] = (4.0 * PI * time / 24.0).sin();
+        result[(i, 3)] = (4.0 * PI * time / 24.0).cos();
+        result[(i, 4)] = (8.0 * PI * time / 24.0).sin();
+        result[(i, 5)] = (8.0 * PI * time / 24.0).cos();
+        result[(i, 6)] = (2.0 * PI * time / (24.0 * 7.0)).sin();
+        result[(i, 7)] = (2.0 * PI * time / (24.0 * 7.0)).cos();
+        result[(i, 8)] = (4.0 * PI * time / (24.0 * 7.0)).sin();
+        result[(i, 9)] = (4.0 * PI * time / (24.0 * 7.0)).cos();
+        result[(i, 10)] = (8.0 * PI * time / (24.0 * 7.0)).sin();
+        result[(i, 11)] = (8.0 * PI * time / (24.0 * 7.0)).cos();
+    }
+
+    result
 }
