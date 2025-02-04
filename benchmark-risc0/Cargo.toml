@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["mrjpdf-fixed", "mrjpdf-floating", "neg-log-fixed", "neg-log-floating", "reserve-price-floating-composition"]
+members = ["mrjpdf-fixed", "mrjpdf-floating", "neg-log-fixed", "neg-log-floating", "remove-seasonality-floating", "reserve-price-floating-composition"]
 
 # Always optimize; otherwise tests take excessively long.
 [profile.dev]

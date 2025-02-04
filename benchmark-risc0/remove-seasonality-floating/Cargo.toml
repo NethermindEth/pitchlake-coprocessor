@@ -1,0 +1,18 @@
+[package]
+name = "remove-seasonality-floating"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2" }
+remove-seasonality-floating-methods = { path = "methods" }
+nalgebra = { version = "0.33.2", features = ["serde-serialize"] }
+benchmark = { path = "../../benchmark" }
+
+db-access = { path = "../../main/db-access" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = "1.41.0"
+eth-rlp-types = { git = "https://github.com/piwonskp/eth-rlp-verify.git" }
+sqlx = "0.8.2"
+dotenv = "0.15.0"
+eyre = "0.6"

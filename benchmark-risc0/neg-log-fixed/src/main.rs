@@ -1,4 +1,4 @@
-#[allow(dead_code)]
+#![allow(dead_code)]
 use nalgebra::DVector;
 use neg_log_fixed_core::NegLogFixedInput;
 use neg_log_fixed_methods::NEG_LOG_FIXED_GUEST_ELF;
@@ -6,7 +6,6 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::FixedI48F16;
 use tokio::{main, task};
 
-#[allow(dead_code)]
 fn generate_inputs_168() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
     let params = vec![
         -0.006246375006242974,

@@ -3,9 +3,15 @@ use std::f64::consts::PI;
 use nalgebra::{DMatrix, DVector};
 
 pub mod remove_seasonality;
+pub use remove_seasonality::*;
 pub mod reserve_price;
+pub use reserve_price::*;
 pub mod simulate_price;
+pub use simulate_price::*;
+pub mod solution;
+pub use solution::*;
 pub mod add_twap;
+pub use add_twap::*;
 
 pub fn mrjpdf(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> DVector<f64> {
     let (a, phi, mu_j, sigma_sq, sigma_sq_j, lambda) = (

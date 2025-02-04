@@ -2,12 +2,11 @@ use std::{f64::EPSILON, ops::Add};
 
 use eyre::Result;
 use nalgebra::{DMatrix, DVector};
-use optimization::types::Solution;
 use rand::thread_rng;
 use rand_distr::Distribution;
 use statrs::distribution::{Binomial, Normal};
 
-use super::neg_log_likelihood;
+use super::{neg_log_likelihood, solution::Solution};
 
 fn function_value(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
     neg_log_likelihood(position, pt, pt_1)

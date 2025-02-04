@@ -1,3 +1,12 @@
 pub mod fixed_point;
 pub mod floating_point;
+use eyre::Result;
+
 mod tests;
+
+pub fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
+    let stripped = hex_str.trim_start_matches("0x");
+    u128::from_str_radix(stripped, 16)
+        .map(|value| value as f64)
+        .map_err(|e| eyre::eyre!("Error converting hex string '{}' to f64: {}", hex_str, e))
+}
