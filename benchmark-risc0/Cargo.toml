@@ -6,7 +6,7 @@ members = [
     "mrjpdf-floating",
     "neg-log-fixed",
     "neg-log-floating",
-    "remove-seasonality-floating",
+    "remove-seasonality-floating", "reserve-price-floating",
     "reserve-price-floating-composition",
     "simulate-price-fixed",
     "simulate-price-floating",
