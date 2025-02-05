@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+use benchmark::fixed_point::FixedPoint;
 use nalgebra::DVector;
 use neg_log_fixed_core::NegLogFixedInput;
 use neg_log_fixed_methods::NEG_LOG_FIXED_GUEST_ELF;
@@ -3406,18 +3407,18 @@ async fn main() -> Result<(), String> {
 
     let params = params
         .iter()
-        .map(|x| FixedI48F16::from_num(*x))
+        .map(|x| FixedPoint::from_num(*x))
         .collect::<Vec<_>>();
 
     let pt_data = pt_data
         .iter()
-        .map(|x| FixedI48F16::from_num(*x))
+        .map(|x| FixedPoint::from_num(*x))
         .collect::<Vec<_>>();
     let pt = DVector::from_vec(pt_data);
 
     let pt1_data = pt1_data
         .iter()
-        .map(|x| FixedI48F16::from_num(*x))
+        .map(|x| FixedPoint::from_num(*x))
         .collect::<Vec<_>>();
     let pt_1 = DVector::from_vec(pt1_data);
 

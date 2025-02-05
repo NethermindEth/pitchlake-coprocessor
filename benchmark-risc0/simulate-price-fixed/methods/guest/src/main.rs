@@ -22,7 +22,7 @@ fn main() {
 
     let num_paths = 4000;
     let n_periods = 720;
-    let (simulated_prices, params) = post_minimize(&solution, &data, n_periods, num_paths).unwrap();
+    let (simulated_prices, params) = post_minimize(&solution, &data, n_periods, num_paths);
     // exposing data as public input so we can use it to assert output == this input in proof composition
     // yes it will add overhead
     // (DVector<f64>, DMatrix<f64>, Vec<f64>)

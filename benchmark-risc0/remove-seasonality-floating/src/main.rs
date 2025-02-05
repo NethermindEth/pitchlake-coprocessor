@@ -5,14 +5,13 @@ use dotenv::dotenv;
 use eyre::Result;
 use remove_seasonality_floating::remove_seasonality;
 use remove_seasonality_floating_methods::REMOVE_SEASONALITY_FLOATING_GUEST_ID;
-use tokio::main;
+use tokio;
 
-#[main]
+#[tokio::main]
 async fn main() -> Result<(), String> {
     let start_block = 20000000;
     let end_block = 20002000;
 
-    dotenv().ok();
     dotenv().ok();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
