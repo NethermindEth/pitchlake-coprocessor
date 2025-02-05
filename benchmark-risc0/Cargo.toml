@@ -1,6 +1,16 @@
 [workspace]
 resolver = "2"
-members = ["mrjpdf-fixed", "mrjpdf-floating", "neg-log-fixed", "neg-log-floating", "remove-seasonality-floating", "reserve-price-floating-composition", "simulate-price-fixed", "simulate-price-floating"]
+members = [
+    "add-twap-7d",
+    "mrjpdf-fixed",
+    "mrjpdf-floating",
+    "neg-log-fixed",
+    "neg-log-floating",
+    "remove-seasonality-floating",
+    "reserve-price-floating-composition",
+    "simulate-price-fixed",
+    "simulate-price-floating",
+]
 
 # Always optimize; otherwise tests take excessively long.
 [profile.dev]

@@ -6,13 +6,6 @@ use simba::scalar::{ComplexField, FixedI44F20};
 pub mod simulate_price;
 pub use simulate_price::*;
 
-// Copy pasted from `left_scalar_mul_impl` in `nalgebra/src/base/ops.rs`
-// if possible, we should modify the `nalgebra` crate to support scalar-vector multiplication
-// however when i tried to do this, i couldnt get this current file to 'detect' the changes
-// Notice that we have `rhs.clone()` which is inefficient. however even in the original code,
-// the same cloning approach is used.
-
-
 pub type FixedPoint = FixedI44F20;
 
 fn mul(lhs: FixedPoint, rhs: &DVector<FixedPoint>) -> DVector<FixedPoint> {
