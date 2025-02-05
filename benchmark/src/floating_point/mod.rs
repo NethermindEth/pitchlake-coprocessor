@@ -58,3 +58,44 @@ pub fn season_matrix(t: DVector<f64>) -> DMatrix<f64> {
 
     result
 }
+
+pub struct AllInputsToReservePrice {
+    pub season_param: DVector<f64>,
+    pub de_seasonalised_detrended_log_base_fee: DVector<f64>,
+    pub de_seasonalized_detrended_simulated_prices: DMatrix<f64>,
+    pub twap_7d: Vec<f64>,
+    pub slope: f64,
+    pub intercept: f64,
+    pub reserve_price: f64,
+}
+
+pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReservePrice {
+    let (slope, intercept, de_seasonalised_detrended_log_base_fee, season_param) =
+        calculate_remove_seasonality(&input).unwrap();
+
+    let (simulated_prices, _params) = simulate_price(&de_seasonalised_detrended_log_base_fee);
+
+    let twap = add_twap_7d(&input).unwrap();
+
+    let reserve_price = calculate_reserve_price(
+        input[0].0,
+        input[input.len() - 1].0,
+        &season_param,
+        &simulated_prices,
+        &twap,
+        slope,
+        intercept,
+        input.len(),
+    )
+    .unwrap();
+
+    AllInputsToReservePrice {
+        season_param,
+        de_seasonalised_detrended_log_base_fee,
+        de_seasonalized_detrended_simulated_prices: simulated_prices,
+        twap_7d: twap,
+        slope,
+        intercept,
+        reserve_price,
+    }
+}

@@ -11,3 +11,10 @@ risc0-zkvm = { version = "1.1.2", default-features = false, features = [
     'getrandom',
     'heap-embedded-alloc',
 ] }
+remove-seasonality-floating-methods = { path = "../../../remove-seasonality-floating/methods" }
+simulate-price-floating-methods = { path = "../../../simulate-price-floating/methods" }
+add-twap-7d-floating-methods = { path = "../../../add-twap-7d-floating/methods" }
+reserve-price-floating-methods = { path = "../../../reserve-price-floating/methods" }
+reserve-price-floating-core = { path = "../../../reserve-price-floating/core" }
+
+reserve-price-floating-composition-core = { path = "../../core" }

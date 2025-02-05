@@ -44,7 +44,7 @@ async fn main() -> Result<(), String> {
 
     reserve_price_inputs.sort_by(|a, b| a.0.cmp(&b.0));
 
-    let (receipt, res) = remove_seasonality(reserve_price_inputs);
+    let (receipt, res) = remove_seasonality(&reserve_price_inputs);
 
     println!("res: {:?}", res);
 
