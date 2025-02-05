@@ -5,7 +5,6 @@ use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 pub fn remove_seasonality(
     data: Vec<(i64, f64)>,
 ) -> (Receipt, (f64, f64, DVector<f64>, DVector<f64>)) {
-    // -> Result<(f64, f64, DVector<f64>, DVector<f64>)> {
     let env = ExecutorEnv::builder()
         // Send a & b to the guest
         .write(&data)

@@ -1,13 +1,12 @@
 #[cfg(test)]
 mod tests {
     use crate::fixed_point::{
-        mrjpdf as mrjpdf_fixed, neg_log_likelihood as neg_log_likelihood_fixed,
+        mrjpdf as mrjpdf_fixed, neg_log_likelihood as neg_log_likelihood_fixed, FixedPoint,
     };
     use crate::floating_point::{
         mrjpdf as mrjpdf_floating, neg_log_likelihood as neg_log_likelihood_floating,
     };
     use nalgebra::DVector;
-    use simba::scalar::FixedI48F16;
 
     fn generate_inputs() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         let param = vec![
@@ -399,17 +398,17 @@ mod tests {
         let (params, pt_data, pt1_data) = generate_inputs();
         let params = params
             .iter()
-            .map(|x| FixedI48F16::from_num(*x))
+            .map(|x| FixedPoint::from_num(*x))
             .collect::<Vec<_>>();
 
         let pt_data = pt_data
             .iter()
-            .map(|x| FixedI48F16::from_num(*x))
+            .map(|x| FixedPoint::from_num(*x))
             .collect::<Vec<_>>();
 
         let pt1_data = pt1_data
             .iter()
-            .map(|x| FixedI48F16::from_num(*x))
+            .map(|x| FixedPoint::from_num(*x))
             .collect::<Vec<_>>();
 
         let pt = DVector::from_vec(pt_data);
@@ -424,17 +423,17 @@ mod tests {
         let (params, pt_data, pt1_data) = generate_inputs();
         let params = params
             .iter()
-            .map(|x| FixedI48F16::from_num(*x))
+            .map(|x| FixedPoint::from_num(*x))
             .collect::<Vec<_>>();
 
         let pt_data = pt_data
             .iter()
-            .map(|x| FixedI48F16::from_num(*x))
+            .map(|x| FixedPoint::from_num(*x))
             .collect::<Vec<_>>();
 
         let pt1_data = pt1_data
             .iter()
-            .map(|x| FixedI48F16::from_num(*x))
+            .map(|x| FixedPoint::from_num(*x))
             .collect::<Vec<_>>();
 
         let pt = DVector::from_vec(pt_data);

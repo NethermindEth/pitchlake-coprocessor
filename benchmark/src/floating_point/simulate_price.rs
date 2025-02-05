@@ -89,13 +89,12 @@ fn search(
     }
 }
 
-// TODO: maybe can move Solution struct to current repo
 pub fn minimize(
     initial_position: Vec<f64>,
     pt: &DVector<f64>,
     pt_1: &DVector<f64>,
     max_iterations: u64,
-) -> Solution {
+) -> Solution<f64> {
     let mut position = initial_position;
     let mut value = function_value(&position, pt, pt_1);
 
@@ -137,7 +136,7 @@ pub fn pre_minimize(
 }
 
 pub fn post_minimize(
-    solution: &Solution,
+    solution: &Solution<f64>,
     de_seasonalised_detrended_log_base_fee: &DVector<f64>,
     n_periods: usize,
     num_paths: usize,

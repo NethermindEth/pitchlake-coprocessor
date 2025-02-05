@@ -12,6 +12,7 @@ simba = { version = "0.9.0", features = [
     "partial_fixed_point_support",
     "serde_serialize",
 ] }
+approx = { version = "0.5", default-features = false }
 
 # for reserve price simulation
 lstsq = "0.6.0"

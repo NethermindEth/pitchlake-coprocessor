@@ -1,10 +1,10 @@
 /// Captures the essence of a function evaluation.
-pub trait Evaluation {
+pub trait Evaluation<F> {
     /// Position `x` with the lowest corresponding value `f(x)`.
-    fn position(&self) -> &[f64];
+    fn position(&self) -> &[F];
 
     /// The actual value `f(x)`.
-    fn value(&self) -> f64;
+    fn value(&self) -> F;
 }
 
 /// A solution of a minimization run providing only the minimal information.
@@ -12,26 +12,29 @@ pub trait Evaluation {
 /// Each `Minimizer` might yield different types of solution structs which provide more
 /// information.
 #[derive(Debug, Clone)]
-pub struct Solution {
+pub struct Solution<F> {
     /// Position `x` of the lowest corresponding value `f(x)` that has been found.
-    pub position: Vec<f64>,
+    pub position: Vec<F>,
     /// The actual value `f(x)`.
-    pub value: f64,
+    pub value: F,
 }
 
-impl Solution {
+impl<F> Solution<F> {
     /// Creates a new `Solution` given the `position` as well as the corresponding `value`.
-    pub fn new(position: Vec<f64>, value: f64) -> Solution {
+    pub fn new(position: Vec<F>, value: F) -> Solution<F> {
         Solution { position, value }
     }
 }
 
-impl Evaluation for Solution {
-    fn position(&self) -> &[f64] {
+impl<F> Evaluation<F> for Solution<F>
+where
+    F: Copy,
+{
+    fn position(&self) -> &[F] {
         &self.position
     }
 
-    fn value(&self) -> f64 {
+    fn value(&self) -> F {
         self.value
     }
 }
