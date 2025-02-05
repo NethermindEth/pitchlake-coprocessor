@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+use benchmark::fixed_point::FixedPoint;
 use nalgebra::DVector;
 use neg_log_fixed_core::NegLogFixedInput;
 use neg_log_fixed_methods::NEG_LOG_FIXED_GUEST_ELF;
@@ -355,6 +357,7 @@ fn generate_inputs_168() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         0.05652593401608641,
         0.003129724678494483,
         0.0002000479649879594,
+        -0.017731740736298462,
     ];
 
     return (params, pt_data, pt1_data);
@@ -1374,6 +1377,7 @@ fn generate_inputs_500() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         0.07428894161926891,
         0.05041537866572199,
         0.0042120182394675965,
+        -0.003978276851395179,
     ];
 
     (params, pt_data, pt1_data)
@@ -2389,7 +2393,6 @@ fn generate_inputs_1000() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
         0.014387799764993048,
         -0.001014130841294758,
         0.0051869719598727215,
-        0.05006193309635165,
     ];
 
     let pt1_data = vec![
@@ -3404,18 +3407,18 @@ async fn main() -> Result<(), String> {
 
     let params = params
         .iter()
-        .map(|x| FixedI48F16::from_num(*x))
+        .map(|x| FixedPoint::from_num(*x))
         .collect::<Vec<_>>();
 
     let pt_data = pt_data
         .iter()
-        .map(|x| FixedI48F16::from_num(*x))
+        .map(|x| FixedPoint::from_num(*x))
         .collect::<Vec<_>>();
     let pt = DVector::from_vec(pt_data);
 
     let pt1_data = pt1_data
         .iter()
-        .map(|x| FixedI48F16::from_num(*x))
+        .map(|x| FixedPoint::from_num(*x))
         .collect::<Vec<_>>();
     let pt_1 = DVector::from_vec(pt1_data);
 

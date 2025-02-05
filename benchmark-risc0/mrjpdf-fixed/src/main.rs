@@ -2,7 +2,7 @@ use mrjpdf_fixed_core::MrjPdfFixedInput;
 use mrjpdf_fixed_methods::MRJPDF_FIXED_GUEST_ELF;
 use nalgebra::DVector;
 use risc0_zkvm::{default_prover, ExecutorEnv};
-use simba::scalar::FixedI48F16;
+use benchmark::fixed_point::FixedPoint;
 use tokio::{main, task};
 
 #[main]
@@ -16,7 +16,7 @@ async fn main() -> Result<(), String> {
         0.21146713832539435,
     ]
     .iter()
-    .map(|x| FixedI48F16::from_num(*x))
+    .map(|x| FixedPoint::from_num(*x))
     .collect::<Vec<_>>();
 
     let pt_data = vec![
@@ -190,7 +190,7 @@ async fn main() -> Result<(), String> {
         -0.017731740736298462,
     ]
     .iter()
-    .map(|x| FixedI48F16::from_num(*x))
+    .map(|x| FixedPoint::from_num(*x))
     .collect::<Vec<_>>();
     let pt = DVector::from_vec(pt_data);
 
@@ -365,7 +365,7 @@ async fn main() -> Result<(), String> {
         0.0002000479649879594,
     ]
     .iter()
-    .map(|x| FixedI48F16::from_num(*x))
+    .map(|x| FixedPoint::from_num(*x))
     .collect::<Vec<_>>();
     let pt_1 = DVector::from_vec(pt1_data);
 
@@ -384,7 +384,7 @@ async fn main() -> Result<(), String> {
     .unwrap();
 
     let receipt = prove_info.receipt;
-    let res: DVector<FixedI48F16> = receipt.journal.decode().unwrap();
+    let res: DVector<FixedPoint> = receipt.journal.decode().unwrap();
 
     println!("res: {:?}", res);
     Ok(())

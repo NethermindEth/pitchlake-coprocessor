@@ -1,0 +1,24 @@
+[package]
+name = "reserve-price-floating-composition"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2" }
+remove-seasonality-floating = { path = "../remove-seasonality-floating" }
+add-twap-7d-floating = { path = "../add-twap-7d-floating" }
+reserve-price-floating = { path = "../reserve-price-floating" }
+reserve-price-floating-core = { path = "../reserve-price-floating/core" }
+simulate-price-floating = { path = "../simulate-price-floating" }
+benchmark = { path = "../../benchmark" }
+
+reserve-price-floating-composition-core = { path = "./core" }
+reserve-price-floating-composition-methods = { path = "./methods" }
+
+db-access = { path = "../../main/db-access" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = "1.41.0"
+eth-rlp-types = { git = "https://github.com/piwonskp/eth-rlp-verify.git" }
+sqlx = "0.8.2"
+dotenv = "0.15.0"
+eyre = "0.6"
