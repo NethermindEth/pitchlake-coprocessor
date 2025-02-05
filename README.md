@@ -19,5 +19,7 @@ main
 ```
 
 `benchmark` - consist of commonly shared rust functions in floating point and fixed point
+
 `benchmark-risc0` - consist of guest programs to run various sub functions
+
 `main` - contains the original unoptimzed implementation as well as optimized twap and volatility calculation
