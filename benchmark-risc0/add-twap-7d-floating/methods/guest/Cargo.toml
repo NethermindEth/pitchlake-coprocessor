@@ -1,5 +1,5 @@
 [package]
-name = "add-twap-7d-guest"
+name = "add-twap-7d-floating-guest"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,5 +1,5 @@
 [package]
-name = "add-twap-7d-methods"
+name = "add-twap-7d-floating-methods"
 version = "0.1.0"
 edition = "2021"
 

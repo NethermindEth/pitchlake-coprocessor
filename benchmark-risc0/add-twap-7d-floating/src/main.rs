@@ -1,5 +1,5 @@
-use add_twap_7d::add_twap_7d;
-use add_twap_7d_methods::ADD_TWAP_7D_GUEST_ID;
+use add_twap_7d_floating::add_twap_7d;
+use add_twap_7d_floating_methods::ADD_TWAP_7D_FLOATING_GUEST_ID;
 use benchmark::hex_string_to_f64;
 use db_access::queries::get_block_headers_by_block_range;
 use db_access::DbConnection;
@@ -50,7 +50,7 @@ async fn main() -> Result<(), String> {
 
     println!("res: {:?}", res);
 
-    receipt.verify(ADD_TWAP_7D_GUEST_ID).unwrap();
+    receipt.verify(ADD_TWAP_7D_FLOATING_GUEST_ID).unwrap();
 
     Ok(())
 }
