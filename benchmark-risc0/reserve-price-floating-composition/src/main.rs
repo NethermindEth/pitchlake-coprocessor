@@ -13,7 +13,9 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use simulate_price_floating::simulate_price;
 use tokio;
 
-use reserve_price_floating_composition_methods::RESERVE_PRICE_FLOATING_COMPOSITION_GUEST_ELF;
+use reserve_price_floating_composition_methods::{
+    RESERVE_PRICE_FLOATING_COMPOSITION_GUEST_ELF, RESERVE_PRICE_FLOATING_COMPOSITION_GUEST_ID,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), String> {
@@ -71,19 +73,14 @@ async fn main() -> Result<(), String> {
         .build()
         .unwrap();
 
-    let receipt = default_prover()
+    let prove_info = default_prover()
         .prove(env, RESERVE_PRICE_FLOATING_COMPOSITION_GUEST_ELF)
         .unwrap();
 
-    // // Anybody who receives the receipt for the exponentiation is assured both that:
-    // // A) The modulus n included in the journal has a known factorization.
-    // // B) The number c is the result of exponentiation of some known secret x ^ e mod n.
-    // //
-    // // These two statements are proven with a single receipt via composition.
-    // receipt.verify(EXPONENTIATE_ID).unwrap();
-
-    // // Decode the receipt to get (n, e, and c = x^e mod n).
-    // let (n, e, c): (u64, u64, u64) = receipt.journal.decode().unwrap();
+    let receipt = prove_info.receipt;
+    receipt
+        .verify(RESERVE_PRICE_FLOATING_COMPOSITION_GUEST_ID)
+        .unwrap();
 
     Ok(())
 }
