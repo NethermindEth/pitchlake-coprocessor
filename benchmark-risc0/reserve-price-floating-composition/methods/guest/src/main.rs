@@ -14,6 +14,7 @@ fn main() {
 
     // TODO: to include inputs as public input and check it
     // slope,intercept,de_seasonalised_detrended_log_base_fee,season_param,
+
     env::verify(
         REMOVE_SEASONALITY_FLOATING_GUEST_ID,
         &serde::to_vec(&(
@@ -32,7 +33,7 @@ fn main() {
         &serde::to_vec(&(
             data.de_seasonalised_detrended_log_base_fee.clone(), // TODO: check if we can avoid cloning
             data.de_seasonalized_detrended_simulated_prices.clone(), // TODO: check if we can avoid cloning
-            data.season_param.clone(),
+            // data.season_param.clone(),
         ))
         .unwrap(),
     )

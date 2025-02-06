@@ -15,11 +15,12 @@ fn main() {
 
     let num_paths = 4000;
     let n_periods = 720;
-    let (simulated_prices, params) = post_minimize(&solution, &data, n_periods, num_paths).unwrap();
+    let (simulated_prices, _params) = post_minimize(&solution, &data, n_periods, num_paths).unwrap();
     // exposing data as public input so we can use it to assert output == this input in proof composition
     // yes it will add overhead
-    // (DVector<f64>, DMatrix<f64>, Vec<f64>)
-    env::commit(&(data, simulated_prices, params));
+    // (DVector<f64>, DMatrix<f64>)
+    // we can ignore _params as it will not be used anywhere
+    env::commit(&(data, simulated_prices));
 }
 
 // pub fn pre_minimize(
