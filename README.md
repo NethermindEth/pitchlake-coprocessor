@@ -12,6 +12,10 @@ benchmark
 benchmark-risc0
 ├── methods-*
 │
+data-gathering
+├── reserve-price-original
+├── reserve-price-modified
+│
 main
 ├── host
 ├── methods-*
@@ -19,7 +23,6 @@ main
 ```
 
 `benchmark` - consist of commonly shared rust functions in floating point and fixed point
-
 `benchmark-risc0` - consist of guest programs to run various sub functions
-
+`data-gathering` - contains code to gather data from the original implementation and the modified implementation
 `main` - contains the original unoptimzed implementation as well as optimized twap and volatility calculation

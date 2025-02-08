@@ -33,7 +33,7 @@ async fn main() -> Result<(), String> {
 
     let (simulate_price_receipt, simulate_price_result) =
         simulate_price(&remove_seasonality_result.2); // use input from remove_seasonality_result due to math inconsistency
-    let (add_twap_7d_receipt, add_twap_7d_result) = add_twap_7d(&input_data);
+    let (add_twap_7d_receipt, _add_twap_7d_result) = add_twap_7d(&input_data);
     let reserve_price_input = ReservePriceFloatingInput {
         period_start_timestamp: input_data[0].0,
         period_end_timestamp: input_data[input_data.len() - 1].0,
