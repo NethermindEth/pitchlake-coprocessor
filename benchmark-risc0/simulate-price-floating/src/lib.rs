@@ -4,7 +4,7 @@ use simulate_price_floating_methods::SIMULATE_PRICE_FLOATING_GUEST_ELF;
 
 pub fn simulate_price(
     de_seasonalised_detrended_log_base_fee: &DVector<f64>,
-) -> (Receipt, (DVector<f64>, DMatrix<f64>, Vec<f64>)) {
+) -> (Receipt, (DVector<f64>, DMatrix<f64>)) {
     let env = ExecutorEnv::builder()
         // Send a & b to the guest
         .write(de_seasonalised_detrended_log_base_fee)
@@ -21,7 +21,7 @@ pub fn simulate_price(
         .unwrap();
 
     let receipt = prove_info.receipt;
-    let res: (DVector<f64>, DMatrix<f64>, Vec<f64>) = receipt.journal.decode().unwrap();
+    let res: (DVector<f64>, DMatrix<f64>) = receipt.journal.decode().unwrap();
 
     (receipt, res)
 }
