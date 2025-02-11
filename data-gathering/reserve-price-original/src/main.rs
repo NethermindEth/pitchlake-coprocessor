@@ -9,7 +9,7 @@ async fn main() {
     let df = read_data_from_file("data.csv");
     let df = add_df_property(df);
     let periods = split_dataframe_into_periods(df, 3).unwrap();
-    let max_iterations = 8000;
+    let max_iterations = 10000;
 
     let mut wtr = open_reserve_price_csv_writer("reserve_price_reserve_price_original.csv");
     for period in periods {
@@ -48,3 +48,4 @@ async fn main() {
 // Solution { position: [-0.01762748615163198, 0.8891317028744364, 0.04931994818663203, 0.01382354520544229, 0.1525266305724204, 0.33667441434122203], value: -189.0124925657238 } 5000 iter
 // Solution { position: [-0.01762748615163198, 0.8891317028744364, 0.04931994818663203, 0.01382354520544229, 0.1525266305724204, 0.33667441434122203], value: -189.0124925657238 } 5500 iter
 // Solution { position: [-0.01762748615163198, 0.8891317028744364, 0.04931994818663203, 0.01382354520544229, 0.1525266305724204, 0.33667441434122203], value: -189.0124925657238 } 8000 iter
+// Solution { position: [-0.01762748615163198, 0.8891317028744364, 0.04931994818663203, 0.01382354520544229, 0.1525266305724204, 0.33667441434122203], value: -189.0124925657238 } 10,000 iter
