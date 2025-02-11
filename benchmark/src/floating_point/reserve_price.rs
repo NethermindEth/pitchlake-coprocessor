@@ -15,7 +15,7 @@ fn standard_deviation(values: &[f64]) -> f64 {
 
 pub fn calculate_reserve_price(
     period_start_timestamp: i64, // this timestamps does not include the nulled twap timestamps
-    period_end_timestamp: i64, // this timestamps does not include the nulled twap timestamps
+    period_end_timestamp: i64,   // this timestamps does not include the nulled twap timestamps
     season_param: &DVector<f64>,
     de_seasonalized_detrended_simulated_prices: &DMatrix<f64>,
     twap_7d: &[f64],

@@ -162,7 +162,6 @@ pub fn post_minimize(
     for i in 0..n_periods {
         for j in 0..num_paths {
             jumps[(i, j)] = binom.sample(&mut rng) as f64;
-            // jumps[(i, j)] = 5.0;
         }
     }
 
@@ -182,8 +181,6 @@ pub fn post_minimize(
         for j in 0..num_paths {
             n1[(i, j)] = normal.sample(&mut rng);
             n2[(i, j)] = normal.sample(&mut rng);
-            // n1[(i, j)] = 7.0;
-            // n2[(i, j)] = 7.0;
         }
     }
     // Simulate prices over time
@@ -210,7 +207,7 @@ pub fn simulate_price(
     let (pt, pt_1, var_pt) = pre_minimize(de_seasonalised_detrended_log_base_fee);
 
     let initial_position = vec![-3.928e-02, 2.873e-04, 4.617e-02, var_pt, var_pt, 0.2];
-    let max_iterations = 2000;
+    let max_iterations = 2400;
     let solution = minimize(initial_position, &pt, &pt_1, max_iterations);
 
     let num_paths = 4000;
