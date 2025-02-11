@@ -1,6 +1,6 @@
 use benchmark::floating_point::calculate_reserve_price_full;
 use common::{
-    add_df_property, convert_to_timestamp_gas_used_tuple,
+    add_df_property, convert_to_timestamp_base_fee_tuple,
     csv::{close_csv_file, open_reserve_price_csv_writer, write_reserve_price_to_csv},
     read_data_from_file, split_dataframe_into_periods,
 };
@@ -10,9 +10,9 @@ fn main() {
     let df = add_df_property(df);
     let periods = split_dataframe_into_periods(df, 3).unwrap();
 
-    let mut wtr = open_reserve_price_csv_writer("reserve_price_reserve_price_modified.csv");
+    let mut wtr = open_reserve_price_csv_writer("reserve_price_reserve_price_modified_2000_iter.csv");
     for period in periods {
-        let timestamp_gas_used_tuple = convert_to_timestamp_gas_used_tuple(period.clone());
+        let timestamp_gas_used_tuple = convert_to_timestamp_base_fee_tuple(period.clone());
         let all_inputs_to_reserve_price = calculate_reserve_price_full(&timestamp_gas_used_tuple);
 
         let start_timestamp = period

@@ -521,57 +521,6 @@ fn neg_log_likelihood(params: &[f64], pt: &Array1<f64>, pt_1: &Array1<f64>) -> f
     -pdf_vals.mapv(|x| (x + 1e-10).ln()).sum()
 }
 
-/// Adds a Time-Weighted Average Price (TWAP) column to the DataFrame.
-///
-/// This function calculates the 7-day TWAP for the 'base_fee' column and adds it as a new column
-/// named 'TWAP_7d' to the input DataFrame.
-///
-/// # Arguments
-///
-/// * `df` - The input DataFrame containing the 'base_fee' column.
-///
-/// # Returns
-///
-/// A `Result` containing the DataFrame with the added 'TWAP_7d' column, or an `Error` if the
-/// operation fails.
-///
-/// # Errors
-///
-/// This function will return an error if:
-/// * The rolling mean calculation fails.
-/// * The final collection of the lazy DataFrame fails.
-///
-fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
-    let required_window_size = 24 * 7;
-
-    tracing::debug!("DataFrame shape before TWAP: {:?}", df.shape());
-
-    if df.height() < required_window_size {
-        return Err(err!(
-            "Insufficient data: At least {} data points are required, but only {} provided.",
-            required_window_size,
-            df.height()
-        ));
-    }
-
-    let lazy_df = df.lazy().with_column(
-        col("base_fee")
-            .rolling_mean(RollingOptionsFixedWindow {
-                window_size: required_window_size,
-                min_periods: 1,
-                weights: None,
-                center: false,
-                fn_params: None,
-            })
-            .alias("TWAP_7d"),
-    );
-
-    let df = lazy_df.collect()?;
-    tracing::debug!("DataFrame shape after TWAP: {:?}", df.shape());
-
-    Ok(df.fill_null(FillNullStrategy::Backward(None))?)
-}
-
 /// Groups the DataFrame by 1-hour intervals and aggregates specified columns.
 ///
 /// This function takes a DataFrame and groups it by 1-hour intervals based on the 'date' column.

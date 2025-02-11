@@ -39,25 +39,36 @@ pub fn add_df_property(df: DataFrame) -> DataFrame {
 /// * The rolling mean calculation fails.
 /// * The final collection of the lazy DataFrame fails.
 ///
-fn add_twap_7d(df: DataFrame) -> Result<DataFrame, Error> {
-    let df = df
-        .lazy()
-        .with_column(
-            col("base_fee")
-                .rolling_mean(RollingOptionsFixedWindow {
-                    window_size: 24 * 7,
-                    min_periods: 24 * 7,
-                    weights: None,
-                    center: false,
-                    fn_params: None,
-                })
-                .alias("TWAP_7d"),
-        )
-        .collect()?;
+fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
+    let required_window_size = 24 * 7;
 
-    Ok(df)
+    tracing::debug!("DataFrame shape before TWAP: {:?}", df.shape());
+
+    if df.height() < required_window_size {
+        return Err(err!(
+            "Insufficient data: At least {} data points are required, but only {} provided.",
+            required_window_size,
+            df.height()
+        ));
+    }
+
+    let lazy_df = df.lazy().with_column(
+        col("base_fee")
+            .rolling_mean(RollingOptionsFixedWindow {
+                window_size: required_window_size,
+                min_periods: 1,
+                weights: None,
+                center: false,
+                fn_params: None,
+            })
+            .alias("TWAP_7d"),
+    );
+
+    let df = lazy_df.collect()?;
+    tracing::debug!("DataFrame shape after TWAP: {:?}", df.shape());
+
+    Ok(df.fill_null(FillNullStrategy::Backward(None))?)
 }
-
 /// Groups the DataFrame by 1-hour intervals and aggregates specified columns.
 ///
 /// This function takes a DataFrame and groups it by 1-hour intervals based on the 'date' column.
@@ -102,14 +113,14 @@ fn group_by_1h_intervals(df: DataFrame) -> Result<DataFrame, Error> {
     Ok(df)
 }
 
-pub fn convert_to_timestamp_gas_used_tuple(df: DataFrame) -> Vec<(i64, f64)> {
-    let xxxx = df.select(["date", "gas_used"]).unwrap();
+pub fn convert_to_timestamp_base_fee_tuple(df: DataFrame) -> Vec<(i64, f64)> {
+    let xxxx = df.select(["date", "base_fee"]).unwrap();
 
     let dates = xxxx.column("date").unwrap().datetime().unwrap();
-    let gas = xxxx.column("gas_used").unwrap().f64().unwrap();
+    let base_fee = xxxx.column("base_fee").unwrap().f64().unwrap();
     let tuples: Vec<(i64, f64)> = dates
         .iter()
-        .zip(gas.iter())
+        .zip(base_fee.iter())
         .map(|(d, g)| (d.unwrap() / 1000, g.unwrap()))
         .collect();
 
@@ -256,7 +267,7 @@ mod tests {
     fn test_convert_to_timestamp_gas_used_tuple() {
         let df = read_data_from_file("../data.csv");
         let df = add_df_property(df);
-        let tuples = convert_to_timestamp_gas_used_tuple(df);
+        let tuples = convert_to_timestamp_base_fee_tuple(df);
         println!("{:?}", tuples);
     }
 }
