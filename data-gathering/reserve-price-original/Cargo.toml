@@ -1,0 +1,26 @@
+[package]
+name = "reserve-price-original"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eyre = "0.6"
+tracing = "0.1"
+benchmark = { path = "../../benchmark" }
+db-models = { path = "../../main/db-models" }
+ndarray = "0.15"
+# Update ndarray-linalg to use a specific version known to work with LAPACK
+ndarray-linalg = { version = "0.15", features = [
+    "openblas-system",
+], default-features = false }
+ndarray-rand = "0.15.0"
+optimization = "0.2.0"
+polars = { workspace = true }
+rand = "0.8.5"
+rand_distr = "0.4.3"
+chrono = { version = "0.4", features = ["serde"] }
+linfa = "0.7.0"
+linfa-linear = "0.7.0"
+statrs = "0.17"
+common = { path = "../common" }
+tokio = { version = "1.41.0", features = ["macros", "rt-multi-thread"] }

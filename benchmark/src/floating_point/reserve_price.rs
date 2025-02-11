@@ -14,8 +14,8 @@ fn standard_deviation(values: &[f64]) -> f64 {
 }
 
 pub fn calculate_reserve_price(
-    period_start_timestamp: i64,
-    period_end_timestamp: i64,
+    period_start_timestamp: i64, // this timestamps does not include the nulled twap timestamps
+    period_end_timestamp: i64,   // this timestamps does not include the nulled twap timestamps
     season_param: &DVector<f64>,
     de_seasonalized_detrended_simulated_prices: &DMatrix<f64>,
     twap_7d: &[f64],
@@ -23,10 +23,11 @@ pub fn calculate_reserve_price(
     intercept: f64,
     log_base_fee_len: usize,
 ) -> Result<f64> {
-    let num_paths = 4000;
+    let num_paths = 4000; // to refactor this, pass these two values in as input parameters
     let n_periods = 720;
 
-    let total_hours = (period_end_timestamp - period_start_timestamp) / 3600 / 1000;
+    // timestamps are assumed to be in milliseconds for this calculation
+    let total_hours = (period_end_timestamp * 1000 - period_start_timestamp * 1000) / 3600 / 1000;
 
     let sim_hourly_times = DVector::from_iterator(
         n_periods,

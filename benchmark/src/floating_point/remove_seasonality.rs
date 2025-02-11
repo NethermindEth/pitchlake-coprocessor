@@ -50,10 +50,11 @@ fn remove_seasonality(
         .ok_or_else(|| err!("Missing start timestamp"))?
         .0;
 
+    // hack:
     let t_series = DVector::from_iterator(
         data.len(),
         data.iter()
-            .map(|(timestamp, _)| (*timestamp - start_timestamp) as f64 / 1000.0 / 3600.0),
+            .map(|(timestamp, _)| (*timestamp - start_timestamp) as f64 / 3600.0),
     );
 
     let c = season_matrix(t_series.clone());
@@ -62,11 +63,9 @@ fn remove_seasonality(
     let season_param = lstsq::lstsq(&c, &detrended_log_base_fee, epsilon)
         .unwrap()
         .solution;
-
     let season = &c * &season_param;
 
     let de_seasonalised_detrended_log_base_fee = detrended_log_base_fee - season;
-
     Ok((de_seasonalised_detrended_log_base_fee, season_param))
 }
 
@@ -75,6 +74,7 @@ pub fn calculate_remove_seasonality(
     data: &[(i64, f64)],
 ) -> Result<(f64, f64, DVector<f64>, DVector<f64>)> {
     let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
+
     let log_base_fee = compute_log_of_base_fees(&fees)?;
     let (slope, intercept, trend_values) = discover_trend(&log_base_fee)?;
 

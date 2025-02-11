@@ -1,0 +1,8 @@
+[package]
+name = "reserve-price-modified"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+benchmark = { path = "../../benchmark" }
+common = { path = "../common" }
