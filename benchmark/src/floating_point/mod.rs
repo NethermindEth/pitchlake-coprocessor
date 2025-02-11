@@ -76,8 +76,6 @@ pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReser
 
     let (simulated_prices, _params) = simulate_price(&de_seasonalised_detrended_log_base_fee);
 
-    // hack:
-    let input = input[167..].to_vec();
     let reserve_price = calculate_reserve_price(
         input[0].0,
         input[input.len() - 1].0,
