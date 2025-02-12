@@ -10,7 +10,7 @@ members = [
     "reserve-price-floating",
     "reserve-price-floating-composition",
     "simulate-price-fixed",
-    "simulate-price-floating",
+    "simulate-price-floating", "simulate-price-verify-position-floating",
 ]
 
 # Always optimize; otherwise tests take excessively long.

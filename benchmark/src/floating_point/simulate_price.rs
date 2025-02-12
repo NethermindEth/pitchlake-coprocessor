@@ -8,11 +8,11 @@ use statrs::distribution::{Binomial, Normal};
 
 use super::{neg_log_likelihood, solution::Solution};
 
-fn function_value(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
+pub fn function_value(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
     neg_log_likelihood(position, pt, pt_1)
 }
 
-fn gradient(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> Vec<f64> {
+pub fn gradient(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> Vec<f64> {
     let mut x: Vec<_> = position.to_vec();
     let current = function_value(position, pt, pt_1);
 
@@ -44,7 +44,7 @@ fn gradient(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> Vec<f64
         .collect()
 }
 
-fn is_saddle_point(gradient: &[f64], tolerance: f64) -> bool {
+pub fn is_saddle_point(gradient: &[f64], tolerance: f64) -> bool {
     gradient.iter().all(|dx| dx.abs() <= tolerance)
 }
 
