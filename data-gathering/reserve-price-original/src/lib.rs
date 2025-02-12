@@ -20,7 +20,7 @@ use statrs::distribution::Binomial;
 
 // block_headers is a vector of block headers for 3 months
 
-pub async fn calculate_reserve_price(df: DataFrame) -> Result<f64> {
+pub async fn calculate_reserve_price(df: DataFrame, max_iterations: u64) -> Result<f64> {
     // pub async fn calculate_reserve_price(block_headers: Vec<BlockHeader>) -> Result<f64> {
     // if block_headers.is_empty() {
     //     tracing::error!("No block headers provided.");
@@ -98,6 +98,7 @@ pub async fn calculate_reserve_price(df: DataFrame) -> Result<f64> {
         de_seasonalised_detrended_log_base_fee.view(),
         n_periods,
         num_paths,
+        max_iterations,
     )?;
 
     let total_hours = (period_end_date_timestamp - period_start_date_timestamp) / 3600 / 1000;
@@ -250,6 +251,7 @@ fn simulate_prices(
     de_seasonalised_detrended_log_base_fee: ArrayView1<f64>,
     n_periods: usize,
     num_paths: usize,
+    max_iterations: u64,
 ) -> Result<(Array2<f64>, Vec<f64>)> {
     let dt = 1.0 / (365.0 * 24.0);
     let pt = de_seasonalised_detrended_log_base_fee
@@ -262,13 +264,15 @@ fn simulate_prices(
     let function =
         NumericalDifferentiation::new(Func(|x: &[f64]| neg_log_likelihood(x, &pt, &pt_1)));
 
-    let minimizer = GradientDescent::new().max_iterations(Some(2400));
+    let minimizer = GradientDescent::new().max_iterations(Some(max_iterations));
 
     let var_pt = pt.var(0.0);
     let solution = minimizer.minimize(
         &function,
         vec![-3.928e-02, 2.873e-04, 4.617e-02, var_pt, var_pt, 0.2],
     );
+
+    println!("solution: {:?}", solution);
 
     let params = &solution.position;
     let alpha = params[0] / dt;
