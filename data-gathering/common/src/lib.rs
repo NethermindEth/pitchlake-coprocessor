@@ -39,6 +39,7 @@ pub fn add_df_property(df: DataFrame) -> DataFrame {
 /// * The rolling mean calculation fails.
 /// * The final collection of the lazy DataFrame fails.
 ///
+/// TODO: To import this from 'benchmark' crate.
 fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
     let required_window_size = 24 * 7;
 
@@ -114,10 +115,10 @@ fn group_by_1h_intervals(df: DataFrame) -> Result<DataFrame, Error> {
 }
 
 pub fn convert_to_timestamp_base_fee_tuple(df: DataFrame) -> Vec<(i64, f64)> {
-    let xxxx = df.select(["date", "base_fee"]).unwrap();
+    let df = df.select(["date", "base_fee"]).unwrap();
 
-    let dates = xxxx.column("date").unwrap().datetime().unwrap();
-    let base_fee = xxxx.column("base_fee").unwrap().f64().unwrap();
+    let dates = df.column("date").unwrap().datetime().unwrap();
+    let base_fee = df.column("base_fee").unwrap().f64().unwrap();
     let tuples: Vec<(i64, f64)> = dates
         .iter()
         .zip(base_fee.iter())

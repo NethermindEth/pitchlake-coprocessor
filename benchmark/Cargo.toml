@@ -19,5 +19,9 @@ lstsq = "0.6.0"
 statrs = { version = "0.17", default-features = false }
 rand = "0.8.5"
 rand_distr = "0.4.3"
-# optimization = { git = "https://github.com/piwonskp/optimization-rust" }
-# optimization = { path = "../../optimization-rust" }
+polars = { version = "0.43", features = [
+    "lazy",
+    "dynamic_group_by",
+    "rolling_window",
+    "ndarray",
+] }

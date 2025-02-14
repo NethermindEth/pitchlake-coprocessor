@@ -1,5 +1,6 @@
 pub mod fixed_point;
 pub mod floating_point;
+pub mod original;
 use eyre::Result;
 
 mod tests;
