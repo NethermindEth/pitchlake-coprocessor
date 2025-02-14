@@ -10,8 +10,7 @@ use rand::prelude::*;
 use rand_distr::Distribution;
 use statrs::distribution::Binomial;
 
-use crate::floating_point::Solution;
-use crate::is_saddle_point;
+use crate::{is_saddle_point, Solution};
 
 fn mrjpdf(params: &[f64], pt: &Array1<f64>, pt_1: &Array1<f64>) -> Array1<f64> {
     let (a, phi, mu_j, sigma_sq, sigma_sq_j, lambda) = (
@@ -142,7 +141,8 @@ pub fn minimize(
     }
 }
 
-fn simulate_prices(
+// this function will iterate until it reaches convergence
+pub fn simulate_prices(
     de_seasonalised_detrended_log_base_fee: ArrayView1<f64>,
     n_periods: usize,
     num_paths: usize,
@@ -157,21 +157,23 @@ fn simulate_prices(
         .to_owned();
 
     let var_pt = pt.var(0.0);
+    let mut position = vec![-3.928e-02, 2.873e-04, 4.617e-02, var_pt, var_pt, 0.2];
 
-    let (solution, _is_saddle_point) = minimize(
-        vec![-3.928e-02, 2.873e-04, 4.617e-02, var_pt, var_pt, 0.2],
-        &pt,
-        &pt_1,
-        max_iterations,
-    );
+    // ensure that it reaches convergence
+    loop {
+        let (solution, is_saddle_point) = minimize(position.clone(), &pt, &pt_1, max_iterations);
+        if is_saddle_point {
+            break;
+        }
+        position = solution.position;
+    }
 
-    let params = &solution.position;
-    let alpha = params[0] / dt;
-    let kappa = (1.0 - params[1]) / dt;
-    let mu_j = params[2];
-    let sigma = (params[3] / dt).sqrt();
-    let sigma_j = params[4].sqrt();
-    let lambda_ = params[5] / dt;
+    let alpha = position[0] / dt;
+    let kappa = (1.0 - position[1]) / dt;
+    let mu_j = position[2];
+    let sigma = (position[3] / dt).sqrt();
+    let sigma_j = position[4].sqrt();
+    let lambda_ = position[5] / dt;
 
     let mut rng = thread_rng();
     let j: Array2<f64> = {
@@ -208,5 +210,5 @@ fn simulate_prices(
             .assign(&new_prices.clone());
     }
 
-    Ok((simulated_prices, params.to_vec()))
+    Ok((simulated_prices, position))
 }

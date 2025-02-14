@@ -6,9 +6,9 @@ use rand::thread_rng;
 use rand_distr::Distribution;
 use statrs::distribution::{Binomial, Normal};
 
-use crate::is_saddle_point;
+use crate::{is_saddle_point, Solution};
 
-use super::{neg_log_likelihood, solution::Solution};
+use super::neg_log_likelihood;
 
 pub fn function_value(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
     neg_log_likelihood(position, pt, pt_1)

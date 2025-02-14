@@ -8,8 +8,6 @@ pub mod reserve_price;
 pub use reserve_price::*;
 pub mod simulate_price;
 pub use simulate_price::*;
-pub mod solution;
-pub use solution::*;
 pub mod add_twap;
 pub use add_twap::*;
 pub mod simulate_price_verify_position;

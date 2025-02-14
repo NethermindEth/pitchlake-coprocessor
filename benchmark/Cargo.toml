@@ -14,6 +14,7 @@ simba = { version = "0.9.0", features = [
 ] }
 approx = { version = "0.5", default-features = false }
 
+chrono = { version = "0.4", features = ["serde"] }
 # for reserve price simulation
 lstsq = "0.6.0"
 statrs = { version = "0.17", default-features = false }
@@ -31,3 +32,5 @@ ndarray-linalg = { version = "0.15", features = [
     "openblas-system",
 ], default-features = false }
 ndarray-rand = "0.15.0"
+linfa = "0.7.0"
+linfa-linear = "0.7.0"
