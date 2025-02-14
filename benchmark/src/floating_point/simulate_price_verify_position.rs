@@ -1,4 +1,6 @@
-use super::{gradient, is_saddle_point};
+use crate::is_saddle_point;
+
+use super::gradient;
 use eyre::Result;
 use nalgebra::{DMatrix, DVector};
 use rand::thread_rng;

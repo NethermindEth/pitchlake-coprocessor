@@ -25,3 +25,9 @@ polars = { version = "0.43", features = [
     "rolling_window",
     "ndarray",
 ] }
+ndarray = "0.15"
+# Update ndarray-linalg to use a specific version known to work with LAPACK
+ndarray-linalg = { version = "0.15", features = [
+    "openblas-system",
+], default-features = false }
+ndarray-rand = "0.15.0"

@@ -6,6 +6,8 @@ use rand::thread_rng;
 use rand_distr::Distribution;
 use statrs::distribution::{Binomial, Normal};
 
+use crate::is_saddle_point;
+
 use super::{neg_log_likelihood, solution::Solution};
 
 pub fn function_value(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> f64 {
@@ -42,10 +44,6 @@ pub fn gradient(position: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> Vec
             d_i
         })
         .collect()
-}
-
-pub fn is_saddle_point(gradient: &[f64], tolerance: f64) -> bool {
-    gradient.iter().all(|dx| dx.abs() <= tolerance)
 }
 
 // ArmijoLineSearch::new(0.5, 1.0, 0.5)

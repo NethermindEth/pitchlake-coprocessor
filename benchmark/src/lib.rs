@@ -11,3 +11,7 @@ pub fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
         .map(|value| value as f64)
         .map_err(|e| eyre::eyre!("Error converting hex string '{}' to f64: {}", hex_str, e))
 }
+
+pub fn is_saddle_point(gradient: &[f64], tolerance: f64) -> bool {
+    gradient.iter().all(|dx| dx.abs() <= tolerance)
+}
