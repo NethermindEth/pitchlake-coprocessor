@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        floating_point::add_twap_7d, original::convert_input_to_df,
+        floating_point::add_twap_7d,
+        original::{calculate_reserve_price, convert_input_to_df},
         tests::mock::get_first_period_data,
     };
 
@@ -53,5 +54,14 @@ mod tests {
         for (df, non_df) in twap_7d_df.iter().zip(twap_7d.iter()) {
             assert_eq!(df.ceil(), non_df.ceil());
         }
+    }
+
+    #[test]
+    fn test_calculate_reserve_price() {
+        let data = get_first_period_data();
+
+        let res = calculate_reserve_price(&data);
+
+        println!("res: {:?}", res);
     }
 }

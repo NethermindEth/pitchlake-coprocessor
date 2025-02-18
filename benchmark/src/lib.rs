@@ -6,7 +6,7 @@ pub use solution::*;
 
 use eyre::Result;
 
-mod tests;
+pub mod tests;
 
 pub fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
     let stripped = hex_str.trim_start_matches("0x");

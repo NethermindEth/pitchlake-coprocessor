@@ -1,0 +1,8 @@
+[package]
+name = "simulate-price-verify-position-floating2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+simulate-price-verify-position-floating2-core = { path = "core" }
+simulate-price-verify-position-floating2-methods = { path = "methods" }

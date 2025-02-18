@@ -1,4 +1,4 @@
-mod mock;
+pub mod mock;
 mod original;
 
 #[cfg(test)]

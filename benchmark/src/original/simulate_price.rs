@@ -2,6 +2,7 @@ use std::f64::EPSILON;
 use std::ops::Add;
 
 use eyre::{anyhow as err, Result};
+use nalgebra::point;
 use ndarray::prelude::*;
 use ndarray::{stack, Array1, Array2, Axis};
 use ndarray_linalg::LeastSquaresSvd;
@@ -120,7 +121,7 @@ pub fn minimize(
     let mut position = initial_position;
     let mut value = function_value(&position, pt, pt_1);
 
-    let gradient_tolerance = 1.0e-4;
+    let gradient_tolerance = 5.0e-3;
     let mut iteration = 0;
     loop {
         let gradient = gradient(&position, pt, pt_1);
@@ -160,12 +161,27 @@ pub fn simulate_prices(
     let mut position = vec![-3.928e-02, 2.873e-04, 4.617e-02, var_pt, var_pt, 0.2];
 
     // ensure that it reaches convergence
+    // let mut i = 0;
     loop {
-        let (solution, is_saddle_point) = minimize(position.clone(), &pt, &pt_1, max_iterations);
-        if is_saddle_point {
+        let (solution, _is_saddle_point) = minimize(position.clone(), &pt, &pt_1, max_iterations);
+        let cur_position = solution.position;
+        let diffs = cur_position
+            .iter()
+            .zip(position.iter())
+            .map(|(x, y)| (x - y).abs())
+            .collect::<Vec<f64>>();
+
+        println!("diffs: {:?}", diffs);
+
+        let is_zeroes = diffs.iter().all(|d| *d == 0.0);
+        if is_zeroes {
             break;
         }
-        position = solution.position;
+
+        position = cur_position;
+        // i += 1;
+        // println!("i: {:?}", i);
+        // println!("position: {:?}", position);
     }
 
     let alpha = position[0] / dt;

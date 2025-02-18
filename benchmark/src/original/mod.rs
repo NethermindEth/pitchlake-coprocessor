@@ -186,6 +186,7 @@ fn standard_deviation(returns: Vec<f64>) -> f64 {
     variance.sqrt()
 }
 
+#[derive(Debug)]
 pub struct AllInputsToReservePrice {
     pub season_param: Array1<f64>,
     pub de_seasonalised_detrended_log_base_fee: Array1<f64>,
