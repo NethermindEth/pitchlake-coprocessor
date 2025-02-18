@@ -24,7 +24,7 @@ fn main() {
         pt: convert_array1_to_dvec(res.pt),
         pt_1: convert_array1_to_dvec(res.pt_1),
         n_periods: 720,
-        num_paths: 4000,
+        num_paths: 15000,
     };
 
     let (receipt, res) = simulate_price_verify_position(input);

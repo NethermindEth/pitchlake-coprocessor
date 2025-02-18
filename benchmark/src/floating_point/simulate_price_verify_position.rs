@@ -32,6 +32,13 @@ fn post_minimize_after_verify(
     let sigma_j = positions[4].sqrt();
     let lambda_ = positions[5] / dt;
 
+    println!("alpha: {}", alpha);
+    println!("kappa: {}", kappa);
+    println!("mu_j: {}", mu_j);
+    println!("sigma: {}", sigma);
+    println!("sigma_j: {}", sigma_j);
+    println!("lambda_: {}", lambda_);
+
     // RNG for stochastic processes
     let mut rng = thread_rng();
 

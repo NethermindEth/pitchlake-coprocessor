@@ -14,6 +14,8 @@ fn main() {
         data.slope,
         data.intercept,
         data.log_base_fee_len,
+        15000,
+        720,
     )
     .unwrap();
 

@@ -69,11 +69,17 @@ pub struct AllInputsToReservePrice {
 }
 
 pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReservePrice {
+    let num_paths = 15000;
+    let n_periods = 720;
     let twap = add_twap_7d(&input).unwrap();
     let (slope, intercept, de_seasonalised_detrended_log_base_fee, season_param) =
         calculate_remove_seasonality(&input).unwrap();
 
-    let (simulated_prices, _params) = simulate_price(&de_seasonalised_detrended_log_base_fee);
+    let (simulated_prices, _params) = simulate_price(
+        &de_seasonalised_detrended_log_base_fee,
+        num_paths,
+        n_periods,
+    );
 
     let reserve_price = calculate_reserve_price(
         input[0].0,
@@ -84,6 +90,8 @@ pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReser
         slope,
         intercept,
         input.len(),
+        num_paths,
+        n_periods,
     )
     .unwrap();
 

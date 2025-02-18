@@ -312,7 +312,26 @@ pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePr
         }
     }
 
+    println!("simulated_log_prices");
+    println!(
+        "simulated_log_prices[0]: {:?}",
+        simulated_log_prices.row(0).slice(s![..5])
+    );
+    println!(
+        "simulated_log_prices[1]: {:?}",
+        simulated_log_prices.row(1).slice(s![..5])
+    );
+
     let simulated_prices = simulated_log_prices.mapv(f64::exp);
+    println!("simulated_prices");
+    println!(
+        "simulated_prices[0]: {:?}",
+        simulated_prices.row(0).slice(s![..5])
+    );
+    println!(
+        "simulated_prices[1]: {:?}",
+        simulated_prices.row(1).slice(s![..5])
+    );
     let twap_start = n_periods.saturating_sub(24 * 7);
     let final_prices_twap = simulated_prices
         .slice(s![twap_start.., ..])
