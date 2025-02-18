@@ -26,7 +26,7 @@ polars = { version = "0.43", features = [
     "dynamic_group_by",
     "rolling_window",
     "ndarray",
-] }
+], optional = true }
 ndarray = { version = "0.15", optional = true }
 linfa = { version = "0.7.0", optional = true }
 ndarray-linalg = { version = "0.15", features = [
@@ -37,6 +37,7 @@ linfa-linear = { version = "0.7.0", optional = true }
 
 [features]
 original = [
+    "polars",
     "ndarray",
     "ndarray-rand",
     "ndarray-linalg",
