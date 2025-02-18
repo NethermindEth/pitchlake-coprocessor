@@ -1,11 +1,9 @@
 use std::f64::EPSILON;
 use std::ops::Add;
 
-use eyre::{anyhow as err, Result};
-use nalgebra::point;
+use eyre::Result;
 use ndarray::prelude::*;
-use ndarray::{stack, Array1, Array2, Axis};
-use ndarray_linalg::LeastSquaresSvd;
+use ndarray::{Array1, Array2};
 use ndarray_rand::rand_distr::Normal;
 use rand::prelude::*;
 use rand_distr::Distribution;
