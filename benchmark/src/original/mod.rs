@@ -5,6 +5,7 @@ use eyre::{anyhow as err, Result};
 use linfa::prelude::*;
 use linfa::traits::Fit;
 use linfa_linear::{FittedLinearRegression, LinearRegression};
+use nalgebra::{DVector, Scalar};
 use ndarray::prelude::*;
 use ndarray::{stack, Array1, Array2, Axis};
 use ndarray_linalg::LeastSquaresSvd;
@@ -196,6 +197,8 @@ pub struct AllInputsToReservePrice {
     pub intercept: f64,
     pub reserve_price: f64,
     pub positions: Vec<f64>,
+    pub pt: Array1<f64>,
+    pub pt_1: Array1<f64>,
 }
 
 pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePrice {
@@ -244,7 +247,7 @@ pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePr
     let cap_level = 0.3;
     let risk_free_rate = 0.05;
     let max_iterations = 2000;
-    let (de_seasonalized_detrended_simulated_prices, positions) = simulate_prices(
+    let (de_seasonalized_detrended_simulated_prices, positions, pt, pt_1) = simulate_prices(
         de_seasonalised_detrended_log_base_fee.view(),
         n_periods,
         num_paths,
@@ -340,5 +343,15 @@ pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePr
         slope: trend_model.params()[0],
         intercept: trend_model.params()[1],
         reserve_price,
+        pt,
+        pt_1,
     }
+}
+
+pub fn convert_array1_to_dvec<A: Clone + std::cmp::PartialEq + Scalar>(
+    array_1: Array1<A>,
+) -> DVector<A> {
+    let vec = array_1.to_vec();
+    let res = DVector::from_vec(vec);
+    res
 }

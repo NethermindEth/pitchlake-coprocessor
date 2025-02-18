@@ -146,7 +146,7 @@ pub fn simulate_prices(
     n_periods: usize,
     num_paths: usize,
     max_iterations: u64,
-) -> Result<(Array2<f64>, Vec<f64>)> {
+) -> Result<(Array2<f64>, Vec<f64>, Array1<f64>, Array1<f64>)> {
     let dt = 1.0 / (365.0 * 24.0);
     let pt = de_seasonalised_detrended_log_base_fee
         .slice(s![1..])
@@ -169,17 +169,12 @@ pub fn simulate_prices(
             .map(|(x, y)| (x - y).abs())
             .collect::<Vec<f64>>();
 
-        println!("diffs: {:?}", diffs);
-
         let is_zeroes = diffs.iter().all(|d| *d == 0.0);
         if is_zeroes {
             break;
         }
 
         position = cur_position;
-        // i += 1;
-        // println!("i: {:?}", i);
-        // println!("position: {:?}", position);
     }
 
     let alpha = position[0] / dt;
@@ -224,5 +219,5 @@ pub fn simulate_prices(
             .assign(&new_prices.clone());
     }
 
-    Ok((simulated_prices, position))
+    Ok((simulated_prices, position, pt, pt_1))
 }
