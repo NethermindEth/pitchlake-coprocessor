@@ -7,8 +7,9 @@ use rand::thread_rng;
 use rand_distr::Distribution;
 use statrs::distribution::{Binomial, Normal};
 
-use crate::floating_point::Solution;
 use approx::AbsDiffEq;
+
+use crate::Solution;
 
 use super::{neg_log_likelihood, FixedPoint};
 

@@ -1,3 +1,6 @@
+pub mod mock;
+mod original;
+
 #[cfg(test)]
 mod tests {
     use crate::fixed_point::{

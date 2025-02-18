@@ -10,8 +10,6 @@ use risc0_zkvm::{guest::env, serde};
 
 fn main() {
     let data: ReservePriceFloatingCompositionInput = env::read();
-    // TODO: check if inputs are sorted by timestamp
-
     // TODO: to include inputs as public input and check it
     // slope,intercept,de_seasonalised_detrended_log_base_fee,season_param,
 

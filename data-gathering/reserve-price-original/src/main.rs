@@ -9,7 +9,7 @@ async fn main() {
     let df = read_data_from_file("data.csv");
     let df = add_df_property(df);
     let periods: Vec<polars::prelude::DataFrame> = split_dataframe_into_periods(df, 3).unwrap();
-    // let max_iterations = 25000;
+    let max_iterations = 25000;
     // let period_index = 5;
 
     // println!(
