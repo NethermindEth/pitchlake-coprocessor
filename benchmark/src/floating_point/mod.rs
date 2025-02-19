@@ -105,3 +105,32 @@ pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReser
         reserve_price,
     }
 }
+
+// tolerance is in percentage eg: 5.0 means 5%
+pub fn error_bound_matrix(target: DMatrix<f64>, calculated: DMatrix<f64>, tolerance: f64) -> bool {
+    if target.nrows() != calculated.nrows() || target.ncols() != calculated.ncols() {
+        return false;
+    }
+
+    for i in 0..target.nrows() {
+        for j in 0..target.ncols() {
+            let target_val = target[(i, j)];
+            let calc_val = calculated[(i, j)];
+            let diff: f64 = (target_val - calc_val).abs();
+
+            let percentage_diff = if target_val != 0.0 {
+                (diff / target_val.abs()) * 100.0
+            } else if calc_val != 0.0 {
+                100.0 // If target is 0 but calc isn't, that's 100% error
+            } else {
+                0.0 // Both are 0, no difference
+            };
+
+            if percentage_diff > tolerance {
+                return false;
+            }
+        }
+    }
+
+    true
+}

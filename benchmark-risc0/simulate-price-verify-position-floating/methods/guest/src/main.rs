@@ -6,6 +6,7 @@ use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInp
 fn main() {
     let data: SimulatePriceVerifyPositionInput = env::read();
 
+    // TODO: pass these in from input
     let num_paths = 4000;
     let n_periods = 720;
 

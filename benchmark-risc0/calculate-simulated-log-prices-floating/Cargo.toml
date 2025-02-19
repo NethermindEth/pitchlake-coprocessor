@@ -1,0 +1,7 @@
+[package]
+name = "calculate-simulated-log-prices-floating"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+calculate-simulated-log-prices-floating-core = { path = "core" }
