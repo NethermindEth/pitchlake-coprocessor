@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "add-twap-7d-floating",
+    "add-twap-7d-floating", "calculate-simulated-log-prices-floating",
     "mrjpdf-fixed",
     "mrjpdf-floating",
     "neg-log-fixed",

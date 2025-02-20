@@ -5,7 +5,7 @@ use eyre::{anyhow as err, Result};
 use linfa::prelude::*;
 use linfa::traits::Fit;
 use linfa_linear::{FittedLinearRegression, LinearRegression};
-use nalgebra::{DVector, Scalar};
+use nalgebra::{DMatrix, DVector, Scalar};
 use ndarray::prelude::*;
 use ndarray::{stack, Array1, Array2, Axis};
 use ndarray_linalg::LeastSquaresSvd;
@@ -199,9 +199,14 @@ pub struct AllInputsToReservePrice {
     pub positions: Vec<f64>,
     pub pt: Array1<f64>,
     pub pt_1: Array1<f64>,
+    pub simulated_log_prices: Array2<f64>,
 }
 
-pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePrice {
+pub fn calculate_reserve_price(
+    inputs: &Vec<(i64, f64)>,
+    num_paths: usize,
+    n_periods: usize,
+) -> AllInputsToReservePrice {
     let mut df = convert_input_to_df(inputs);
 
     let period_end_date_timestamp = df
@@ -242,8 +247,8 @@ pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePr
     ))
     .unwrap();
 
-    let num_paths = 15000;
-    let n_periods = 720;
+    // let num_paths = 15000;
+    // let n_periods = 720;
     let cap_level = 0.3;
     let risk_free_rate = 0.05;
     let max_iterations = 2000;
@@ -312,7 +317,39 @@ pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePr
         }
     }
 
+    // println!("simulated_log_prices");
+    // println!("simulated_log_prices.dim: {:?}", simulated_log_prices.dim());
+    // println!(
+    //     "simulated_log_prices[0]-start: {:?}",
+    //     simulated_log_prices.row(0).slice(s![..15])
+    // );
+    // println!(
+    //     "simulated_log_prices[0]-end: {:?}",
+    //     simulated_log_prices
+    //         .row(0)
+    //         .slice(s![n_periods - 15..n_periods])
+    // );
+    // println!(
+    //     "simulated_log_prices[1]-start: {:?}",
+    //     simulated_log_prices.row(1).slice(s![..15])
+    // );
+    // println!(
+    //     "simulated_log_prices[1]-end: {:?}",
+    //     simulated_log_prices
+    //         .row(1)
+    //         .slice(s![n_periods - 15..n_periods])
+    // );
+
     let simulated_prices = simulated_log_prices.mapv(f64::exp);
+    // println!("simulated_prices");
+    // println!(
+    //     "simulated_prices[0]: {:?}",
+    //     simulated_prices.row(0).slice(s![..5])
+    // );
+    // println!(
+    //     "simulated_prices[1]: {:?}",
+    //     simulated_prices.row(1).slice(s![..5])
+    // );
     let twap_start = n_periods.saturating_sub(24 * 7);
     let final_prices_twap = simulated_prices
         .slice(s![twap_start.., ..])
@@ -345,6 +382,7 @@ pub fn calculate_reserve_price(inputs: &Vec<(i64, f64)>) -> AllInputsToReservePr
         reserve_price,
         pt,
         pt_1,
+        simulated_log_prices,
     }
 }
 
@@ -354,4 +392,12 @@ pub fn convert_array1_to_dvec<A: Clone + std::cmp::PartialEq + Scalar>(
     let vec = array_1.to_vec();
     let res = DVector::from_vec(vec);
     res
+}
+
+pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar>(
+    array_2: Array2<A>,
+) -> DMatrix<A> {
+    let (rows, cols) = array_2.dim();
+    let vec = array_2.into_raw_vec();
+    DMatrix::from_vec(rows, cols, vec)
 }

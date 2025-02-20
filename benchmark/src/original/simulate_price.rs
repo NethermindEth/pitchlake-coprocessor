@@ -183,6 +183,12 @@ pub fn simulate_prices(
     let sigma = (position[3] / dt).sqrt();
     let sigma_j = position[4].sqrt();
     let lambda_ = position[5] / dt;
+    // println!("alpha: {}", alpha);
+    // println!("kappa: {}", kappa);
+    // println!("mu_j: {}", mu_j);
+    // println!("sigma: {}", sigma);
+    // println!("sigma_j: {}", sigma_j);
+    // println!("lambda_: {}", lambda_);
 
     let mut rng = thread_rng();
     let j: Array2<f64> = {

@@ -10,7 +10,7 @@ fn main() {
     let periods = split_dataframe_into_periods(df, 3).unwrap();
 
     let timestamp_gas_used_tuple: Vec<(i64, f64)> = convert_to_timestamp_base_fee_tuple(periods[0].clone());
-    let res = calculate_reserve_price(&timestamp_gas_used_tuple);
+    let res = calculate_reserve_price(&timestamp_gas_used_tuple, 15000, 720);
 
     // println!("res: {:?}", res);
 }

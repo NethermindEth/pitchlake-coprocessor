@@ -51,7 +51,8 @@ async fn main() -> Result<(), String> {
     let (slope, intercept, de_seasonalised_detrended_log_base_fee, season_param) =
         calculate_remove_seasonality(&reserve_price_inputs).unwrap();
 
-    let (simulated_prices, _params) = simulate_price(&de_seasonalised_detrended_log_base_fee);
+    let (simulated_prices, _params) =
+        simulate_price(&de_seasonalised_detrended_log_base_fee, 15000, 720);
 
     let twap = add_twap_7d(&reserve_price_inputs).unwrap();
 

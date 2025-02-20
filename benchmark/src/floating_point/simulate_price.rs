@@ -201,6 +201,8 @@ pub fn post_minimize(
 
 pub fn simulate_price(
     de_seasonalised_detrended_log_base_fee: &DVector<f64>,
+    num_paths: usize,
+    n_periods: usize,
 ) -> (DMatrix<f64>, Vec<f64>) {
     let (pt, pt_1, var_pt) = pre_minimize(de_seasonalised_detrended_log_base_fee);
 
@@ -208,8 +210,6 @@ pub fn simulate_price(
     let max_iterations = 2400;
     let solution = minimize(initial_position, &pt, &pt_1, max_iterations);
 
-    let num_paths = 4000;
-    let n_periods = 720;
     let (simulated_prices, params) = post_minimize(
         &solution,
         de_seasonalised_detrended_log_base_fee,
