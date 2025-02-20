@@ -4,4 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+risc0-zkvm = { version = "1.1.2" }
 calculate-simulated-log-prices-floating-core = { path = "core" }
+calculate-simulated-log-prices-floating-methods = { path = "methods" }
+nalgebra = { version = "0.33.2", features = ["serde-serialize"] }
+benchmark = { path = "../../benchmark", features = ["original"] }

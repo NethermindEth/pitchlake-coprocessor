@@ -25,3 +25,4 @@ methods/guest/Cargo.lock
 .env
 *.txt
 data.csv
+benchmark-risc0/error_bound_diff.csv

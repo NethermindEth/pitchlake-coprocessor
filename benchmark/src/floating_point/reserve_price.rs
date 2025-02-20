@@ -75,40 +75,82 @@ pub fn calculate_reserve_price(
                 detrended_simulated_prices[(i, j)] + trend + stochastic_trend[(i, j)];
         }
     }
+    
 
-    println!(
-        "simulated_log_prices[0]: {:?}",
-        simulated_log_prices
-            .row(0)
-            .columns(0, 5)
-            .iter()
-            .collect::<Vec<_>>()
-    );
-    println!(
-        "simulated_log_prices[1]: {:?}",
-        simulated_log_prices
-            .row(1)
-            .columns(0, 5)
-            .iter()
-            .collect::<Vec<_>>()
-    );
+    // println!(
+    //     "\nsimulated_log_prices.shape: {:?}",
+    //     simulated_log_prices.shape()
+    // );
+
+    // println!(
+    //     "simulated_log_prices[0]-start: {:?}\n",
+    //     simulated_log_prices
+    //         .row(0)
+    //         .columns(0, 15)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+    // println!(
+    //     "simulated_log_prices[0]-end: {:?}\n",
+    //     simulated_log_prices
+    //         .row(0)
+    //         .columns(n_periods - 15, n_periods)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+
+    // // .slice(s![n_periods - 15..n_periods])
+    // println!(
+    //     "simulated_log_prices[1]-start: {:?}\n",
+    //     simulated_log_prices
+    //         .row(1)
+    //         .columns(0, 15)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+    // println!(
+    //     "simulated_log_prices[1]-end: {:?}\n",
+    //     simulated_log_prices
+    //         .row(1)
+    //         .columns(n_periods - 15, n_periods)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+
     let simulated_prices = simulated_log_prices.map(f64::exp);
-    println!(
-        "simulated_prices[0]: {:?}",
-        simulated_prices
-            .row(0)
-            .columns(0, 5)
-            .iter()
-            .collect::<Vec<_>>()
-    );
-    println!(
-        "simulated_prices[1]: {:?}",
-        simulated_prices
-            .row(1)
-            .columns(0, 5)
-            .iter()
-            .collect::<Vec<_>>()
-    );
+    // println!(
+    //     "simulated_prices[0]-start: {:?}",
+    //     simulated_prices
+    //         .row(0)
+    //         .columns(0, 15)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+    // println!(
+    //     "simulated_prices[0]-end: {:?}",
+    //     simulated_prices
+    //         .row(0)
+    //         .columns(n_periods - 15, n_periods - 1)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+    // println!(
+    //     "simulated_prices[1]-start: {:?}",
+    //     simulated_prices
+    //         .row(1)
+    //         .columns(0, 15)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+    // println!(
+    //     "simulated_prices[1]-end: {:?}",
+    //     simulated_prices
+    //         .row(1)
+    //         .columns(n_periods - 15, n_periods - 1)
+    //         .iter()
+    //         .collect::<Vec<_>>()
+    // );
+
     let twap_start = n_periods.saturating_sub(24 * 7);
 
     let final_prices_twap = simulated_prices

@@ -1,5 +1,5 @@
+use benchmark::floating_point::{calculate_simulated_log_prices, error_bound_simulated_log_prices};
 use calculate_simulated_log_prices_floating_core::CalculateSimulatedLogPricesInput;
-use benchmark::floating_point::calculate_simulated_log_prices;
 use risc0_zkvm::guest::env;
 
 fn main() {
@@ -15,7 +15,20 @@ fn main() {
         data.log_base_fee_len,
         data.num_paths,
         data.n_periods,
+    )
+    .unwrap();
+
+    let result = error_bound_simulated_log_prices(
+        &data.supposed_simulated_log_prices,
+        &simulated_log_prices,
+        data.error_tolerance_in_percentage,
+        data.matrix_tolerance_in_percentage,
     );
+
+    assert!(result);
+
+    // CalculateSimulatedLogPricesInput
+    env::commit(&data);
 }
 
 // pub struct CalculateSimulatedLogPricesInput {
@@ -29,5 +42,6 @@ fn main() {
 //     pub log_base_fee_len: usize,
 //     pub num_paths: usize,
 //     pub n_periods: usize,
-    // pub supposed_simulated_log_prices: DMatrix<f64>,
+//     pub supposed_simulated_log_prices: DMatrix<f64>,
+//     pub error_tolerance_in_percentage: f64,
 // }

@@ -15,4 +15,6 @@ pub struct CalculateSimulatedLogPricesInput {
     pub num_paths: usize,
     pub n_periods: usize,
     pub supposed_simulated_log_prices: DMatrix<f64>,
+    pub error_tolerance_in_percentage: f64,
+    pub matrix_tolerance_in_percentage: f64,
 }
