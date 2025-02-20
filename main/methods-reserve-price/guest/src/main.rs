@@ -180,7 +180,7 @@ fn simulate_prices(
     let sigma_j = params[4].sqrt();
     let lambda_ = params[5] / dt;
 
-    // RNG for stochastic processes
+    // LDS for stochastic processes
     let mut binom_sequence = sobol();
     let p = lambda_ * dt;
 
