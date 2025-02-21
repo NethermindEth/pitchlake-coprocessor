@@ -10,6 +10,7 @@ use ndarray::prelude::*;
 use ndarray::{stack, Array1, Array2, Axis};
 use ndarray_linalg::LeastSquaresSvd;
 use ndarray_rand::rand_distr::Normal;
+use num_traits::Zero;
 use polars::prelude::*;
 use rand::thread_rng;
 use rand_distr::Distribution;
@@ -317,45 +318,13 @@ pub fn calculate_reserve_price(
         }
     }
 
-    // println!("simulated_log_prices");
-    // println!("simulated_log_prices.dim: {:?}", simulated_log_prices.dim());
-    // println!(
-    //     "simulated_log_prices[0]-start: {:?}",
-    //     simulated_log_prices.row(0).slice(s![..15])
-    // );
-    // println!(
-    //     "simulated_log_prices[0]-end: {:?}",
-    //     simulated_log_prices
-    //         .row(0)
-    //         .slice(s![n_periods - 15..n_periods])
-    // );
-    // println!(
-    //     "simulated_log_prices[1]-start: {:?}",
-    //     simulated_log_prices.row(1).slice(s![..15])
-    // );
-    // println!(
-    //     "simulated_log_prices[1]-end: {:?}",
-    //     simulated_log_prices
-    //         .row(1)
-    //         .slice(s![n_periods - 15..n_periods])
-    // );
-
     let simulated_prices = simulated_log_prices.mapv(f64::exp);
-    // println!("simulated_prices");
-    // println!(
-    //     "simulated_prices[0]: {:?}",
-    //     simulated_prices.row(0).slice(s![..5])
-    // );
-    // println!(
-    //     "simulated_prices[1]: {:?}",
-    //     simulated_prices.row(1).slice(s![..5])
-    // );
+
     let twap_start = n_periods.saturating_sub(24 * 7);
     let final_prices_twap = simulated_prices
         .slice(s![twap_start.., ..])
         .mean_axis(Axis(0))
         .unwrap();
-
     let twap_7d_series = df.column("TWAP_7d").unwrap();
     let strike = twap_7d_series
         .f64()
@@ -394,10 +363,26 @@ pub fn convert_array1_to_dvec<A: Clone + std::cmp::PartialEq + Scalar>(
     res
 }
 
-pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar>(
+// pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar>(
+//     array_2: Array2<A>,
+// ) -> DMatrix<A> {
+//     let (rows, cols) = array_2.dim();
+//     let vec = array_2.into_raw_vec();
+//     DMatrix::from_vec(rows, cols, vec)
+// }
+
+pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar + Zero>(
     array_2: Array2<A>,
 ) -> DMatrix<A> {
     let (rows, cols) = array_2.dim();
-    let vec = array_2.into_raw_vec();
-    DMatrix::from_vec(rows, cols, vec)
+    println!("rows: {:?}", rows);
+    println!("cols: {:?}", cols);
+
+    let mut mat = DMatrix::zeros(rows, cols);
+    for i in 0..rows {
+        for j in 0..cols {
+            mat[(i, j)] = array_2[(i, j)].clone();
+        }
+    }
+    mat
 }

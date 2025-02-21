@@ -1,7 +1,7 @@
 #[cfg(feature = "original")]
 #[cfg(test)]
 mod tests {
-    use ndarray::{s, stack, Axis};
+    use ndarray::{stack, Axis};
 
     use crate::{
         floating_point::{self, add_twap_7d},
@@ -76,21 +76,6 @@ mod tests {
         let data = get_first_period_data();
         let res = calculate_reserve_price(&data, 15000, 720);
 
-        // println!("res.simulated_price");
-        // println!(
-        //     "res.simulated_price[0]: {:?}",
-        //     res.de_seasonalized_detrended_simulated_prices
-        //         .row(0)
-        //         .slice(s![..5])
-        // );
-        // println!(
-        //     "res.simulated_price[1]: {:?}",
-        //     res.de_seasonalized_detrended_simulated_prices
-        //         .row(1)
-        //         .slice(s![..5])
-        // );
-        // println!("res.reserve_price: {:?}", res.reserve_price);
-
         let de_seasonalised_detrended_log_base_fee =
             convert_array1_to_dvec(res.de_seasonalised_detrended_log_base_fee);
         let pt = convert_array1_to_dvec(res.pt);
@@ -107,41 +92,6 @@ mod tests {
             num_paths,
         );
         assert!(is_saddle_point);
-
-        // println!("simulated_price");
-        // println!(
-        //     "simulated_price[0]-start: {:?}",
-        //     simulated_price
-        //         .row(0)
-        //         .columns(0, 15)
-        //         .iter()
-        //         .collect::<Vec<_>>()
-        // );
-
-        // println!(
-        //     "simulated_price[0]-end: {:?}",
-        //     simulated_price
-        //         .row(0)
-        //         .columns(n_periods - 15, n_periods - 1)
-        //         .iter()
-        //         .collect::<Vec<_>>()
-        // );
-        // println!(
-        //     "simulated_price[1]-start: {:?}",
-        //     simulated_price
-        //         .row(1)
-        //         .columns(0, 15)
-        //         .iter()
-        //         .collect::<Vec<_>>()
-        // );
-        // println!(
-        //     "simulated_price[1]-end: {:?}",
-        //     simulated_price
-        //         .row(1)
-        //         .columns(n_periods - 15, n_periods - 1)
-        //         .iter()
-        //         .collect::<Vec<_>>()
-        // );
 
         let reserve_price = floating_point::calculate_reserve_price(
             data[0].0,
@@ -181,5 +131,23 @@ mod tests {
             dmatrix.row(2).iter().copied().collect::<Vec<_>>(),
             vec![3, 6, 9]
         );
+    }
+
+    #[test]
+    fn test_compare_calculated_reserve_price_from_simulated_log_prices() {
+        let num_paths = 4000;
+        let n_periods = 720;
+        let data = get_first_period_data();
+        let res = calculate_reserve_price(&data, num_paths, n_periods);
+        println!("original reserve_price: {:?}", res.reserve_price);
+
+        let reserve_price = floating_point::calculated_reserve_price_from_simulated_log_prices(
+            &convert_array2_to_dmatrix(res.simulated_log_prices),
+            &res.twap_7d,
+            n_periods,
+        )
+        .unwrap();
+
+        println!("reserve_price: {:?}", reserve_price);
     }
 }
