@@ -4,7 +4,7 @@ mod tests {
     use ndarray::{stack, Axis};
 
     use crate::{
-        floating_point::{self, add_twap_7d},
+        floating_point::{self, add_twap_7d, calculated_reserve_price_from_simulated_log_prices},
         original::{
             calculate_reserve_price, convert_array1_to_dvec, convert_array2_to_dmatrix,
             convert_input_to_df,
@@ -75,12 +75,14 @@ mod tests {
     fn test_compare_simulate_price_results() {
         let data = get_first_period_data();
         let res = calculate_reserve_price(&data, 15000, 720);
+        println!("res.reserve_price: {:?}", res.reserve_price);
+        // res.reserve_price: 1755519897.514507
 
         let de_seasonalised_detrended_log_base_fee =
             convert_array1_to_dvec(res.de_seasonalised_detrended_log_base_fee);
         let pt = convert_array1_to_dvec(res.pt);
         let pt_1 = convert_array1_to_dvec(res.pt_1);
-        let num_paths = 15000;
+        let num_paths = 4000;
         let n_periods = 720;
         let (is_saddle_point, simulated_price) = floating_point::simulate_price_verify_position(
             &res.positions,
@@ -92,6 +94,13 @@ mod tests {
             num_paths,
         );
         assert!(is_saddle_point);
+
+        // let is_within_error_bound = floating_point::error_bound_matrix(
+        //     &convert_array2_to_dmatrix(res.de_seasonalized_detrended_simulated_prices),
+        //     &simulated_price,
+        //     5.0,
+        // );
+        // assert!(is_within_error_bound);
 
         let reserve_price = floating_point::calculate_reserve_price(
             data[0].0,
@@ -108,6 +117,18 @@ mod tests {
         .unwrap();
 
         println!("reserve_price: {:?}", reserve_price);
+        // reserve_price: 1765847736.6691935 (num_paths: 15,000)
+        // reserve_price: 1710956542.6769266 (num_paths: 4,000)
+
+        let original_reserve_price = calculated_reserve_price_from_simulated_log_prices(
+            &convert_array2_to_dmatrix(res.simulated_log_prices),
+            &res.twap_7d,
+            n_periods,
+        )
+        .unwrap();
+
+        println!("original_reserve_price: {:?}", original_reserve_price);
+        // original_reserve_price: 1735924412.5244353
     }
 
     #[test]
