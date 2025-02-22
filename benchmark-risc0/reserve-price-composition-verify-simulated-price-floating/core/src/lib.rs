@@ -16,4 +16,5 @@ pub struct ReservePriceCompositionInput {
     pub slope: f64,
     pub intercept: f64,
     pub reserve_price: f64,
+    pub floating_point_tolerance: f64,
 }

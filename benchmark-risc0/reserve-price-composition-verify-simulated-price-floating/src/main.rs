@@ -1,3 +1,5 @@
+use add_twap_7d_error_bound_floating::add_twap_7d_error_bound;
+use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
 use benchmark::{
     original::{self, convert_array1_to_dvec, convert_array2_to_dmatrix},
     tests::mock::get_first_period_data,
@@ -20,6 +22,14 @@ fn main() {
 
     let num_paths = 4000;
     let gradient_tolerance = 5e-3;
+    let floating_point_tolerance = 0.00001; // 0.00001%
+
+    let (add_twap_7d_error_bound_receipt, _add_twap_7d_error_bound_res) =
+        add_twap_7d_error_bound(AddTwap7dErrorBoundFloatingInput {
+            data: data.clone(),
+            twap_7d: res.twap_7d.clone(),
+            tolerance: floating_point_tolerance,
+        });
 
     let (simulate_price_verify_position_receipt, simulate_price_verify_position_res) =
         simulate_price_verify_position_receipt(SimulatePriceVerifyPositionInput {
@@ -55,11 +65,12 @@ fn main() {
         slope: res.slope,
         intercept: res.intercept,
         reserve_price: simulate_price_verify_position_res.1, // todo: change this so that we can pass this in from AllInput, do the error bound check
+        floating_point_tolerance,
     };
 
     let env = ExecutorEnv::builder()
         .add_assumption(simulate_price_verify_position_receipt)
-        // .add_assumption(simulate_price_receipt)
+        .add_assumption(add_twap_7d_error_bound_receipt)
         // .add_assumption(add_twap_7d_receipt)
         // .add_assumption(calculate_reserve_price_receipt)
         .write(&input)
