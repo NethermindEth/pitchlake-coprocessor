@@ -1,0 +1,13 @@
+[package]
+name = "reserve-price-composition-verify-simulated-price-floating"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2" }
+reserve-price-composition-verify-simulated-price-floating-core = { path = "core" }
+reserve-price-composition-verify-simulated-price-floating-methods = { path = "methods" }
+benchmark = { path = "../../benchmark", features = ["original"] }
+
+simulate-price-verify-position-floating = { path = "../simulate-price-verify-position-floating" }
+simulate-price-verify-position-floating-core = { path = "../simulate-price-verify-position-floating/core" }

@@ -1,0 +1,20 @@
+[package]
+name = "reserve-price-composition-verify-simulated-price-floating-guest"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2", default-features = false, features = [
+    'std',
+    'getrandom',
+    'heap-embedded-alloc',
+] }
+# benchmark = { path = "../../../../benchmark" }
+reserve-price-composition-verify-simulated-price-floating-core = { path = "../../core" }
+simulate-price-verify-position-floating-core = { path = "../../../simulate-price-verify-position-floating/core" }
+simulate-price-verify-position-floating-methods = { path = "../../../simulate-price-verify-position-floating/methods" }
+
+
+# remove-seasonality-floating-methods = { path = "../../../remove-seasonality-floating/methods" }

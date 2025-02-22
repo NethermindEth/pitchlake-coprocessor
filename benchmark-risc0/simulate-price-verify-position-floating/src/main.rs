@@ -11,7 +11,7 @@ fn main() {
     let data = get_first_period_data();
     // run rust code in host
     // ensure convergence in host
-    let res = calculate_reserve_price(&data);
+    let res = calculate_reserve_price(&data, 4000, 720);
     println!("res: {:?}", res);
     // create input for guest
 

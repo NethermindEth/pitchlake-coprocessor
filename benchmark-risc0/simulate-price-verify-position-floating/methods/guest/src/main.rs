@@ -6,18 +6,14 @@ use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInp
 fn main() {
     let data: SimulatePriceVerifyPositionInput = env::read();
 
-    // TODO: pass these in from input
-    let num_paths = 4000;
-    let n_periods = 720;
-
     let (is_saddle_point, simulated_prices) = simulate_price_verify_position(
         &data.positions,
         &data.pt,
         &data.pt_1,
         data.gradient_tolerance,
         &data.de_seasonalised_detrended_log_base_fee,
-        n_periods,
-        num_paths,
+        data.n_periods,
+        data.num_paths,
     );
 
     assert!(is_saddle_point);
