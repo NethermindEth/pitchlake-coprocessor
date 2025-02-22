@@ -182,7 +182,7 @@ mod tests {
         let res = calculate_reserve_price(&data, 15000, 720);
         let twap_7d = add_twap_7d(&data).unwrap();
 
-        let percentage_tolerance = 1.0;
+        let percentage_tolerance = 0.00001;
         let is_within_tolerance = error_bound_vec(&twap_7d, &res.twap_7d, percentage_tolerance);
         assert!(is_within_tolerance);
     }

@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "add-twap-7d-error-bound-floating",
     "add-twap-7d-floating",
     "calculate-reserve-price-from-simulated-log-prices-floating",
     "calculate-simulated-log-prices-floating",
@@ -8,7 +9,8 @@ members = [
     "mrjpdf-floating",
     "neg-log-fixed",
     "neg-log-floating",
-    "remove-seasonality-floating", "reserve-price-composition-verify-simulated-price-floating",
+    "remove-seasonality-floating",
+    "reserve-price-composition-verify-simulated-price-floating",
     "reserve-price-floating",
     "reserve-price-floating-composition",
     "simulate-price-fixed",
