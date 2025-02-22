@@ -15,14 +15,15 @@ fn main() {
     let data = get_first_period_data();
     // run rust code in host
     // ensure convergence in host
-    let num_paths = 4000;
     let n_periods = 720;
-    let res = original::calculate_reserve_price(&data, num_paths, n_periods);
+    let res = original::calculate_reserve_price(&data, 15000, n_periods);
 
+    let num_paths = 4000;
     let gradient_tolerance = 5e-3;
 
     let (simulate_price_verify_position_receipt, simulate_price_verify_position_res) =
         simulate_price_verify_position_receipt(SimulatePriceVerifyPositionInput {
+            data: data.clone(),
             positions: res.positions.clone(),
             pt: convert_array1_to_dvec(res.pt.clone()),
             pt_1: convert_array1_to_dvec(res.pt_1.clone()),
@@ -32,9 +33,14 @@ fn main() {
             ),
             n_periods,
             num_paths,
+            season_param: convert_array1_to_dvec(res.season_param.clone()),
+            twap_7d: res.twap_7d.clone(),
+            slope: res.slope,
+            intercept: res.intercept,
         });
 
     let input = ReservePriceCompositionInput {
+        data,
         positions: res.positions,
         pt: convert_array1_to_dvec(res.pt),
         pt_1: convert_array1_to_dvec(res.pt_1),
@@ -44,10 +50,11 @@ fn main() {
         ),
         n_periods,
         num_paths,
-        // de_seasonalized_detrended_simulated_prices: convert_array2_to_dmatrix(
-        //     res.de_seasonalized_detrended_simulated_prices,
-        // ),
-        de_seasonalized_detrended_simulated_prices: simulate_price_verify_position_res.1, // todo: change this so that we can pass this in from AllInput, do the error bound check
+        season_param: convert_array1_to_dvec(res.season_param),
+        twap_7d: res.twap_7d,
+        slope: res.slope,
+        intercept: res.intercept,
+        reserve_price: simulate_price_verify_position_res.1, // todo: change this so that we can pass this in from AllInput, do the error bound check
     };
 
     let env = ExecutorEnv::builder()

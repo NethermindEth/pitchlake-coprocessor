@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ReservePriceCompositionInput {
+    pub data: Vec<(i64, f64)>,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
     pub pt_1: DVector<f64>,
@@ -10,5 +11,9 @@ pub struct ReservePriceCompositionInput {
     pub de_seasonalised_detrended_log_base_fee: DVector<f64>,
     pub n_periods: usize,
     pub num_paths: usize,
-    pub de_seasonalized_detrended_simulated_prices: DMatrix<f64>,
+    pub season_param: DVector<f64>,
+    pub twap_7d: Vec<f64>,
+    pub slope: f64,
+    pub intercept: f64,
+    pub reserve_price: f64,
 }
