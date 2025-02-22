@@ -4,7 +4,9 @@ mod tests {
     use ndarray::{stack, Axis};
 
     use crate::{
-        floating_point::{self, add_twap_7d, calculated_reserve_price_from_simulated_log_prices},
+        floating_point::{
+            self, add_twap_7d, calculated_reserve_price_from_simulated_log_prices, error_bound_vec,
+        },
         original::{
             calculate_reserve_price, convert_array1_to_dvec, convert_array2_to_dmatrix,
             convert_input_to_df,
@@ -129,6 +131,8 @@ mod tests {
 
         println!("original_reserve_price: {:?}", original_reserve_price);
         // original_reserve_price: 1735924412.5244353
+
+        // todo: constraint reserve price to be within tolerance
     }
 
     #[test]
@@ -170,5 +174,16 @@ mod tests {
         .unwrap();
 
         println!("reserve_price: {:?}", reserve_price);
+    }
+
+    #[test]
+    fn test_compare_add_twap_7d() {
+        let data = get_first_period_data();
+        let res = calculate_reserve_price(&data, 15000, 720);
+        let twap_7d = add_twap_7d(&data).unwrap();
+
+        let percentage_tolerance = 1.0;
+        let is_within_tolerance = error_bound_vec(&twap_7d, &res.twap_7d, percentage_tolerance);
+        assert!(is_within_tolerance);
     }
 }

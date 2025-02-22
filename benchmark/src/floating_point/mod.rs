@@ -196,3 +196,25 @@ pub fn error_bound_simulated_log_prices(
 
     percentage_diff < matrix_tolerance
 }
+
+pub fn error_bound_vec(target: &Vec<f64>, calculated: &Vec<f64>, tolerance: f64) -> bool {
+    for i in 0..target.len() {
+        let target_val = target[i];
+        let calc_val = calculated[i];
+        let diff: f64 = (target_val - calc_val).abs();
+
+        let percentage_diff = if target_val != 0.0 {
+            (diff / target_val.abs()) * 100.0
+        } else if calc_val != 0.0 {
+            100.0 // If target is 0 but calc isn't, that's 100% error
+        } else {
+            0.0 // Both are 0, no difference
+        };
+
+        if percentage_diff > tolerance {
+            return false;
+        }
+    }
+
+    true
+}
