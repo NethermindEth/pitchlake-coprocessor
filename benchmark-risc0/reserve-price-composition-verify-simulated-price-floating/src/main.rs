@@ -15,6 +15,9 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use simulate_price_verify_position_floating::simulate_price_verify_position as simulate_price_verify_position_receipt;
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
 
+use calculate_pt_pt1_error_bound_floating::calculate_pt_pt1_error_bound_floating;
+use calculate_pt_pt1_error_bound_floating_core::CalculatePtPt1ErrorBoundFloatingInput;
+
 fn main() {
     let data = get_first_period_data();
     // run rust code in host
@@ -25,10 +28,6 @@ fn main() {
     let num_paths = 4000;
     let gradient_tolerance = 5e-3;
     let floating_point_tolerance = 0.00001; // 0.00001%
-
-    // remaining inputs:
-    // pt,
-    // pt_1,
 
     // to error bound reserve_price
 
@@ -48,6 +47,16 @@ fn main() {
         add_twap_7d_error_bound(AddTwap7dErrorBoundFloatingInput {
             data: data.clone(),
             twap_7d: res.twap_7d.clone(),
+            tolerance: floating_point_tolerance,
+        });
+
+    let (calculate_pt_pt1_error_bound_receipt, _calculate_pt_pt1_error_bound_res) =
+        calculate_pt_pt1_error_bound_floating(CalculatePtPt1ErrorBoundFloatingInput {
+            de_seasonalised_detrended_log_base_fee: convert_array1_to_dvec(
+                res.de_seasonalised_detrended_log_base_fee.clone(),
+            ),
+            pt: convert_array1_to_dvec(res.pt.clone()),
+            pt_1: convert_array1_to_dvec(res.pt_1.clone()),
             tolerance: floating_point_tolerance,
         });
 
@@ -90,9 +99,9 @@ fn main() {
 
     let env = ExecutorEnv::builder()
         .add_assumption(remove_seasonality_error_bound_receipt)
-        .add_assumption(simulate_price_verify_position_receipt)
         .add_assumption(add_twap_7d_error_bound_receipt)
-        // .add_assumption(calculate_reserve_price_receipt)
+        .add_assumption(calculate_pt_pt1_error_bound_receipt)
+        .add_assumption(simulate_price_verify_position_receipt)
         .write(&input)
         .unwrap()
         .build()

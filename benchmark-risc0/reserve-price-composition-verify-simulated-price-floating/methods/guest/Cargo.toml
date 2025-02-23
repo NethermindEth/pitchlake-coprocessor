@@ -21,3 +21,6 @@ simulate-price-verify-position-floating-methods = { path = "../../../simulate-pr
 
 add-twap-7d-error-bound-floating-core = { path = "../../../add-twap-7d-error-bound-floating/core" }
 add-twap-7d-error-bound-floating-methods = { path = "../../../add-twap-7d-error-bound-floating/methods" }
+
+calculate-pt-pt1-error-bound-floating-core = { path = "../../../calculate-pt-pt1-error-bound-floating/core" }
+calculate-pt-pt1-error-bound-floating-methods = { path = "../../../calculate-pt-pt1-error-bound-floating/methods" }

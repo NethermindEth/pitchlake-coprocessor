@@ -1,5 +1,5 @@
 [package]
-name = "calculate_pt_pt1_error_bound_floating"
+name = "calculate-pt-pt1-error-bound-floating"
 version = "0.1.0"
 edition = "2021"
 

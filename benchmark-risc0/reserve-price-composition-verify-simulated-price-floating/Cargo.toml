@@ -17,3 +17,6 @@ add-twap-7d-error-bound-floating-core = { path = "../add-twap-7d-error-bound-flo
 
 remove-seasonality-error-bound-floating = { path = "../remove-seasonality-error-bound-floating" }
 remove-seasonality-error-bound-floating-core = { path = "../remove-seasonality-error-bound-floating/core" }
+
+calculate-pt-pt1-error-bound-floating = { path = "../calculate-pt-pt1-error-bound-floating" }
+calculate-pt-pt1-error-bound-floating-core = { path = "../calculate-pt-pt1-error-bound-floating/core" }

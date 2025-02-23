@@ -7,6 +7,9 @@ use remove_seasonality_error_bound_floating_methods::REMOVE_SEASONALITY_ERROR_BO
 use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
 use add_twap_7d_error_bound_floating_methods::ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ID;
 
+use calculate_pt_pt1_error_bound_floating_core::CalculatePtPt1ErrorBoundFloatingInput;
+use calculate_pt_pt1_error_bound_floating_methods::CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ID;
+
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID;
 
@@ -37,6 +40,19 @@ fn main() {
     env::verify(
         ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ID,
         &serde::to_vec(&add_twap_7d_error_bound_input).unwrap(),
+    )
+    .unwrap();
+
+    let calculate_pt_pt1_error_bound_input = CalculatePtPt1ErrorBoundFloatingInput {
+        de_seasonalised_detrended_log_base_fee: data.de_seasonalised_detrended_log_base_fee.clone(),
+        pt: data.pt.clone(),
+        pt_1: data.pt_1.clone(),
+        tolerance: data.floating_point_tolerance,
+    };
+
+    env::verify(
+        CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ID,
+        &serde::to_vec(&calculate_pt_pt1_error_bound_input).unwrap(),
     )
     .unwrap();
 
