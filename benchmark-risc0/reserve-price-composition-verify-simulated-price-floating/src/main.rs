@@ -1,9 +1,11 @@
 use add_twap_7d_error_bound_floating::add_twap_7d_error_bound;
 use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
 use benchmark::{
-    original::{self, convert_array1_to_dvec, convert_array2_to_dmatrix},
+    original::{self, convert_array1_to_dvec},
     tests::mock::get_first_period_data,
 };
+use remove_seasonality_error_bound_floating::remove_seasonality_error_bound;
+use remove_seasonality_error_bound_floating_core::RemoveSeasonalityErrorBoundFloatingInput;
 use reserve_price_composition_verify_simulated_price_floating_core::ReservePriceCompositionInput;
 use reserve_price_composition_verify_simulated_price_floating_methods::{
     RESERVE_PRICE_COMPOSITION_VERIFY_SIMULATED_PRICE_FLOATING_GUEST_ELF,
@@ -27,10 +29,20 @@ fn main() {
     // remaining inputs:
     // pt,
     // pt_1,
-    // season_param,
-    // de_seasonalised_detrended_log_base_fee
-    // slope
-    // intercept
+
+    // to error bound reserve_price
+
+    let (remove_seasonality_error_bound_receipt, _remove_seasonality_error_bound_res) =
+        remove_seasonality_error_bound(RemoveSeasonalityErrorBoundFloatingInput {
+            data: data.clone(),
+            slope: res.slope,
+            intercept: res.intercept,
+            de_seasonalised_detrended_log_base_fee: convert_array1_to_dvec(
+                res.de_seasonalised_detrended_log_base_fee.clone(),
+            ),
+            season_param: convert_array1_to_dvec(res.season_param.clone()),
+            tolerance: floating_point_tolerance,
+        });
 
     let (add_twap_7d_error_bound_receipt, _add_twap_7d_error_bound_res) =
         add_twap_7d_error_bound(AddTwap7dErrorBoundFloatingInput {
@@ -77,9 +89,9 @@ fn main() {
     };
 
     let env = ExecutorEnv::builder()
+        .add_assumption(remove_seasonality_error_bound_receipt)
         .add_assumption(simulate_price_verify_position_receipt)
         .add_assumption(add_twap_7d_error_bound_receipt)
-        // .add_assumption(add_twap_7d_receipt)
         // .add_assumption(calculate_reserve_price_receipt)
         .write(&input)
         .unwrap()

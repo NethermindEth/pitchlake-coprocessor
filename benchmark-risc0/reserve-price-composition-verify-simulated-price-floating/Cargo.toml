@@ -14,3 +14,6 @@ simulate-price-verify-position-floating-core = { path = "../simulate-price-verif
 
 add-twap-7d-error-bound-floating = { path = "../add-twap-7d-error-bound-floating" }
 add-twap-7d-error-bound-floating-core = { path = "../add-twap-7d-error-bound-floating/core" }
+
+remove-seasonality-error-bound-floating = { path = "../remove-seasonality-error-bound-floating" }
+remove-seasonality-error-bound-floating-core = { path = "../remove-seasonality-error-bound-floating/core" }

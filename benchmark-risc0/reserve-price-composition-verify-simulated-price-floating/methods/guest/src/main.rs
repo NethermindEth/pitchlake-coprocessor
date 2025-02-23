@@ -1,6 +1,9 @@
 use reserve_price_composition_verify_simulated_price_floating_core::ReservePriceCompositionInput;
 use risc0_zkvm::{guest::env, serde};
 
+use remove_seasonality_error_bound_floating_core::RemoveSeasonalityErrorBoundFloatingInput;
+use remove_seasonality_error_bound_floating_methods::REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ID;
+
 use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
 use add_twap_7d_error_bound_floating_methods::ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ID;
 
@@ -9,6 +12,21 @@ use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSIT
 
 fn main() {
     let data: ReservePriceCompositionInput = env::read();
+
+    let remove_seasonality_error_bound_input = RemoveSeasonalityErrorBoundFloatingInput {
+        data: data.data.clone(),
+        slope: data.slope,
+        intercept: data.intercept,
+        de_seasonalised_detrended_log_base_fee: data.de_seasonalised_detrended_log_base_fee.clone(),
+        season_param: data.season_param.clone(),
+        tolerance: data.floating_point_tolerance,
+    };
+
+    env::verify(
+        REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ID,
+        &serde::to_vec(&remove_seasonality_error_bound_input).unwrap(),
+    )
+    .unwrap();
 
     let add_twap_7d_error_bound_input = AddTwap7dErrorBoundFloatingInput {
         data: data.data.clone(),

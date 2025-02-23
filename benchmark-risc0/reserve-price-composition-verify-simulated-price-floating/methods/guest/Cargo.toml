@@ -13,6 +13,9 @@ risc0-zkvm = { version = "1.1.2", default-features = false, features = [
 ] }
 reserve-price-composition-verify-simulated-price-floating-core = { path = "../../core" }
 
+remove-seasonality-error-bound-floating-core = { path = "../../../remove-seasonality-error-bound-floating/core" }
+remove-seasonality-error-bound-floating-methods = { path = "../../../remove-seasonality-error-bound-floating/methods" }
+
 simulate-price-verify-position-floating-core = { path = "../../../simulate-price-verify-position-floating/core" }
 simulate-price-verify-position-floating-methods = { path = "../../../simulate-price-verify-position-floating/methods" }
 

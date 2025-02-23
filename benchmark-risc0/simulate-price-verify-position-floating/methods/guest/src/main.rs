@@ -2,7 +2,7 @@ use benchmark::floating_point::{simulate_price_verify_position, calculate_reserv
 use risc0_zkvm::guest::env;
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
 
-// TODO: error bound check for simulated_prices
+// TODO: error bound check for reserve_price
 fn main() {
     let data: SimulatePriceVerifyPositionInput = env::read();
 
