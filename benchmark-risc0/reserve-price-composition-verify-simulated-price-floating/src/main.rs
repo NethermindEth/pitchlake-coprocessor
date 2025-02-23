@@ -24,6 +24,14 @@ fn main() {
     let gradient_tolerance = 5e-3;
     let floating_point_tolerance = 0.00001; // 0.00001%
 
+    // remaining inputs:
+    // pt,
+    // pt_1,
+    // season_param,
+    // de_seasonalised_detrended_log_base_fee
+    // slope
+    // intercept
+
     let (add_twap_7d_error_bound_receipt, _add_twap_7d_error_bound_res) =
         add_twap_7d_error_bound(AddTwap7dErrorBoundFloatingInput {
             data: data.clone(),

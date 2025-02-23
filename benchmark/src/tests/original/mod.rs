@@ -5,7 +5,7 @@ mod tests {
 
     use crate::{
         floating_point::{
-            self, add_twap_7d, calculated_reserve_price_from_simulated_log_prices, error_bound_vec,
+            self, add_twap_7d, calculate_remove_seasonality, calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64, error_bound_vec
         },
         original::{
             calculate_reserve_price, convert_array1_to_dvec, convert_array2_to_dmatrix,
@@ -185,5 +185,34 @@ mod tests {
         let percentage_tolerance = 0.00001;
         let is_within_tolerance = error_bound_vec(&twap_7d, &res.twap_7d, percentage_tolerance);
         assert!(is_within_tolerance);
+    }
+
+    #[test]
+    fn test_compare_remove_seasonality() {
+        let data = get_first_period_data();
+        let res = calculate_reserve_price(&data, 15000, 720);
+
+        let (slope, intercept, de_seasonalised_detrended_log_base_fee, season_param) =
+            calculate_remove_seasonality(&data).unwrap();
+
+        let is_within_tolerance_de_seasonalised_detrended_log_base_fee = error_bound_dvec(
+            &convert_array1_to_dvec(res.de_seasonalised_detrended_log_base_fee),
+            &de_seasonalised_detrended_log_base_fee,
+            0.00001,
+        );
+        assert!(is_within_tolerance_de_seasonalised_detrended_log_base_fee);
+
+        let is_within_tolerance_season_param = error_bound_dvec(
+            &convert_array1_to_dvec(res.season_param),
+            &season_param,
+            0.00001,
+        );
+        assert!(is_within_tolerance_season_param);
+
+        let is_within_tolerance_slope = error_bound_f64(res.slope, slope, 0.00001);
+        assert!(is_within_tolerance_slope);
+
+        let is_within_tolerance_intercept = error_bound_f64(res.intercept, intercept, 0.00001);
+        assert!(is_within_tolerance_intercept);
     }
 }
