@@ -4,7 +4,7 @@ members = [
     "add-twap-7d-error-bound-floating",
     "add-twap-7d-floating",
     "calculate-reserve-price-from-simulated-log-prices-floating",
-    "calculate-simulated-log-prices-floating",
+    "calculate-simulated-log-prices-floating", "calculate_pt_pt1_error_bound_floating",
     "mrjpdf-fixed",
     "mrjpdf-floating",
     "neg-log-fixed",

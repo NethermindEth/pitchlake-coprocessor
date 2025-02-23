@@ -5,7 +5,9 @@ mod tests {
 
     use crate::{
         floating_point::{
-            self, add_twap_7d, calculate_remove_seasonality, calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64, error_bound_vec
+            self, add_twap_7d, calculate_remove_seasonality,
+            calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64,
+            error_bound_vec, pre_minimize,
         },
         original::{
             calculate_reserve_price, convert_array1_to_dvec, convert_array2_to_dmatrix,
@@ -214,5 +216,23 @@ mod tests {
 
         let is_within_tolerance_intercept = error_bound_f64(res.intercept, intercept, 0.00001);
         assert!(is_within_tolerance_intercept);
+    }
+
+    #[test]
+    fn test_compare_calculate_pt_pt1() {
+        let data = get_first_period_data();
+        let res = calculate_reserve_price(&data, 15000, 720);
+
+        let (pt, pt_1, _var_pt) = pre_minimize(&convert_array1_to_dvec(
+            res.de_seasonalised_detrended_log_base_fee,
+        ));
+
+        let is_within_tolerance_pt =
+            error_bound_dvec(&pt, &convert_array1_to_dvec(res.pt), 0.00001);
+        assert!(is_within_tolerance_pt);
+
+        let is_within_tolerance_pt_1 =
+            error_bound_dvec(&pt_1, &convert_array1_to_dvec(res.pt_1), 0.00001);
+        assert!(is_within_tolerance_pt_1);
     }
 }
