@@ -15,4 +15,6 @@ pub struct SimulatePriceVerifyPositionInput {
     pub twap_7d: Vec<f64>,
     pub slope: f64,
     pub intercept: f64,
+    pub reserve_price: f64,
+    pub tolerance: f64,
 }

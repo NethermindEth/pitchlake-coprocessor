@@ -5,7 +5,7 @@ use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSIT
 
 pub fn simulate_price_verify_position(
     input: SimulatePriceVerifyPositionInput,
-) -> (Receipt, (SimulatePriceVerifyPositionInput, f64)) {
+) -> (Receipt, SimulatePriceVerifyPositionInput) {
     let env = ExecutorEnv::builder()
         // Send a & b to the guest
         .write(&input)
@@ -22,7 +22,7 @@ pub fn simulate_price_verify_position(
         .unwrap();
 
     let receipt = prove_info.receipt;
-    let res: (SimulatePriceVerifyPositionInput, f64) = receipt.journal.decode().unwrap();
+    let res: SimulatePriceVerifyPositionInput = receipt.journal.decode().unwrap();
 
     (receipt, res)
 }

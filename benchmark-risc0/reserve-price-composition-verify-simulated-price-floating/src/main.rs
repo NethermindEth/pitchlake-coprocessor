@@ -28,8 +28,7 @@ fn main() {
     let num_paths = 4000;
     let gradient_tolerance = 5e-3;
     let floating_point_tolerance = 0.00001; // 0.00001%
-
-    // to error bound reserve_price
+    let reserve_price_tolerance = 5.0; // 5%
 
     let (remove_seasonality_error_bound_receipt, _remove_seasonality_error_bound_res) =
         remove_seasonality_error_bound(RemoveSeasonalityErrorBoundFloatingInput {
@@ -76,6 +75,8 @@ fn main() {
             twap_7d: res.twap_7d.clone(),
             slope: res.slope,
             intercept: res.intercept,
+            reserve_price: res.reserve_price,
+            tolerance: reserve_price_tolerance, // 5%
         });
 
     let input = ReservePriceCompositionInput {
@@ -93,8 +94,9 @@ fn main() {
         twap_7d: res.twap_7d,
         slope: res.slope,
         intercept: res.intercept,
-        reserve_price: simulate_price_verify_position_res.1, // todo: change this so that we can pass this in from AllInput, do the error bound check
+        reserve_price: res.reserve_price,
         floating_point_tolerance,
+        reserve_price_tolerance,
     };
 
     let env = ExecutorEnv::builder()

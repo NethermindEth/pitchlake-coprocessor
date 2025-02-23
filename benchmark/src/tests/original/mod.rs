@@ -121,6 +121,9 @@ mod tests {
         .unwrap();
 
         println!("reserve_price: {:?}", reserve_price);
+
+        let is_within_tolerance_reserve_price = error_bound_f64(reserve_price, res.reserve_price, 5.0);
+        assert!(is_within_tolerance_reserve_price);
         // reserve_price: 1765847736.6691935 (num_paths: 15,000)
         // reserve_price: 1710956542.6769266 (num_paths: 4,000)
 

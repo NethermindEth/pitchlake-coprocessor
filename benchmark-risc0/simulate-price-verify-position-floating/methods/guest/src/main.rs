@@ -1,4 +1,4 @@
-use benchmark::floating_point::{simulate_price_verify_position, calculate_reserve_price};
+use benchmark::floating_point::{simulate_price_verify_position, calculate_reserve_price, error_bound_f64};
 use risc0_zkvm::guest::env;
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
 
@@ -31,6 +31,8 @@ fn main() {
         data.n_periods,
     ).unwrap();
 
-    // (SimulatePriceVerifyPositionInput, f64)
-    env::commit(&(data, reserve_price));
+    let is_within_tolerance_reserve_price = error_bound_f64(reserve_price, data.reserve_price, data.tolerance);
+    assert!(is_within_tolerance_reserve_price);
+
+    env::commit(&data);
 }

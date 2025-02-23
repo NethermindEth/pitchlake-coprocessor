@@ -31,12 +31,11 @@ fn main() {
         twap_7d: res.twap_7d,
         slope: res.slope,
         intercept: res.intercept,
+        reserve_price: res.reserve_price,
+        tolerance: 5.0, // 5%
     };
 
     let (receipt, simulate_price_res) = simulate_price_verify_position(input);
-
-    // verify guest receipt
-    println!("reserve_price: {:?}", simulate_price_res.1);
 
     receipt
         .verify(SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID)

@@ -69,11 +69,13 @@ fn main() {
         twap_7d: data.twap_7d.clone(),
         slope: data.slope,
         intercept: data.intercept,
+        reserve_price: data.reserve_price,
+        tolerance: data.reserve_price_tolerance,
     };
 
     env::verify(
         SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID,
-        &serde::to_vec(&(simulate_price_verify_position_input, data.reserve_price)).unwrap(),
+        &serde::to_vec(&simulate_price_verify_position_input).unwrap(),
     )
     .unwrap();
 
