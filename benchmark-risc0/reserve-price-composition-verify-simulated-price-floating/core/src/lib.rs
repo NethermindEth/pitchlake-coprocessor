@@ -1,8 +1,8 @@
-use nalgebra::DVector;
+use nalgebra::{DMatrix, DVector};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-pub struct SimulatePriceVerifyPositionInput {
+pub struct ReservePriceCompositionInput {
     pub data: Vec<(i64, f64)>,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
@@ -16,5 +16,6 @@ pub struct SimulatePriceVerifyPositionInput {
     pub slope: f64,
     pub intercept: f64,
     pub reserve_price: f64,
-    pub tolerance: f64,
+    pub floating_point_tolerance: f64,
+    pub reserve_price_tolerance: f64,
 }

@@ -375,8 +375,6 @@ pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar + Zero>
     array_2: Array2<A>,
 ) -> DMatrix<A> {
     let (rows, cols) = array_2.dim();
-    println!("rows: {:?}", rows);
-    println!("cols: {:?}", cols);
 
     let mut mat = DMatrix::zeros(rows, cols);
     for i in 0..rows {

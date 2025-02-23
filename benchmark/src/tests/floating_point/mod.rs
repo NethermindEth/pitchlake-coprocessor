@@ -4,7 +4,8 @@ mod tests {
 
     use crate::{
         floating_point::{
-            error_bound_matrix, error_bound_simulated_log_prices, mrjpdf, neg_log_likelihood,
+            error_bound_dvec, error_bound_f64, error_bound_matrix,
+            error_bound_simulated_log_prices, error_bound_vec, mrjpdf, neg_log_likelihood,
         },
         tests::mock::generate_inputs,
     };
@@ -177,6 +178,60 @@ mod tests {
 
         let result =
             error_bound_simulated_log_prices(&n1, &n2, element_wise_tolerance, matrix_tolerance);
+        assert!(!result);
+    }
+
+    #[test]
+    fn test_error_bound_vec_within_tolerance() {
+        let target = vec![1.0, 2.0, 3.0];
+        let calculated = vec![1.0001, 2.0, 3.0];
+        let tolerance = 1.0;
+        let result = error_bound_vec(&target, &calculated, tolerance);
+        assert!(result);
+    }
+
+    #[test]
+    fn test_error_bound_vec_outside_tolerance() {
+        let target = vec![1.0, 2.0, 3.0];
+        let calculated = vec![1.1, 2.0, 3.0];
+        let tolerance = 1.0;
+        let result = error_bound_vec(&target, &calculated, tolerance);
+        assert!(!result);
+    }
+
+    #[test]
+    fn test_error_bound_dvec_within_tolerance() {
+        let target = DVector::from_vec(vec![1.0, 2.0, 3.0]);
+        let calculated = DVector::from_vec(vec![1.0001, 2.0, 3.0]);
+        let tolerance = 1.0;
+        let result = error_bound_dvec(&target, &calculated, tolerance);
+        assert!(result);
+    }
+
+    #[test]
+    fn test_error_bound_dvec_outside_tolerance() {
+        let target = DVector::from_vec(vec![1.0, 2.0, 3.0]);
+        let calculated = DVector::from_vec(vec![1.1, 2.0, 3.0]);
+        let tolerance = 1.0;
+        let result = error_bound_dvec(&target, &calculated, tolerance);
+        assert!(!result);
+    }
+
+    #[test]
+    fn test_error_bound_f64_within_tolerance() {
+        let target = 1.0;
+        let calculated = 1.0001;
+        let tolerance = 1.0;
+        let result = error_bound_f64(target, calculated, tolerance);
+        assert!(result);
+    }
+
+    #[test]
+    fn test_error_bound_f64_outside_tolerance() {
+        let target = 1.0;
+        let calculated = 1.1;
+        let tolerance = 1.0;
+        let result = error_bound_f64(target, calculated, tolerance);
         assert!(!result);
     }
 }

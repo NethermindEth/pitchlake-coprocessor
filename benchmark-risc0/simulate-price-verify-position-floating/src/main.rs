@@ -11,25 +11,31 @@ fn main() {
     let data = get_first_period_data();
     // run rust code in host
     // ensure convergence in host
-    let res = calculate_reserve_price(&data);
-    println!("res: {:?}", res);
+    let res = calculate_reserve_price(&data, 15000, 720);
+    // println!("res: {:?}", res);
     // create input for guest
+    println!("original reserve price: {:?}", res.reserve_price);
 
     let input = SimulatePriceVerifyPositionInput {
+        data: data.clone(),
         positions: res.positions,
+        pt: convert_array1_to_dvec(res.pt),
+        pt_1: convert_array1_to_dvec(res.pt_1),
         gradient_tolerance: 5e-3, // a too small tolerance will result in the verification to fail, this is because of how floating point operation always introduce some sort of inaccuracies
         de_seasonalised_detrended_log_base_fee: convert_array1_to_dvec(
             res.de_seasonalised_detrended_log_base_fee,
         ),
-        pt: convert_array1_to_dvec(res.pt),
-        pt_1: convert_array1_to_dvec(res.pt_1),
         n_periods: 720,
-        num_paths: 15000,
+        num_paths: 4000,
+        season_param: convert_array1_to_dvec(res.season_param),
+        twap_7d: res.twap_7d,
+        slope: res.slope,
+        intercept: res.intercept,
+        reserve_price: res.reserve_price,
+        tolerance: 5.0, // 5%
     };
 
-    let (receipt, res) = simulate_price_verify_position(input);
-
-    // verify guest receipt
+    let (receipt, simulate_price_res) = simulate_price_verify_position(input);
 
     receipt
         .verify(SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID)

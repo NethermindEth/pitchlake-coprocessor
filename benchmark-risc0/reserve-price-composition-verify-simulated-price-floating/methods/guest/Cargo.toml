@@ -1,0 +1,26 @@
+[package]
+name = "reserve-price-composition-verify-simulated-price-floating-guest"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+risc0-zkvm = { version = "1.1.2", default-features = false, features = [
+    'std',
+    'getrandom',
+    'heap-embedded-alloc',
+] }
+reserve-price-composition-verify-simulated-price-floating-core = { path = "../../core" }
+
+remove-seasonality-error-bound-floating-core = { path = "../../../remove-seasonality-error-bound-floating/core" }
+remove-seasonality-error-bound-floating-methods = { path = "../../../remove-seasonality-error-bound-floating/methods" }
+
+simulate-price-verify-position-floating-core = { path = "../../../simulate-price-verify-position-floating/core" }
+simulate-price-verify-position-floating-methods = { path = "../../../simulate-price-verify-position-floating/methods" }
+
+add-twap-7d-error-bound-floating-core = { path = "../../../add-twap-7d-error-bound-floating/core" }
+add-twap-7d-error-bound-floating-methods = { path = "../../../add-twap-7d-error-bound-floating/methods" }
+
+calculate-pt-pt1-error-bound-floating-core = { path = "../../../calculate-pt-pt1-error-bound-floating/core" }
+calculate-pt-pt1-error-bound-floating-methods = { path = "../../../calculate-pt-pt1-error-bound-floating/methods" }
