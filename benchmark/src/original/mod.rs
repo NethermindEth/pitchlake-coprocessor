@@ -17,6 +17,7 @@ use rand_distr::Distribution;
 use simulate_price::simulate_prices;
 
 pub mod calculate_twap;
+pub mod max_return;
 mod simulate_price;
 
 fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
