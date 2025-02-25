@@ -25,7 +25,7 @@ fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
             (col("TWAP_30d") / col("TWAP_30d").shift(lit(period)) - lit(1.0)).alias("30d_returns"),
         )
         .collect()?;
-
+    
     Ok(df)
 }
 
