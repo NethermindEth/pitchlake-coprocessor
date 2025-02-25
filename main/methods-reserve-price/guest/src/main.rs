@@ -189,14 +189,14 @@ fn simulate_prices(
     let mut jumps = DMatrix::zeros(n_periods, num_paths);
     for i in 0..n_periods {
         for j in 0..num_paths {
-            let prob = binom_sequence.next().unwrap().pop().unwrap();
-            // let upper_bound = 1.0 - p;
-            // let lower_bound = p;
+            let sobol_value = binom_sequence.next().unwrap().pop().unwrap();
+            let upper_bound = 1.0;
+            let lower_bound = 1.0 - p;
 
-            // let size = upper_bound - lower_bound;
-            // let prob = lower_bound + sobol_value  * size;
-            // let prob = 0.5;
-            jumps[(i, j)] = if (prob <= binom.cdf(0)) {0.0} else {binom.inverse_cdf(prob) as f64};
+            let size = p;
+            let prob = lower_bound + sobol_value  * size;
+
+            jumps[(i, j)] = binom.inverse_cdf(prob) as f64;
         }
     }
 
