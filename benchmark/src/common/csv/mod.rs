@@ -1,14 +1,6 @@
 use std::fs::File;
 
 use csv::Writer;
-use polars::prelude::*;
-
-pub fn read_csv(file: &str) -> PolarsResult<DataFrame> {
-    CsvReadOptions::default()
-        .with_has_header(true)
-        .try_into_reader_with_file_path(Some(file.into()))?
-        .finish()
-}
 
 pub fn open_csv_writer(file_name: &str) -> Writer<File> {
     let wtr = Writer::from_path(file_name).unwrap();
