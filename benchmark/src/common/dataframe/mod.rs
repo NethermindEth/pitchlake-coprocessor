@@ -3,8 +3,6 @@ use chrono::Months;
 use eyre::{anyhow as err, Error, Result};
 use polars::prelude::*;
 
-pub mod csv;
-
 pub fn read_data_from_file(file_name: &str) -> DataFrame {
     let df: DataFrame = read_csv(file_name).expect("Cannot read file");
     df
@@ -43,8 +41,6 @@ pub fn add_df_property(df: DataFrame) -> DataFrame {
 fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
     let required_window_size = 24 * 7;
 
-    tracing::debug!("DataFrame shape before TWAP: {:?}", df.shape());
-
     if df.height() < required_window_size {
         return Err(err!(
             "Insufficient data: At least {} data points are required, but only {} provided.",
@@ -66,8 +62,6 @@ fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
     );
 
     let df = lazy_df.collect()?;
-    tracing::debug!("DataFrame shape after TWAP: {:?}", df.shape());
-
     Ok(df.fill_null(FillNullStrategy::Backward(None))?)
 }
 /// Groups the DataFrame by 1-hour intervals and aggregates specified columns.
@@ -128,6 +122,20 @@ pub fn convert_to_timestamp_base_fee_tuple(df: DataFrame) -> Vec<(i64, f64)> {
     tuples
 }
 
+pub fn convert_to_timestamp_base_fee_int_tuple(df: DataFrame) -> Vec<(i64, i64)> {
+    let df = df.select(["date", "base_fee"]).unwrap();
+
+    let dates = df.column("date").unwrap().datetime().unwrap();
+    let base_fee = df.column("base_fee").unwrap().i64().unwrap();
+    let tuples: Vec<(i64, i64)> = dates
+        .iter()
+        .zip(base_fee.iter())
+        .map(|(d, g)| (d.unwrap() / 1000, g.unwrap()))
+        .collect();
+
+    tuples
+}
+
 /// Replaces the 'timestamp' column with a 'date' column in a DataFrame.
 ///
 /// This function takes a DataFrame with a 'timestamp' column, converts the timestamps
@@ -150,7 +158,7 @@ pub fn convert_to_timestamp_base_fee_tuple(df: DataFrame) -> Vec<(i64, f64)> {
 /// * The conversion to milliseconds or casting to datetime fails.
 /// * The column replacement or renaming operations fail.
 ///
-fn replace_timestamp_with_date(mut df: DataFrame) -> Result<DataFrame, Error> {
+pub fn replace_timestamp_with_date(mut df: DataFrame) -> Result<DataFrame, Error> {
     let dates = df
         .column("timestamp")?
         .i64()?

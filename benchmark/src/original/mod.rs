@@ -16,6 +16,7 @@ use rand::thread_rng;
 use rand_distr::Distribution;
 use simulate_price::simulate_prices;
 
+pub mod calculate_twap;
 mod simulate_price;
 
 fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
@@ -362,14 +363,6 @@ pub fn convert_array1_to_dvec<A: Clone + std::cmp::PartialEq + Scalar>(
     let res = DVector::from_vec(vec);
     res
 }
-
-// pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar>(
-//     array_2: Array2<A>,
-// ) -> DMatrix<A> {
-//     let (rows, cols) = array_2.dim();
-//     let vec = array_2.into_raw_vec();
-//     DMatrix::from_vec(rows, cols, vec)
-// }
 
 pub fn convert_array2_to_dmatrix<A: Clone + std::cmp::PartialEq + Scalar + Zero>(
     array_2: Array2<A>,

@@ -1,6 +1,10 @@
 [workspace]
 resolver = "2"
-members = ["common", "reserve-price-modified", "reserve-price-original", "reserve-price-original-modifed"]
+members = [
+    "reserve-price-modified",
+    "reserve-price-original",
+    "reserve-price-original-modifed",
+]
 
 # Always optimize; otherwise tests take excessively long.
 [profile.dev]

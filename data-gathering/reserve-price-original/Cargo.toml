@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 eyre = "0.6"
 tracing = "0.1"
-benchmark = { path = "../../benchmark" }
+benchmark = { path = "../../benchmark", features = ["original"] }
 db-models = { path = "../../main/db-models" }
 ndarray = "0.15"
 # Update ndarray-linalg to use a specific version known to work with LAPACK
@@ -22,5 +22,4 @@ chrono = { version = "0.4", features = ["serde"] }
 linfa = "0.7.0"
 linfa-linear = "0.7.0"
 statrs = "0.17"
-common = { path = "../common" }
 tokio = { version = "1.41.0", features = ["macros", "rt-multi-thread"] }

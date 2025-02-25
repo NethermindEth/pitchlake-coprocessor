@@ -4,14 +4,19 @@ mod tests {
     use ndarray::{stack, Axis};
 
     use crate::{
+        common::dataframe::{
+            convert_to_timestamp_base_fee_int_tuple, convert_to_timestamp_base_fee_tuple,
+            read_data_from_file, replace_timestamp_with_date, split_dataframe_into_periods,
+        },
         floating_point::{
             self, add_twap_7d, calculate_remove_seasonality,
+            calculate_twap as calculate_twap_floating,
             calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64,
             error_bound_vec, pre_minimize,
         },
         original::{
-            calculate_reserve_price, convert_array1_to_dvec, convert_array2_to_dmatrix,
-            convert_input_to_df,
+            calculate_reserve_price, calculate_twap::calculate_twap, convert_array1_to_dvec,
+            convert_array2_to_dmatrix, convert_input_to_df,
         },
         tests::mock::get_first_period_data,
     };
@@ -122,7 +127,8 @@ mod tests {
 
         println!("reserve_price: {:?}", reserve_price);
 
-        let is_within_tolerance_reserve_price = error_bound_f64(reserve_price, res.reserve_price, 5.0);
+        let is_within_tolerance_reserve_price =
+            error_bound_f64(reserve_price, res.reserve_price, 5.0);
         assert!(is_within_tolerance_reserve_price);
         // reserve_price: 1765847736.6691935 (num_paths: 15,000)
         // reserve_price: 1710956542.6769266 (num_paths: 4,000)
@@ -237,5 +243,33 @@ mod tests {
         let is_within_tolerance_pt_1 =
             error_bound_dvec(&pt_1, &convert_array1_to_dvec(res.pt_1), 0.00001);
         assert!(is_within_tolerance_pt_1);
+    }
+
+    #[test]
+    fn test_compare_calculate_twap() {
+        let df = read_data_from_file("data.csv");
+        let df = replace_timestamp_with_date(df).unwrap();
+        let first_period = split_dataframe_into_periods(df, 3)
+            .unwrap()
+            .into_iter()
+            .take(1)
+            .next()
+            .unwrap();
+        // calculate using original algorithm using base_fee for each block
+        let data: Vec<(i64, i64)> = convert_to_timestamp_base_fee_int_tuple(first_period);
+        let twap_original = calculate_twap(&data);
+
+        println!("twap: {:?}", twap_original);
+
+        // calculated using zkvm algorithm using average hourly base fee
+        let data = get_first_period_data();
+        let twap = calculate_twap_floating(&data.iter().map(|x| x.1).collect::<Vec<f64>>());
+        println!("twap: {:?}", twap);
+
+        // in this case, the tolerance is 0.5 because the data is not too close when using avg as an input
+        // vs. using base_fee for each block
+        // but it is close enough 
+        let is_within_tolerance = error_bound_f64(twap, twap_original, 0.5);
+        assert!(is_within_tolerance);
     }
 }
