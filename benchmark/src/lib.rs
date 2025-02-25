@@ -7,7 +7,7 @@ pub use solution::*;
 
 use eyre::Result;
 
-mod common;
+pub mod common;
 pub mod tests;
 
 pub fn hex_string_to_f64(hex_str: &String) -> Result<f64> {

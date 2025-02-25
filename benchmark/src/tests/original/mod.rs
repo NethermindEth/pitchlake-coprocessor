@@ -4,16 +4,14 @@ mod tests {
     use ndarray::{stack, Axis};
 
     use crate::{
-        floating_point::{
+        common::csv::read_data_from_file, floating_point::{
             self, add_twap_7d, calculate_remove_seasonality,
             calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64,
             error_bound_vec, pre_minimize,
-        },
-        original::{
+        }, original::{
             calculate_reserve_price, convert_array1_to_dvec, convert_array2_to_dmatrix,
             convert_input_to_df,
-        },
-        tests::mock::get_first_period_data,
+        }, tests::mock::get_first_period_data
     };
 
     #[test]
@@ -237,5 +235,13 @@ mod tests {
         let is_within_tolerance_pt_1 =
             error_bound_dvec(&pt_1, &convert_array1_to_dvec(res.pt_1), 0.00001);
         assert!(is_within_tolerance_pt_1);
+    }
+
+    #[test]
+    fn test_compare_calculate_twap() {
+        let df = read_data_from_file("data.csv");
+        // let df = replace_timestamp_with_date(df).unwrap();
+        // let twap = calculate_twap(&df);
+        // println!("twap: {:?}", twap);
     }
 }

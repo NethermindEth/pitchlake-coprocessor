@@ -3,18 +3,9 @@ use chrono::Months;
 use eyre::{anyhow as err, Error, Result};
 use polars::prelude::*;
 
-pub mod csv;
-
 pub fn read_data_from_file(file_name: &str) -> DataFrame {
     let df: DataFrame = read_csv(file_name).expect("Cannot read file");
     df
-}
-
-fn read_csv(file: &str) -> PolarsResult<DataFrame> {
-    CsvReadOptions::default()
-        .with_has_header(true)
-        .try_into_reader_with_file_path(Some(file.into()))?
-        .finish()
 }
 
 pub fn add_df_property(df: DataFrame) -> DataFrame {
@@ -50,8 +41,6 @@ pub fn add_df_property(df: DataFrame) -> DataFrame {
 fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
     let required_window_size = 24 * 7;
 
-    tracing::debug!("DataFrame shape before TWAP: {:?}", df.shape());
-
     if df.height() < required_window_size {
         return Err(err!(
             "Insufficient data: At least {} data points are required, but only {} provided.",
@@ -73,8 +62,6 @@ fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
     );
 
     let df = lazy_df.collect()?;
-    tracing::debug!("DataFrame shape after TWAP: {:?}", df.shape());
-
     Ok(df.fill_null(FillNullStrategy::Backward(None))?)
 }
 /// Groups the DataFrame by 1-hour intervals and aggregates specified columns.
