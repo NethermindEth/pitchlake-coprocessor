@@ -122,6 +122,20 @@ pub fn convert_to_timestamp_base_fee_tuple(df: DataFrame) -> Vec<(i64, f64)> {
     tuples
 }
 
+pub fn convert_to_timestamp_base_fee_int_tuple(df: DataFrame) -> Vec<(i64, i64)> {
+    let df = df.select(["date", "base_fee"]).unwrap();
+
+    let dates = df.column("date").unwrap().datetime().unwrap();
+    let base_fee = df.column("base_fee").unwrap().i64().unwrap();
+    let tuples: Vec<(i64, i64)> = dates
+        .iter()
+        .zip(base_fee.iter())
+        .map(|(d, g)| (d.unwrap() / 1000, g.unwrap()))
+        .collect();
+
+    tuples
+}
+
 /// Replaces the 'timestamp' column with a 'date' column in a DataFrame.
 ///
 /// This function takes a DataFrame with a 'timestamp' column, converts the timestamps
@@ -144,7 +158,7 @@ pub fn convert_to_timestamp_base_fee_tuple(df: DataFrame) -> Vec<(i64, f64)> {
 /// * The conversion to milliseconds or casting to datetime fails.
 /// * The column replacement or renaming operations fail.
 ///
-fn replace_timestamp_with_date(mut df: DataFrame) -> Result<DataFrame, Error> {
+pub fn replace_timestamp_with_date(mut df: DataFrame) -> Result<DataFrame, Error> {
     let dates = df
         .column("timestamp")?
         .i64()?
