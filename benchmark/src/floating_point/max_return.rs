@@ -45,10 +45,10 @@ pub fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
 }
 
 // expects 210 days (5,040 hours) of data
-pub fn calculate_max_returns(data: Vec<f64>) -> f64 {
-    assert!(data.len() == 5040);
+pub fn calculate_max_returns(data: &Vec<f64>) -> f64 {
+    assert!(data.len() == 24 * 30 * 8);
 
-    let twap_30d = add_twap_30d(&data).unwrap();
+    let twap_30d = add_twap_30d(data).unwrap();
     let returns = calculate_30d_returns(&twap_30d).unwrap();
 
     let max_return = returns

@@ -15,12 +15,10 @@ mod tests {
             error_bound_vec, pre_minimize,
         },
         original::{
-            calculate_reserve_price,
-            calculate_twap::calculate_twap,
-            convert_array1_to_dvec, convert_array2_to_dmatrix, convert_input_to_df,
-            max_return::{add_twap_30d, calculate_max_return},
+            calculate_reserve_price, calculate_twap::calculate_twap, convert_array1_to_dvec,
+            convert_array2_to_dmatrix, convert_input_to_df,
         },
-        tests::mock::get_first_period_data,
+        tests::mock::{get_first_period_data, get_max_return_input_data},
     };
 
     #[test]
@@ -277,18 +275,20 @@ mod tests {
 
     #[test]
     fn test_compare_calculate_max_return() {
-        let data = get_first_period_data();
-        let df = convert_input_to_df(&data);
-        let original_max_return = calculate_max_return(df).unwrap();
-        // max_return: 1.0958726937500116
-        println!("max_return: {:?}", original_max_return);
+        // tested manually against python's result
+        let data = get_max_return_input_data();
+        let max_return =
+            floating_point::calculate_max_returns(&data.iter().map(|x| x.1).collect::<Vec<f64>>());
+        // max_return: 1.544626972559826
+        println!("max_return: {:?}", max_return);
     }
 
     #[test]
-    fn test_add_twap_30d() {
-        let data = get_first_period_data();
-        let df = convert_input_to_df(&data);
-        let df = add_twap_30d(df).unwrap();
-        //     println!("df: {:?}", df);
+    fn test_compare_add_twap_30d() {
+        // tested manually against python's result
+        let data = get_max_return_input_data();
+        let twap_30d =
+            floating_point::add_twap_30d(&data.iter().map(|x| x.1).collect::<Vec<f64>>()).unwrap();
+        println!("twap_30d: {:?}", twap_30d);
     }
 }

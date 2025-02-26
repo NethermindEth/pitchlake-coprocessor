@@ -1,7 +1,7 @@
 use eyre::{anyhow as err, Result};
 use polars::prelude::*;
 
-// df should aldy have average hourly base fee
+// seems to be incorrect
 pub fn calculate_max_return(df: DataFrame) -> Result<f64> {
     let mut df = add_twap_30d(df)?;
     df = drop_nulls(&df, "TWAP_30d")?;
@@ -31,6 +31,7 @@ pub fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
     Ok(df)
 }
 
+/// seems to be incorrect
 pub fn add_twap_30d(df: DataFrame) -> Result<DataFrame> {
     let required_window_size = 24 * 30;
 
