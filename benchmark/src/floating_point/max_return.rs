@@ -1,37 +1,8 @@
-// fn add_twap_30d(df: DataFrame) -> Result<DataFrame> {
-//     let required_window_size = 24 * 30;
-
-//     if df.height() < required_window_size {
-//         return Err(err!(
-//             "Insufficient data: At least {} data points are required, but only {} provided.",
-//             required_window_size,
-//             df.height()
-//         ));
-//     }
-
-//     let lazy_df = df.lazy().with_column(
-//         col("base_fee")
-//             .rolling_mean(RollingOptionsFixedWindow {
-//                 window_size: required_window_size,
-//                 min_periods: 1,
-//                 weights: None,
-//                 center: false,
-//                 fn_params: None,
-//             })
-//             .alias("TWAP_30d"),
-//     );
-
-//     let df = lazy_df.collect()?;
-
-//     Ok(df.fill_null(FillNullStrategy::Backward(None))?)
-// }
 use eyre::{anyhow as err, Result};
-use nalgebra::DVector;
 
-fn add_twap_30d(data: &Vec<(i64, f64)>) -> Result<Vec<f64>> {
+pub fn add_twap_30d(data: &Vec<f64>) -> Result<Vec<f64>> {
     let required_window_size = 24 * 30;
 
-    // TODO: can be refactored with add_twap_7d
     let n = data.len();
 
     if n < required_window_size {
@@ -42,24 +13,17 @@ fn add_twap_30d(data: &Vec<(i64, f64)>) -> Result<Vec<f64>> {
         ));
     }
 
-    let values = DVector::from_iterator(n, data.iter().map(|&(_, value)| value));
-    let mut twap_values = Vec::with_capacity(n);
-
-    for i in 0..n {
-        let window_start = if i >= required_window_size {
-            i - required_window_size + 1
-        } else {
-            0
-        };
-        let window_mean = values.rows(window_start, i - window_start + 1).mean();
+    let mut twap_values = vec![];
+    for i in required_window_size..n {
+        let window_mean =
+            data[i - required_window_size..i].iter().sum::<f64>() / required_window_size as f64;
         twap_values.push(window_mean);
     }
 
     Ok(twap_values)
 }
 
-
-fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
+pub fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
     // 24 hours * 30 days = 720 hours
     let period = 24 * 30;
 
@@ -67,12 +31,7 @@ fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
         return Err(err!("Input vector must be longer than {} elements", period));
     }
 
-    let mut returns = Vec::with_capacity(twap_30d.len());
-
-    // Fill initial values with 0.0 since we can't calculate returns yet
-    for _ in 0..period {
-        returns.push(0.0);
-    }
+    let mut returns = vec![];
 
     // Calculate returns for remaining values
     for i in period..twap_30d.len() {
@@ -85,16 +44,17 @@ fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
     Ok(returns)
 }
 
-// fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
-//     // 24 hours * 30 days = 720 hours
-//     let period = 24 * 30;
+// expects 210 days (5,040 hours) of data
+pub fn calculate_max_returns(data: Vec<f64>) -> f64 {
+    assert!(data.len() == 5040);
 
-//     let df = df
-//         .lazy()
-//         .with_column(
-//             (col("TWAP_30d") / col("TWAP_30d").shift(lit(period)) - lit(1.0)).alias("30d_returns"),
-//         )
-//         .collect()?;
+    let twap_30d = add_twap_30d(&data).unwrap();
+    let returns = calculate_30d_returns(&twap_30d).unwrap();
 
-//     Ok(df)
-// }
+    let max_return = returns
+        .iter()
+        .max_by(|a, b| a.partial_cmp(b).unwrap())
+        .unwrap_or(&0.0);
+
+    *max_return
+}

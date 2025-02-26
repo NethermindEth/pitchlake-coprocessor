@@ -15,8 +15,10 @@ mod tests {
             error_bound_vec, pre_minimize,
         },
         original::{
-            calculate_reserve_price, calculate_twap::calculate_twap, convert_array1_to_dvec,
-            convert_array2_to_dmatrix, convert_input_to_df, max_return::calculate_max_return,
+            calculate_reserve_price,
+            calculate_twap::calculate_twap,
+            convert_array1_to_dvec, convert_array2_to_dmatrix, convert_input_to_df,
+            max_return::{add_twap_30d, calculate_max_return},
         },
         tests::mock::get_first_period_data,
     };
@@ -281,5 +283,12 @@ mod tests {
         // max_return: 1.0958726937500116
         println!("max_return: {:?}", original_max_return);
     }
-}
 
+    #[test]
+    fn test_add_twap_30d() {
+        let data = get_first_period_data();
+        let df = convert_input_to_df(&data);
+        let df = add_twap_30d(df).unwrap();
+        //     println!("df: {:?}", df);
+    }
+}

@@ -3,8 +3,10 @@ use polars::prelude::*;
 
 // df should aldy have average hourly base fee
 pub fn calculate_max_return(df: DataFrame) -> Result<f64> {
-    let df = add_twap_30d(df)?;
-    let df = calculate_30d_returns(df)?;
+    let mut df = add_twap_30d(df)?;
+    df = drop_nulls(&df, "TWAP_30d")?;
+    df = calculate_30d_returns(df)?;
+    df = drop_nulls(&df, "30d_returns")?;
 
     let max_return = df
         .column("30d_returns")?
@@ -15,7 +17,7 @@ pub fn calculate_max_return(df: DataFrame) -> Result<f64> {
     Ok(max_return)
 }
 
-fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
+pub fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
     // 24 hours * 30 days = 720 hours
     let period = 24 * 30;
 
@@ -25,11 +27,11 @@ fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
             (col("TWAP_30d") / col("TWAP_30d").shift(lit(period)) - lit(1.0)).alias("30d_returns"),
         )
         .collect()?;
-    
+
     Ok(df)
 }
 
-fn add_twap_30d(df: DataFrame) -> Result<DataFrame> {
+pub fn add_twap_30d(df: DataFrame) -> Result<DataFrame> {
     let required_window_size = 24 * 30;
 
     if df.height() < required_window_size {
@@ -55,4 +57,14 @@ fn add_twap_30d(df: DataFrame) -> Result<DataFrame> {
     let df = lazy_df.collect()?;
 
     Ok(df.fill_null(FillNullStrategy::Backward(None))?)
+}
+
+fn drop_nulls(df: &DataFrame, column_name: &str) -> Result<DataFrame> {
+    let df = df
+        .clone()
+        .lazy()
+        .filter(col(column_name).is_not_null())
+        .collect()?;
+
+    Ok(df)
 }
