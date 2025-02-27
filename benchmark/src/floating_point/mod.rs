@@ -14,6 +14,8 @@ pub mod simulate_price_verify_position;
 pub use simulate_price_verify_position::*;
 pub mod calculate_twap;
 pub use calculate_twap::*;
+pub mod max_return;
+pub use max_return::*;
 
 use crate::common::csv::{
     close_csv_file, open_error_bound_diff_csv_writer, write_error_bound_diff_to_csv,

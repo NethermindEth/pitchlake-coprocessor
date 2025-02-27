@@ -5,8 +5,8 @@ mod tests {
 
     use crate::{
         common::dataframe::{
-            convert_to_timestamp_base_fee_int_tuple, convert_to_timestamp_base_fee_tuple,
-            read_data_from_file, replace_timestamp_with_date, split_dataframe_into_periods,
+            convert_to_timestamp_base_fee_int_tuple, read_data_from_file,
+            replace_timestamp_with_date, split_dataframe_into_periods,
         },
         floating_point::{
             self, add_twap_7d, calculate_remove_seasonality,
@@ -18,7 +18,7 @@ mod tests {
             calculate_reserve_price, calculate_twap::calculate_twap, convert_array1_to_dvec,
             convert_array2_to_dmatrix, convert_input_to_df,
         },
-        tests::mock::get_first_period_data,
+        tests::mock::{get_first_period_data, get_max_return_input_data},
     };
 
     #[test]
@@ -268,8 +268,27 @@ mod tests {
 
         // in this case, the tolerance is 0.5 because the data is not too close when using avg as an input
         // vs. using base_fee for each block
-        // but it is close enough 
+        // but it is close enough
         let is_within_tolerance = error_bound_f64(twap, twap_original, 0.5);
         assert!(is_within_tolerance);
+    }
+
+    #[test]
+    fn test_compare_calculate_max_return() {
+        // tested manually against python's result
+        let data = get_max_return_input_data();
+        let max_return =
+            floating_point::calculate_max_returns(&data.iter().map(|x| x.1).collect::<Vec<f64>>());
+        // max_return: 1.544626972559826
+        println!("max_return: {:?}", max_return);
+    }
+
+    #[test]
+    fn test_compare_add_twap_30d() {
+        // tested manually against python's result
+        let data = get_max_return_input_data();
+        let twap_30d =
+            floating_point::add_twap_30d(&data.iter().map(|x| x.1).collect::<Vec<f64>>()).unwrap();
+        println!("twap_30d: {:?}", twap_30d);
     }
 }
