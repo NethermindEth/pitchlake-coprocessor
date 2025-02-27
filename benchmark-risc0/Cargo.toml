@@ -17,7 +17,7 @@ members = [
     "reserve-price-floating-composition",
     "simulate-price-fixed",
     "simulate-price-floating",
-    "simulate-price-verify-position-floating", "twap-error-bound-floating",
+    "simulate-price-verify-position-floating", "twap-error-bound-floating", "max-return-floating",
 ]
 
 # Always optimize; otherwise tests take excessively long.
