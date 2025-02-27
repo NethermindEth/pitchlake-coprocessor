@@ -19,3 +19,11 @@ pub struct ReservePriceCompositionInput {
     pub floating_point_tolerance: f64,
     pub reserve_price_tolerance: f64,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ReservePriceCompositionOutput {
+    pub data: Vec<(i64, f64)>,
+    pub reserve_price: f64,
+    pub floating_point_tolerance: f64,
+    pub reserve_price_tolerance: f64,
+}
