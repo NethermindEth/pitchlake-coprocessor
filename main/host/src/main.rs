@@ -16,7 +16,6 @@ use num_traits::Zero;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::{FixedI48F16, RealField};
 use tokio::task;
-use eth_rlp_types::BlockHeader;
 use clap::Parser;
 use starknet::{
     core::types::{BlockId, BlockTag, Felt, FunctionCall},
@@ -26,10 +25,6 @@ use starknet::{
         Provider, Url,
     },
 };
-use sqlx::Error as SqlxError;
-
-// use starknet::providers::{Provider, SequencerGatewayProvider};
-// use starknet::core::types::{ContractAddress, Call};
 
 fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
     let stripped = hex_str.trim_start_matches("0x");
@@ -244,10 +239,9 @@ struct Args {
 }
 
 async fn fetch_fees(url: &str, contract: String, start_timestamp: i64, end_timestamp: i64) -> Vec<ContractBlockHeader> {
-    // 1558328400 - 1558329711
     let provider = JsonRpcClient::new(HttpTransport::new(Url::parse(url).unwrap()));
     let contract_address = Felt::from_hex(&contract).unwrap();
-    let args = vec![start_timestamp.into(), end_timestamp.into()]; // No arguments needed for this function
+    let args = vec![start_timestamp.into(), end_timestamp.into()];
 
     let call_result =
         provider
@@ -266,6 +260,7 @@ async fn fetch_fees(url: &str, contract: String, start_timestamp: i64, end_times
         ContractBlockHeader {timestamp: start_timestamp + i as i64 * 60 * 60, base_fee: value.try_into().unwrap(),}
     }).collect()
 }
+
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
     // block no.: 20000000, timestamp: 1717281407
