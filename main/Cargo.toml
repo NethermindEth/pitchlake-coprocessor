@@ -8,7 +8,7 @@ members = [
     "methods-reserve-price",
     "methods-twap",
     "db-access",
-    "db-models",
+    "db-models", "types",
 ]
 
 [workspace.package]

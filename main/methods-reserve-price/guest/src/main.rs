@@ -1,4 +1,3 @@
-use eth_rlp_types::BlockHeader;
 use eyre::{anyhow as err, Result};
 use nalgebra::{DMatrix, DVector};
 use rand::prelude::*;
