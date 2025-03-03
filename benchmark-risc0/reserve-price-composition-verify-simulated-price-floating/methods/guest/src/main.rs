@@ -1,4 +1,6 @@
-use reserve_price_composition_verify_simulated_price_floating_core::ReservePriceCompositionInput;
+use reserve_price_composition_verify_simulated_price_floating_core::{
+    ReservePriceCompositionInput, ReservePriceCompositionOutput,
+};
 use risc0_zkvm::{guest::env, serde};
 
 use remove_seasonality_error_bound_floating_core::RemoveSeasonalityErrorBoundFloatingInput;
@@ -79,5 +81,12 @@ fn main() {
     )
     .unwrap();
 
-    env::commit(&data);
+    let output = ReservePriceCompositionOutput {
+        data: data.data.clone(),
+        reserve_price: data.reserve_price,
+        floating_point_tolerance: data.floating_point_tolerance,
+        reserve_price_tolerance: data.reserve_price_tolerance,
+    };
+
+    env::commit(&output);
 }
