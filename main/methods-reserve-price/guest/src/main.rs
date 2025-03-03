@@ -1,13 +1,19 @@
 use eth_rlp_types::BlockHeader;
 use eyre::{anyhow as err, Result};
 use nalgebra::{DMatrix, DVector};
-use rand::prelude::*;
-use rand_distr::{Distribution, Normal};
-use risc0_zkvm::guest::env;
-use statrs::distribution::Binomial;
-use std::f64::consts::PI;
-
 use optimization::{Func, GradientDescent, Minimizer, NumericalDifferentiation};
+use rand::prelude::*;
+use rand_distr::{Distribution};
+use risc0_zkvm::guest::env;
+use sobol::{Sobol, params::JoeKuoD6};
+use std::f64::consts::PI;
+use statrs::distribution::{Binomial, ContinuousCDF, DiscreteCDF, Normal};
+
+
+fn sobol() -> Sobol<f64>{
+    let params = JoeKuoD6::minimal();
+    Sobol::<f64>::new(1, &params)
+}
 
 fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
     let stripped = hex_str.trim_start_matches("0x");
@@ -97,10 +103,11 @@ fn main() {
 
     let mut stochastic_trend = DMatrix::zeros(n_periods, num_paths);
     let normal = Normal::new(0.0, sigma * f64::sqrt(dt)).unwrap();
-    let mut rng = thread_rng();
+    let mut sequence = sobol();
 
     for i in 0..num_paths {
-        let random_shocks: Vec<f64> = (0..n_periods).map(|_| normal.sample(&mut rng)).collect();
+        let probs = sequence.by_ref().take(n_periods);
+        let random_shocks: Vec<f64> = probs.map(|mut prob| normal.inverse_cdf(prob.pop().unwrap())).collect();
         let mut cumsum = 0.0;
         for j in 0..n_periods {
             cumsum += (mu - 0.5 * sigma.powi(2)) * dt + random_shocks[j];
@@ -173,15 +180,23 @@ fn simulate_prices(
     let sigma_j = params[4].sqrt();
     let lambda_ = params[5] / dt;
 
-    // RNG for stochastic processes
-    let mut rng = thread_rng();
+    // LDS for stochastic processes
+    let mut binom_sequence = sobol();
+    let p = lambda_ * dt;
 
     // Simulate the Poisson process (jumps)
-    let binom = Binomial::new(lambda_ * dt, 1)?;
+    let binom = Binomial::new(p, 1)?;
     let mut jumps = DMatrix::zeros(n_periods, num_paths);
     for i in 0..n_periods {
         for j in 0..num_paths {
-            jumps[(i, j)] = binom.sample(&mut rng) as f64;
+            let sobol_value = binom_sequence.next().unwrap().pop().unwrap();
+            let upper_bound = 1.0;
+            let lower_bound = 1.0 - p;
+
+            let size = p;
+            let prob = lower_bound + sobol_value  * size;
+
+            jumps[(i, j)] = binom.inverse_cdf(prob) as f64;
         }
     }
 
@@ -194,13 +209,14 @@ fn simulate_prices(
     }
 
     // Generate standard normal variables
+    let mut normal_sequence = sobol();
     let normal = Normal::new(0.0, 1.0).unwrap();
     let mut n1 = DMatrix::zeros(n_periods, num_paths);
     let mut n2 = DMatrix::zeros(n_periods, num_paths);
     for i in 0..n_periods {
         for j in 0..num_paths {
-            n1[(i, j)] = normal.sample(&mut rng);
-            n2[(i, j)] = normal.sample(&mut rng);
+            n1[(i, j)] = normal.inverse_cdf(normal_sequence.next().unwrap().pop().unwrap());
+            n2[(i, j)] = normal.inverse_cdf(normal_sequence.next().unwrap().pop().unwrap());
         }
     }
     // Simulate prices over time
