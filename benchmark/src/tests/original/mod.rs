@@ -82,7 +82,11 @@ mod tests {
 
     #[test]
     fn test_compare_simulate_price_results() {
-        let data = get_first_period_data();
+        // let data = get_first_period_data();
+
+        let data_8_months = get_max_return_input_data();
+        let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
+        
         let res = calculate_reserve_price(&data, 15000, 720);
         println!("res.reserve_price: {:?}", res.reserve_price);
         // res.reserve_price: 1755519897.514507
