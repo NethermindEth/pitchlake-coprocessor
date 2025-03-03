@@ -1,3 +1,4 @@
+// 2160 data
 pub fn get_first_period_data() -> Vec<(i64, f64)> {
     return vec![
         (1663221600, 72592027088.01163),
@@ -2541,6 +2542,7 @@ pub fn generate_inputs() -> (Vec<f64>, Vec<f64>, Vec<f64>) {
     (param, pt_data, pt1_data)
 }
 
+// 5760 data (8 months worth of data)
 pub fn get_max_return_input_data() -> Vec<(i64, f64)> {
     vec![
         (1663221600, 72592027088.011627),

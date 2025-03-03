@@ -1,9 +1,9 @@
-use nalgebra::{DMatrix, DVector};
+use nalgebra::DVector;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-pub struct ReservePriceCompositionInput {
-    pub data: Vec<(i64, f64)>,
+pub struct ProofCompositionInput {
+    pub data_8_months: Vec<(i64, f64)>,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
     pub pt_1: DVector<f64>,
@@ -18,4 +18,18 @@ pub struct ReservePriceCompositionInput {
     pub reserve_price: f64,
     pub floating_point_tolerance: f64,
     pub reserve_price_tolerance: f64,
+    pub twap_tolerance: f64,
+    pub twap_result: f64,
+    pub max_return: f64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ProofCompositionOutput {
+    pub data_8_months: Vec<(i64, f64)>,
+    pub reserve_price: f64,
+    pub floating_point_tolerance: f64,
+    pub reserve_price_tolerance: f64,
+    pub twap_tolerance: f64,
+    pub twap_result: f64,
+    pub max_return: f64,
 }

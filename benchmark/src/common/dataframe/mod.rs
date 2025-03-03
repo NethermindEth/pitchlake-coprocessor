@@ -179,6 +179,28 @@ fn read_csv(file: &str) -> PolarsResult<DataFrame> {
         .finish()
 }
 
+pub fn filter_dataframe_by_date_range(
+    df: DataFrame,
+    start_date_timestamp: i64,
+    end_date_timestamp: i64,
+) -> DataFrame {
+    let start_date = DateTime::from_timestamp(start_date_timestamp, 0).unwrap();
+    let end_date = DateTime::from_timestamp(end_date_timestamp, 0).unwrap();
+
+    let period_df = df
+        .clone()
+        .lazy()
+        .filter(
+            col("date")
+                .gt_eq(lit(start_date.naive_utc()))
+                .and(col("date").lt(lit(end_date.naive_utc()))),
+        )
+        .collect()
+        .unwrap();
+
+    period_df
+}
+
 // group the data into x number of months per period
 pub fn split_dataframe_into_periods(
     df: DataFrame,

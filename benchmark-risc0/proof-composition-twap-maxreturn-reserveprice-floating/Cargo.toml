@@ -23,3 +23,6 @@ calculate-pt-pt1-error-bound-floating-core = { path = "../calculate-pt-pt1-error
 
 twap-error-bound-floating = { path = "../twap-error-bound-floating" }
 twap-error-bound-floating-core = { path = "../twap-error-bound-floating/core" }
+
+max-return-floating = { path = "../max-return-floating" }
+max-return-floating-core = { path = "../max-return-floating/core" }

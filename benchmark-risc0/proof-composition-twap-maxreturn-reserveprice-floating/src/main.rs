@@ -2,13 +2,15 @@ use add_twap_7d_error_bound_floating::add_twap_7d_error_bound;
 use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
 use benchmark::{
     common::dataframe::{
-        convert_to_timestamp_base_fee_int_tuple, read_data_from_file, replace_timestamp_with_date,
-        split_dataframe_into_periods,
+        convert_to_timestamp_base_fee_int_tuple, filter_dataframe_by_date_range,
+        read_data_from_file, replace_timestamp_with_date, split_dataframe_into_periods,
     },
     original::{self, convert_array1_to_dvec},
-    tests::mock::get_first_period_data,
+    tests::mock::{get_first_period_data, get_max_return_input_data},
 };
-use proof_composition_twap_maxreturn_reserveprice_floating_core::ReservePriceCompositionInput;
+use max_return_floating::max_return;
+use max_return_floating_core::MaxReturnInput;
+use proof_composition_twap_maxreturn_reserveprice_floating_core::ProofCompositionInput;
 use proof_composition_twap_maxreturn_reserveprice_floating_methods::{
     PROOF_COMPOSITION_TWAP_MAXRETURN_RESERVEPRICE_FLOATING_GUEST_ELF,
     PROOF_COMPOSITION_TWAP_MAXRETURN_RESERVEPRICE_FLOATING_GUEST_ID,
@@ -26,30 +28,35 @@ use calculate_pt_pt1_error_bound_floating::calculate_pt_pt1_error_bound_floating
 use calculate_pt_pt1_error_bound_floating_core::CalculatePtPt1ErrorBoundFloatingInput;
 
 fn main() {
+    // max return
+    let data_8_months = get_max_return_input_data();
+    let input = MaxReturnInput {
+        data: data_8_months.iter().map(|x| x.1).collect::<Vec<f64>>(),
+    };
+    let (max_return_receipt, max_return_res) = max_return(input);
+
+    // twap
     // comparing twap using actual data from each block (host)
     // vs twap from using average hourly gas fee (zkvm)
     let df = read_data_from_file("data.csv");
     let df = replace_timestamp_with_date(df).unwrap();
-    let first_period = split_dataframe_into_periods(df, 3)
-        .unwrap()
-        .into_iter()
-        .take(1)
-        .next()
-        .unwrap();
-    // calculate using original algorithm using base_fee for each block
-    let data: Vec<(i64, i64)> = convert_to_timestamp_base_fee_int_tuple(first_period);
-    let twap_original = original::calculate_twap::calculate_twap(&data);
-    println!("twap_original: {:?}", twap_original);
 
-    let data = get_first_period_data();
+    let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
+
+    // calculate using original algorithm using base_fee for each block
+    let raw_data_period = filter_dataframe_by_date_range(df, data[0].0, data[data.len() - 1].0);
+    let raw_data: Vec<(i64, i64)> = convert_to_timestamp_base_fee_int_tuple(raw_data_period);
+    let twap_original = original::calculate_twap::calculate_twap(&raw_data);
+    println!("twap_original: {:?}", twap_original);
     let input = TwapErrorBoundInput {
         avg_hourly_gas_fee: data.iter().map(|x| x.1).collect::<Vec<f64>>(),
         twap_tolerance: 1.0,
         twap_result: twap_original,
     };
 
-    let (receipt, res) = calculate_twap(input);
+    let (calculate_twap_receipt, _calculate_twap_res) = calculate_twap(input);
 
+    // reserve price
     // run rust code in host
     // ensure convergence in host
     let n_periods = 720;
@@ -89,7 +96,7 @@ fn main() {
             tolerance: floating_point_tolerance,
         });
 
-    let (simulate_price_verify_position_receipt, simulate_price_verify_position_res) =
+    let (simulate_price_verify_position_receipt, _simulate_price_verify_position_res) =
         simulate_price_verify_position_receipt(SimulatePriceVerifyPositionInput {
             data: data.clone(),
             positions: res.positions.clone(),
@@ -109,8 +116,8 @@ fn main() {
             tolerance: reserve_price_tolerance, // 5%
         });
 
-    let input = ReservePriceCompositionInput {
-        data,
+    let input = ProofCompositionInput {
+        data_8_months: data_8_months,
         positions: res.positions,
         pt: convert_array1_to_dvec(res.pt),
         pt_1: convert_array1_to_dvec(res.pt_1),
@@ -127,9 +134,14 @@ fn main() {
         reserve_price: res.reserve_price,
         floating_point_tolerance,
         reserve_price_tolerance,
+        twap_result: twap_original,
+        twap_tolerance: 1.0,
+        max_return: max_return_res.1,
     };
 
     let env = ExecutorEnv::builder()
+        .add_assumption(calculate_twap_receipt)
+        .add_assumption(max_return_receipt)
         .add_assumption(remove_seasonality_error_bound_receipt)
         .add_assumption(add_twap_7d_error_bound_receipt)
         .add_assumption(calculate_pt_pt1_error_bound_receipt)

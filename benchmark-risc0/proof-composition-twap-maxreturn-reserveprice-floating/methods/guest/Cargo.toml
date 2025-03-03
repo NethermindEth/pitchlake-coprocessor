@@ -24,3 +24,9 @@ add-twap-7d-error-bound-floating-methods = { path = "../../../add-twap-7d-error-
 
 calculate-pt-pt1-error-bound-floating-core = { path = "../../../calculate-pt-pt1-error-bound-floating/core" }
 calculate-pt-pt1-error-bound-floating-methods = { path = "../../../calculate-pt-pt1-error-bound-floating/methods" }
+
+twap-error-bound-floating-core = { path = "../../../twap-error-bound-floating/core" }
+twap-error-bound-floating-methods = { path = "../../../twap-error-bound-floating/methods" }
+
+max-return-floating-core = { path = "../../../max-return-floating/core" }
+max-return-floating-methods = { path = "../../../max-return-floating/methods" }

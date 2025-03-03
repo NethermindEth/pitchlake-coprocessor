@@ -1,4 +1,6 @@
-use proof_composition_twap_maxreturn_reserveprice_floating_core::ReservePriceCompositionInput;
+use proof_composition_twap_maxreturn_reserveprice_floating_core::{
+    ProofCompositionInput, ProofCompositionOutput,
+};
 use risc0_zkvm::{guest::env, serde};
 
 use remove_seasonality_error_bound_floating_core::RemoveSeasonalityErrorBoundFloatingInput;
@@ -13,11 +15,46 @@ use calculate_pt_pt1_error_bound_floating_methods::CALCULATE_PT_PT1_ERROR_BOUND_
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID;
 
+use twap_error_bound_floating_core::TwapErrorBoundInput;
+use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ID;
+
+use max_return_floating_core::MaxReturnInput;
+use max_return_floating_methods::MAX_RETURN_FLOATING_GUEST_ID;
+
 fn main() {
-    let data: ReservePriceCompositionInput = env::read();
+    let data: ProofCompositionInput = env::read();
+
+    let max_return_input = MaxReturnInput {
+        data: data.data_8_months.iter().map(|x| x.1).collect::<Vec<f64>>(),
+    };
+
+    env::verify(
+        MAX_RETURN_FLOATING_GUEST_ID,
+        &serde::to_vec(&(max_return_input, data.max_return)).unwrap(),
+    )
+    .unwrap();
+
+    let data_3_months =
+        data.data_8_months[data.data_8_months.len().saturating_sub(2160)..].to_vec();
+
+    let twap_error_bound_input = TwapErrorBoundInput {
+        avg_hourly_gas_fee: data_3_months
+            .clone()
+            .iter()
+            .map(|x| x.1)
+            .collect::<Vec<f64>>(),
+        twap_tolerance: data.twap_tolerance,
+        twap_result: data.twap_result,
+    };
+
+    env::verify(
+        TWAP_ERROR_BOUND_FLOATING_GUEST_ID,
+        &serde::to_vec(&twap_error_bound_input).unwrap(),
+    )
+    .unwrap();
 
     let remove_seasonality_error_bound_input = RemoveSeasonalityErrorBoundFloatingInput {
-        data: data.data.clone(),
+        data: data_3_months.clone(),
         slope: data.slope,
         intercept: data.intercept,
         de_seasonalised_detrended_log_base_fee: data.de_seasonalised_detrended_log_base_fee.clone(),
@@ -32,7 +69,7 @@ fn main() {
     .unwrap();
 
     let add_twap_7d_error_bound_input = AddTwap7dErrorBoundFloatingInput {
-        data: data.data.clone(),
+        data: data_3_months.clone(),
         twap_7d: data.twap_7d.clone().clone(),
         tolerance: data.floating_point_tolerance,
     };
@@ -57,7 +94,7 @@ fn main() {
     .unwrap();
 
     let simulate_price_verify_position_input = SimulatePriceVerifyPositionInput {
-        data: data.data.clone(),
+        data: data_3_months.clone(),
         positions: data.positions.clone(),
         pt: data.pt.clone(),
         pt_1: data.pt_1.clone(),
@@ -79,5 +116,15 @@ fn main() {
     )
     .unwrap();
 
-    env::commit(&data);
+    let output = ProofCompositionOutput {
+        data_8_months: data.data_8_months.clone(),
+        reserve_price: data.reserve_price,
+        floating_point_tolerance: data.floating_point_tolerance,
+        reserve_price_tolerance: data.reserve_price_tolerance,
+        twap_tolerance: data.twap_tolerance,
+        twap_result: data.twap_result,
+        max_return: data.max_return,
+    };
+
+    env::commit(&output);
 }

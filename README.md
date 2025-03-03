@@ -26,6 +26,8 @@ main
 
 `benchmark-risc0` - consist of guest programs to run various sub functions
 (to run `twap_error_bound_floating` we will need to have `data.csv` in the `twap_error_bound_floating` directory)
+`benchmark-risc0` - consist of guest programs to run various sub functions
+(to run `proof-composition-twap-maxreturn-reserveprice-floating` we will need to have `data.csv` in the `proof-composition-twap-maxreturn-reserveprice-floating` directory)
 
 `data-gathering` - contains code to gather data from the original implementation and the modified implementation
 
