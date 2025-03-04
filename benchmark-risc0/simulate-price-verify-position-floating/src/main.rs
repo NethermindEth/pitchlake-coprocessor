@@ -1,6 +1,6 @@
 use benchmark::{
     original::{calculate_reserve_price, convert_array1_to_dvec},
-    tests::mock::get_first_period_data,
+    tests::mock::{get_first_period_data, get_max_return_input_data},
 };
 use simulate_price_verify_position_floating::simulate_price_verify_position;
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
@@ -9,6 +9,9 @@ use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSIT
 fn main() {
     // get only first period of (timestamp avg_gas_fee)
     let data = get_first_period_data();
+
+    // let data_8_months = get_max_return_input_data();
+    // let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
     // run rust code in host
     // ensure convergence in host
     let res = calculate_reserve_price(&data, 15000, 720);

@@ -31,6 +31,21 @@ fn main() {
         data.n_periods,
     ).unwrap();
 
+    // eprintln!("reserve_price: {}", reserve_price);
+
+    // let diff: f64 = (reserve_price - data.reserve_price).abs();
+    // let percentage_diff = if reserve_price != 0.0 {
+    //     (diff / reserve_price.abs()) * 100.0
+    // } else if data.reserve_price != 0.0 {
+    //     100.0 // If target is 0 but calc isn't, that's 100% error
+    // } else {
+    //     0.0 // Both are 0, no difference
+    // };
+
+    // // eprintln!("diff: {}", diff);
+    // let is_within_tolerance_reserve_price = percentage_diff <= data.tolerance;
+    // eprintln!("is_within_tolerance_reserve_price: {}", is_within_tolerance_reserve_price);
+
     let is_within_tolerance_reserve_price = error_bound_f64(reserve_price, data.reserve_price, data.tolerance);
     assert!(is_within_tolerance_reserve_price);
 
