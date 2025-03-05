@@ -13,7 +13,7 @@ fn main() {
     let res = original::calculate_reserve_price(&data, 15000, 720);
 
     let input = RemoveSeasonalityErrorBoundFloatingInput {
-        data: data.clone(),
+        data: data.iter().map(|x| x.1).collect(),
         slope: res.slope,
         intercept: res.intercept,
         de_seasonalised_detrended_log_base_fee: convert_array1_to_dvec(

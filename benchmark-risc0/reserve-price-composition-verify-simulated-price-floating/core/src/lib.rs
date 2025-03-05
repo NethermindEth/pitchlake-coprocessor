@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ReservePriceCompositionInput {
-    pub data: Vec<(i64, f64)>,
+    pub data: Vec<f64>,
+    pub start_timestamp: i64,
+    pub end_timestamp: i64,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
     pub pt_1: DVector<f64>,
@@ -22,7 +24,9 @@ pub struct ReservePriceCompositionInput {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ReservePriceCompositionOutput {
-    pub data: Vec<(i64, f64)>,
+    pub data: Vec<f64>,
+    pub start_timestamp: i64,
+    pub end_timestamp: i64,
     pub reserve_price: f64,
     pub floating_point_tolerance: f64,
     pub reserve_price_tolerance: f64,

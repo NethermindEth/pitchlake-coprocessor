@@ -24,13 +24,13 @@ use max_return_floating_methods::MAX_RETURN_FLOATING_GUEST_ID;
 fn main() {
     let data: ProofCompositionInput = env::read();
 
-    let max_return_input = MaxReturnInput {
-        data: data.data_8_months.iter().map(|x| x.1).collect::<Vec<f64>>(),
-    };
+    // let max_return_input = MaxReturnInput {
+    //     data: data.data_8_months.iter().map(|x| x.1).collect::<Vec<f64>>(),
+    // };
 
     env::verify(
         MAX_RETURN_FLOATING_GUEST_ID,
-        &serde::to_vec(&(max_return_input, data.max_return)).unwrap(),
+        &serde::to_vec(&(data.data_8_months.clone(), data.max_return)).unwrap(),
     )
     .unwrap();
 
@@ -39,10 +39,7 @@ fn main() {
 
     let twap_error_bound_input = TwapErrorBoundInput {
         avg_hourly_gas_fee: data_3_months
-            .clone()
-            .iter()
-            .map(|x| x.1)
-            .collect::<Vec<f64>>(),
+            .clone(),
         twap_tolerance: data.twap_tolerance,
         twap_result: data.twap_result,
     };
@@ -94,7 +91,9 @@ fn main() {
     .unwrap();
 
     let simulate_price_verify_position_input = SimulatePriceVerifyPositionInput {
-        data: data_3_months.clone(),
+        start_timestamp: data.start_timestamp,
+        end_timestamp: data.end_timestamp,
+        data_length: data_3_months.len(),
         positions: data.positions.clone(),
         pt: data.pt.clone(),
         pt_1: data.pt_1.clone(),
@@ -118,6 +117,8 @@ fn main() {
 
     let output = ProofCompositionOutput {
         data_8_months: data.data_8_months.clone(),
+        start_timestamp: data.start_timestamp,
+        end_timestamp: data.end_timestamp,
         reserve_price: data.reserve_price,
         floating_point_tolerance: data.floating_point_tolerance,
         reserve_price_tolerance: data.reserve_price_tolerance,

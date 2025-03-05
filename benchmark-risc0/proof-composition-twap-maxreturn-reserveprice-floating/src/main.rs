@@ -69,7 +69,7 @@ fn main() {
 
     let (remove_seasonality_error_bound_receipt, _remove_seasonality_error_bound_res) =
         remove_seasonality_error_bound(RemoveSeasonalityErrorBoundFloatingInput {
-            data: data.clone(),
+            data: data.iter().map(|x| x.1).collect(),
             slope: res.slope,
             intercept: res.intercept,
             de_seasonalised_detrended_log_base_fee: convert_array1_to_dvec(
@@ -81,7 +81,7 @@ fn main() {
 
     let (add_twap_7d_error_bound_receipt, _add_twap_7d_error_bound_res) =
         add_twap_7d_error_bound(AddTwap7dErrorBoundFloatingInput {
-            data: data.clone(),
+            data: data.iter().map(|x| x.1).collect(),
             twap_7d: res.twap_7d.clone(),
             tolerance: floating_point_tolerance,
         });
@@ -98,7 +98,9 @@ fn main() {
 
     let (simulate_price_verify_position_receipt, _simulate_price_verify_position_res) =
         simulate_price_verify_position_receipt(SimulatePriceVerifyPositionInput {
-            data: data.clone(),
+            start_timestamp: data[0].0,
+            end_timestamp: data[data.len() - 1].0,
+            data_length: data.len(),
             positions: res.positions.clone(),
             pt: convert_array1_to_dvec(res.pt.clone()),
             pt_1: convert_array1_to_dvec(res.pt_1.clone()),
@@ -117,7 +119,9 @@ fn main() {
         });
 
     let input = ProofCompositionInput {
-        data_8_months: data_8_months,
+        data_8_months: data_8_months.iter().map(|x| x.1).collect::<Vec<f64>>(),
+        start_timestamp: data[0].0,
+        end_timestamp: data[data.len() - 1].0,
         positions: res.positions,
         pt: convert_array1_to_dvec(res.pt),
         pt_1: convert_array1_to_dvec(res.pt_1),

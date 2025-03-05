@@ -59,7 +59,8 @@ fn main() {
     .unwrap();
 
     let simulate_price_verify_position_input = SimulatePriceVerifyPositionInput {
-        data: data.data.clone(),
+        start_timestamp: data.start_timestamp,
+        end_timestamp: data.end_timestamp,
         positions: data.positions.clone(),
         pt: data.pt.clone(),
         pt_1: data.pt_1.clone(),
@@ -73,6 +74,7 @@ fn main() {
         intercept: data.intercept,
         reserve_price: data.reserve_price,
         tolerance: data.reserve_price_tolerance,
+        data_length: data.data.len(),
     };
 
     env::verify(
@@ -83,6 +85,8 @@ fn main() {
 
     let output = ReservePriceCompositionOutput {
         data: data.data.clone(),
+        start_timestamp: data.start_timestamp,
+        end_timestamp: data.end_timestamp,
         reserve_price: data.reserve_price,
         floating_point_tolerance: data.floating_point_tolerance,
         reserve_price_tolerance: data.reserve_price_tolerance,

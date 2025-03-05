@@ -1,8 +1,4 @@
 use benchmark::{
-    floating_point::{
-        calculate_simulated_log_prices as calculate_simulated_log_prices_no_prove,
-        error_bound_matrix, error_bound_simulated_log_prices,
-    },
     original::{self, convert_array1_to_dvec, convert_array2_to_dmatrix},
     tests::mock::get_first_period_data,
 };

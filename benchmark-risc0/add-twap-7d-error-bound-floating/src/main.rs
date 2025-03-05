@@ -11,7 +11,7 @@ fn main() {
     let res = original::calculate_reserve_price(&data, 15000, 720);
 
     let input = AddTwap7dErrorBoundFloatingInput {
-        data: data.clone(),
+        data: data.iter().map(|x| x.1).collect(),
         twap_7d: res.twap_7d,
         tolerance: 0.00001, // 0.00001%
     };
