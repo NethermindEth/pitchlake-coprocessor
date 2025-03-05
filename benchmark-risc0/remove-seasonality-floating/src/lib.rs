@@ -3,7 +3,7 @@ use remove_seasonality_floating_methods::REMOVE_SEASONALITY_FLOATING_GUEST_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 
 pub fn remove_seasonality(
-    data: &Vec<(i64, f64)>,
+    data: &Vec<f64>,
 ) -> (Receipt, (f64, f64, DVector<f64>, DVector<f64>)) {
     let env = ExecutorEnv::builder()
         // Send a & b to the guest

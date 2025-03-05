@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ProofCompositionInput {
-    pub data_8_months: Vec<(i64, f64)>,
+    pub data_8_months: Vec<f64>,
+    pub start_timestamp: i64,
+    pub end_timestamp: i64,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
     pub pt_1: DVector<f64>,
@@ -25,7 +27,9 @@ pub struct ProofCompositionInput {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ProofCompositionOutput {
-    pub data_8_months: Vec<(i64, f64)>,
+    pub data_8_months: Vec<f64>,
+    pub start_timestamp: i64,
+    pub end_timestamp: i64,
     pub reserve_price: f64,
     pub floating_point_tolerance: f64,
     pub reserve_price_tolerance: f64,

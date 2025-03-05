@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct RemoveSeasonalityErrorBoundFloatingInput {
-    pub data: Vec<(i64, f64)>,
+    pub data: Vec<f64>,
     pub slope: f64,
     pub intercept: f64,
     pub de_seasonalised_detrended_log_base_fee: DVector<f64>,

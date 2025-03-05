@@ -20,7 +20,8 @@ fn main() {
     println!("original reserve price: {:?}", res.reserve_price);
 
     let input = SimulatePriceVerifyPositionInput {
-        data: data.clone(),
+        start_timestamp: data[0].0,
+        end_timestamp: data[data.len() - 1].0,
         positions: res.positions,
         pt: convert_array1_to_dvec(res.pt),
         pt_1: convert_array1_to_dvec(res.pt_1),
@@ -36,6 +37,7 @@ fn main() {
         intercept: res.intercept,
         reserve_price: res.reserve_price,
         tolerance: 5.0, // 5%
+        data_length: data.len(),
     };
 
     let (receipt, simulate_price_res) = simulate_price_verify_position(input);

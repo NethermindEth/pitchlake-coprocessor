@@ -3,7 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct SimulatePriceVerifyPositionInput {
-    pub data: Vec<(i64, f64)>,
+    pub start_timestamp: i64,
+    pub end_timestamp: i64,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
     pub pt_1: DVector<f64>,
@@ -17,4 +18,5 @@ pub struct SimulatePriceVerifyPositionInput {
     pub intercept: f64,
     pub reserve_price: f64,
     pub tolerance: f64,
+    pub data_length: usize, // should always be 2160 . TODO: can remove
 }

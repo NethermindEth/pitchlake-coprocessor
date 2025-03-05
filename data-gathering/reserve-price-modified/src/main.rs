@@ -18,7 +18,11 @@ fn main() {
         open_reserve_price_csv_writer("reserve_price_reserve_price_modified_2400_iter.csv");
     for period in periods {
         let timestamp_gas_used_tuple = convert_to_timestamp_base_fee_tuple(period.clone());
-        let all_inputs_to_reserve_price = calculate_reserve_price_full(&timestamp_gas_used_tuple);
+        let all_inputs_to_reserve_price = calculate_reserve_price_full(
+            timestamp_gas_used_tuple[0].0,
+            timestamp_gas_used_tuple[timestamp_gas_used_tuple.len() - 1].0,
+            &timestamp_gas_used_tuple.iter().map(|x| x.1).collect(),
+        );
 
         let start_timestamp = period
             .column("date")

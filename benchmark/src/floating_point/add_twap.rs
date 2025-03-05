@@ -1,7 +1,7 @@
 use eyre::{anyhow as err, Result};
 use nalgebra::DVector;
 
-pub fn add_twap_7d(data: &[(i64, f64)]) -> Result<Vec<f64>> {
+pub fn add_twap_7d(data: &Vec<f64>) -> Result<Vec<f64>> {
     let required_window_size = 24 * 7;
     let n = data.len();
 
@@ -13,7 +13,7 @@ pub fn add_twap_7d(data: &[(i64, f64)]) -> Result<Vec<f64>> {
         ));
     }
 
-    let values = DVector::from_iterator(n, data.iter().map(|&(_, value)| value));
+    let values = DVector::from_iterator(n, data.iter().map(|&x| x));
     let mut twap_values = Vec::with_capacity(n);
 
     for i in 0..n {
@@ -28,4 +28,3 @@ pub fn add_twap_7d(data: &[(i64, f64)]) -> Result<Vec<f64>> {
 
     Ok(twap_values)
 }
-
