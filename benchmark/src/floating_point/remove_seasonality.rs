@@ -37,25 +37,15 @@ fn discover_trend(log_base_fee: &[f64]) -> Result<(f64, f64, Vec<f64>)> {
     Ok((slope, intercept, trend_values.as_slice().to_vec()))
 }
 
-fn compute_log_of_base_fees(base_fees: &Vec<&f64>) -> Result<Vec<f64>> {
+fn compute_log_of_base_fees(base_fees: &Vec<f64>) -> Result<Vec<f64>> {
     Ok(base_fees.iter().map(|&x| x.ln()).collect())
 }
 
 fn remove_seasonality(
     detrended_log_base_fee: &DVector<f64>,
-    data: &[(i64, f64)],
+    data: &Vec<f64>,
 ) -> Result<(DVector<f64>, DVector<f64>)> {
-    let start_timestamp = data
-        .first()
-        .ok_or_else(|| err!("Missing start timestamp"))?
-        .0;
-
-    // hack:
-    let t_series = DVector::from_iterator(
-        data.len(),
-        data.iter()
-            .map(|(timestamp, _)| (*timestamp - start_timestamp) as f64 / 3600.0),
-    );
+    let t_series = DVector::from_iterator(data.len(), (0..data.len()).map(|i| (i as f64)));
 
     let c = season_matrix(t_series.clone());
 
@@ -71,11 +61,11 @@ fn remove_seasonality(
 
 // assume data is sorted by timestamp
 pub fn calculate_remove_seasonality(
-    data: &[(i64, f64)],
+    data: &Vec<f64>,
 ) -> Result<(f64, f64, DVector<f64>, DVector<f64>)> {
-    let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
+    // let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
 
-    let log_base_fee = compute_log_of_base_fees(&fees)?;
+    let log_base_fee = compute_log_of_base_fees(data)?;
     let (slope, intercept, trend_values) = discover_trend(&log_base_fee)?;
 
     let detrended_log_base_fee: DVector<f64> = DVector::from_iterator(
@@ -87,7 +77,7 @@ pub fn calculate_remove_seasonality(
     );
 
     let (de_seasonalised_detrended_log_base_fee, season_param) =
-        remove_seasonality(&detrended_log_base_fee, &data)?;
+        remove_seasonality(&detrended_log_base_fee, data)?;
 
     Ok((
         slope,

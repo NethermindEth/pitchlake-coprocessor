@@ -53,7 +53,7 @@ mod tests {
             data.iter().map(|x| x.0).collect::<Vec<i64>>()
         );
 
-        let twap_7d = add_twap_7d(&data).unwrap();
+        let twap_7d = add_twap_7d(&data.iter().map(|x| x.1).collect()).unwrap();
         println!("twap_7d: {:?}", twap_7d[0]);
 
         let twap_7d_df = df
@@ -191,7 +191,7 @@ mod tests {
     fn test_compare_add_twap_7d() {
         let data = get_first_period_data();
         let res = calculate_reserve_price(&data, 15000, 720);
-        let twap_7d = add_twap_7d(&data).unwrap();
+        let twap_7d = add_twap_7d(&data.iter().map(|x| x.1).collect()).unwrap();
 
         let percentage_tolerance = 0.00001;
         let is_within_tolerance = error_bound_vec(&twap_7d, &res.twap_7d, percentage_tolerance);
@@ -204,7 +204,7 @@ mod tests {
         let res = calculate_reserve_price(&data, 15000, 720);
 
         let (slope, intercept, de_seasonalised_detrended_log_base_fee, season_param) =
-            calculate_remove_seasonality(&data).unwrap();
+            calculate_remove_seasonality(&data.iter().map(|x| x.1).collect()).unwrap();
 
         let is_within_tolerance_de_seasonalised_detrended_log_base_fee = error_bound_dvec(
             &convert_array1_to_dvec(res.de_seasonalised_detrended_log_base_fee),

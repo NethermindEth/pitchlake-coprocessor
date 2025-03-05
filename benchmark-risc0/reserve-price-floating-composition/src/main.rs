@@ -25,7 +25,11 @@ async fn main() -> Result<(), String> {
     let input_data = get_input_data(start_block, end_block).await;
 
     // host calculation
-    let all_inputs = calculate_reserve_price_full(&input_data);
+    let all_inputs = calculate_reserve_price_full(
+        input_data[0].0,
+        input_data[input_data.len() - 1].0,
+        &input_data.iter().map(|x| x.1).collect(),
+    );
 
     // guest calculation
     // all of these can be done in parallel

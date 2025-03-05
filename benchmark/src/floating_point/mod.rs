@@ -76,7 +76,11 @@ pub struct AllInputsToReservePrice {
     pub reserve_price: f64,
 }
 
-pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReservePrice {
+pub fn calculate_reserve_price_full(
+    start_timestamp: i64,
+    end_timestamp: i64,
+    input: &Vec<f64>,
+) -> AllInputsToReservePrice {
     let num_paths = 15000;
     let n_periods = 720;
     let twap = add_twap_7d(&input).unwrap();
@@ -90,8 +94,8 @@ pub fn calculate_reserve_price_full(input: &Vec<(i64, f64)>) -> AllInputsToReser
     );
 
     let reserve_price = calculate_reserve_price(
-        input[0].0,
-        input[input.len() - 1].0,
+        start_timestamp,
+        end_timestamp,
         &season_param,
         &simulated_prices,
         &twap,
@@ -144,13 +148,13 @@ pub fn error_bound_matrix(
 
             if percentage_diff > tolerance {
                 // total_diff += 1;
-                println!("i: {:?}", i);
-                println!("j: {:?}", j);
-                println!("target_val: {:?}", target_val);
-                println!("calc_val: {:?}", calc_val);
-                println!("percentage_diff: {:?}\n", percentage_diff);
-                continue;
-                // return false;
+                // println!("i: {:?}", i);
+                // println!("j: {:?}", j);
+                // println!("target_val: {:?}", target_val);
+                // println!("calc_val: {:?}", calc_val);
+                // println!("percentage_diff: {:?}\n", percentage_diff);
+                // continue;
+                return false;
             }
         }
     }
@@ -253,7 +257,6 @@ pub fn error_bound_dvec(target: &DVector<f64>, calculated: &DVector<f64>, tolera
 
     true
 }
-
 
 pub fn error_bound_f64(target: f64, calculated: f64, tolerance: f64) -> bool {
     let diff: f64 = (target - calculated).abs();
