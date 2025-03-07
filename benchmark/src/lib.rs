@@ -4,11 +4,13 @@ pub mod floating_point;
 pub mod original;
 pub mod solution;
 pub use solution::*;
-
-use eyre::Result;
+pub mod hashing;
+pub use hashing::*;
 
 pub mod common;
 pub mod tests;
+
+use eyre::Result;
 
 pub fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
     let stripped = hex_str.trim_start_matches("0x");

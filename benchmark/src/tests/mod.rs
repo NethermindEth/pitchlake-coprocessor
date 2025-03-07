@@ -1,6 +1,7 @@
 mod floating_point;
 pub mod mock;
 mod original;
+mod hashing;
 
 #[cfg(test)]
 mod tests {
