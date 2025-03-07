@@ -1,6 +1,8 @@
 mod floating_point;
 pub mod mock;
+#[cfg(feature = "original")]
 mod original;
+#[cfg(feature = "original")]
 mod hashing;
 
 #[cfg(test)]

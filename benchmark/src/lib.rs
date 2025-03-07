@@ -4,7 +4,9 @@ pub mod floating_point;
 pub mod original;
 pub mod solution;
 pub use solution::*;
+#[cfg(feature = "original")]
 pub mod hashing;
+#[cfg(feature = "original")]
 pub use hashing::*;
 
 pub mod common;

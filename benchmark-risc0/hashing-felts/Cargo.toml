@@ -1,0 +1,9 @@
+[package]
+name = "hashing-felts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "=1.2.2" }
+# hashing-felts-methods = { path = "methods" }
+hashing-felts-core = { path = "core" }
