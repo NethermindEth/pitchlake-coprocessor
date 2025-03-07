@@ -8,3 +8,4 @@ risc0-zkvm = { version = "=1.2.2" }
 hashing-felts-methods = { path = "methods" }
 hashing-felts-core = { path = "core" }
 starknet-core = "=0.12.1"
+benchmark = { path = "../../benchmark" }
