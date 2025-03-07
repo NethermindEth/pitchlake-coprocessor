@@ -20,7 +20,7 @@ members = [
     "simulate-price-verify-position-floating",
     "twap-error-bound-floating",
     "max-return-floating",
-    "proof-composition-twap-maxreturn-reserveprice-floating",
+    "proof-composition-twap-maxreturn-reserveprice-floating", "hashing-felts",
 ]
 
 # Always optimize; otherwise tests take excessively long.
