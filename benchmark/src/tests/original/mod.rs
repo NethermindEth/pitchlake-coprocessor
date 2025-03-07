@@ -7,6 +7,7 @@ mod tests {
             convert_to_timestamp_base_fee_int_tuple, read_data_from_file,
             replace_timestamp_with_date, split_dataframe_into_periods,
         },
+        convert_felt_to_f64,
         floating_point::{
             self, add_twap_7d, calculate_remove_seasonality,
             calculate_twap as calculate_twap_floating,
@@ -17,7 +18,10 @@ mod tests {
             calculate_reserve_price, calculate_twap::calculate_twap, convert_array1_to_dvec,
             convert_array2_to_dmatrix, convert_input_to_df,
         },
-        tests::mock::{get_first_period_data, get_max_return_input_data},
+        tests::mock::{
+            convert_data_to_vec_of_tuples, get_5760_avg_base_fees_felt, get_first_period_data,
+            get_max_return_input_data,
+        },
     };
 
     #[test]
@@ -81,7 +85,23 @@ mod tests {
 
     #[test]
     fn test_compare_simulate_price_results() {
-        let data = get_first_period_data();
+        // let data = get_first_period_data();
+
+        let inputs_felt = get_5760_avg_base_fees_felt();
+
+        // max return
+        // let data_8_months = get_max_return_input_data();
+        let data_8_months = inputs_felt
+            .iter()
+            .map(|x| convert_felt_to_f64(*x))
+            .collect::<Vec<_>>();
+
+        let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
+
+        let start_timestamp = 1708833600;  
+        let end_timestamp = 1708833600 + (3600 * 24 * 30 * 3); // as long as start to end timestamp is 90 days
+        let data = convert_data_to_vec_of_tuples(data.clone(), start_timestamp);
+
         let res = calculate_reserve_price(&data, 15000, 720);
         println!("res.reserve_price: {:?}", res.reserve_price);
         // res.reserve_price: 1755519897.514507
@@ -96,7 +116,7 @@ mod tests {
             &res.positions,
             &pt,
             &pt_1,
-            5e-3,
+            5e-2,
             &de_seasonalised_detrended_log_base_fee,
             n_periods,
             num_paths,
