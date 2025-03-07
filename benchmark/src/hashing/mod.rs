@@ -1,5 +1,5 @@
 use sha2::Digest;
-use starknet::core::types::{Felt, U256};
+use starknet_core::types::{Felt, U256};
 
 pub fn hash_avg_base_fees_in_batch(input: &Vec<Felt>) -> Vec<u8> {
     let mut res_array = vec![];
