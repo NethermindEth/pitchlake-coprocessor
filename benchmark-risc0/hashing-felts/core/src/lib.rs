@@ -8,6 +8,6 @@ pub struct HashingFeltInput {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct HashingFeltOutput {
-    pub hash: Vec<u8>,
+    pub hash: [u32; 8],
     pub f64_inputs: Vec<f64>,
 }
