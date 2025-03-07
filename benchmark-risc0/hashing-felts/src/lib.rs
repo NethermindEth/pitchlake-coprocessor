@@ -1,14 +1,23 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use hashing_felts_methods::HASHING_FELTS_GUEST_ELF;
+use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use hashing_felts_core::{HashingFeltInput, HashingFeltOutput};
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub fn hash_felts(input: HashingFeltInput) -> (Receipt, HashingFeltOutput) {
+    let env = ExecutorEnv::builder()
+        .write(&input)
+        .unwrap()
+        .build()
+        .unwrap();
+
+    // Obtain the default prover.
+    let prover = default_prover();
+
+    // Produce a receipt by proving the specified ELF binary.
+    let prove_info = prover.prove(env, HASHING_FELTS_GUEST_ELF).unwrap();
+
+    let receipt = prove_info.receipt;
+    let res: HashingFeltOutput = receipt.journal.decode().unwrap();
+
+    (receipt, res)
 }

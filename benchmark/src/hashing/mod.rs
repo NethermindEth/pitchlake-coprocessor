@@ -1,7 +1,17 @@
 use sha2::Digest;
 use starknet_core::types::{Felt, U256};
 
-pub fn hash_avg_base_fees_in_batch(input: &Vec<Felt>) -> Vec<u8> {
+pub fn generate_batched_hash_for_all_avg_base_fees(input: &Vec<Felt>) -> Vec<u8> {
+    let mut avg_base_gas_fee_hashes = vec![];
+    for avg_base_fees in input.chunks(180) {
+        let hash = hash_avg_base_fees_in_batch(avg_base_fees);
+        avg_base_gas_fee_hashes.push(hash);
+    }
+
+    hash_of_hash_of_avg_base_fees(&avg_base_gas_fee_hashes)
+}
+
+pub fn hash_avg_base_fees_in_batch(input: &[Felt]) -> Vec<u8> {
     let mut res_array = vec![];
     for i in input {
         let u32_array = convert_felt_to_u32_array(*i);
@@ -39,7 +49,6 @@ pub fn hash_of_hash_of_avg_base_fees(hashes: &Vec<Vec<u8>>) -> Vec<u8> {
     }
 
     let hash = sha2::Sha256::digest(&input_array);
-    println!("{:x}", hash);
     hash.to_vec()
 }
 

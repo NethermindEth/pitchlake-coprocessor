@@ -1,14 +1,13 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use serde::{Deserialize, Serialize};
+use starknet_core::types::Felt;
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct HashingFeltInput {
+    pub inputs: Vec<Felt>,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct HashingFeltOutput {
+    pub hash: Vec<u8>,
+    pub f64_inputs: Vec<f64>,
 }
