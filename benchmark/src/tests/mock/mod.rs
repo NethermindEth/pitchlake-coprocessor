@@ -10856,3 +10856,10 @@ pub fn get_5760_avg_base_fees_felt() -> Vec<Felt> {
 
     res
 }
+
+pub fn convert_data_to_vec_of_tuples(data: Vec<f64>, start_timestamp: i64) -> Vec<(i64, f64)> {
+    data.iter()
+        .enumerate()
+        .map(|(i, x)| (start_timestamp + (3600 * i as i64), *x))
+        .collect()
+}

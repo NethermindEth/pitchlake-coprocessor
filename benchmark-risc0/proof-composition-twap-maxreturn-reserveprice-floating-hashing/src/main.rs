@@ -7,7 +7,10 @@ use benchmark::{
     },
     floating_point,
     original::{self, convert_array1_to_dvec},
-    tests::mock::{get_5760_avg_base_fees_felt, get_first_period_data, get_max_return_input_data},
+    tests::mock::{
+        convert_data_to_vec_of_tuples, get_5760_avg_base_fees_felt, get_first_period_data,
+        get_max_return_input_data,
+    },
 };
 use max_return_floating::max_return;
 use max_return_floating_core::MaxReturnInput;
@@ -82,7 +85,7 @@ fn main() {
     let res = original::calculate_reserve_price(&data_with_timestamps, 15000, n_periods);
 
     let num_paths = 4000;
-    let gradient_tolerance = 5e-3;
+    let gradient_tolerance = 5e-2;
     let floating_point_tolerance = 0.00001; // 0.00001%
     let reserve_price_tolerance = 5.0; // 5%
 
@@ -187,11 +190,4 @@ fn main() {
     receipt
         .verify(PROOF_COMPOSITION_TWAP_MAXRETURN_RESERVEPRICE_FLOATING_HASHING_GUEST_ID)
         .unwrap();
-}
-
-fn convert_data_to_vec_of_tuples(data: Vec<f64>, start_timestamp: i64) -> Vec<(i64, f64)> {
-    data.iter()
-        .enumerate()
-        .map(|(i, x)| (start_timestamp + (3600 * i as i64), *x))
-        .collect()
 }
