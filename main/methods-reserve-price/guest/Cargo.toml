@@ -22,3 +22,4 @@ core = { path = "../../core" }
 fixed = { version = "1.28.0", features = ["serde"] }
 num-traits = "0.2.19"
 simba = { version = "0.9.0", features = ["partial_fixed_point_support", "serde_serialize"] }
+sobol = "1.0.2"
