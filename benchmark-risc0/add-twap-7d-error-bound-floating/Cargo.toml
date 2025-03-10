@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-risc0-zkvm = { version = "1.1.2" }
+risc0-zkvm = { version = "=1.2.4" }
 add-twap-7d-error-bound-floating-methods = { path = "methods" }
 add-twap-7d-error-bound-floating-core = { path = "core" }
 benchmark = { path = "../../benchmark", features = ["original"] }

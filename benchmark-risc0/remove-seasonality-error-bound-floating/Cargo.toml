@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-risc0-zkvm = { version = "1.1.2" }
+risc0-zkvm = { version = "=1.2.4" }
 remove-seasonality-error-bound-floating-core = { path = "../remove-seasonality-error-bound-floating/core" }
 remove-seasonality-error-bound-floating-methods = { path = "../remove-seasonality-error-bound-floating/methods" }
 benchmark = { path = "../../benchmark", features = ["original"] }
