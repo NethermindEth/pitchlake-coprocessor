@@ -6,6 +6,7 @@ use core::VolatilityInputsFixedPointSimba;
 use db_access::queries::get_block_headers_by_block_range;
 use db_access::DbConnection;
 use dotenv::dotenv;
+use types::BlockHeader as ContractBlockHeader;
 use eyre::Result;
 use methods::PRICING_CALCULATOR_ELF;
 use methods_reserve_price::GUEST_RESERVE_PRICE_ELF;
@@ -15,6 +16,15 @@ use num_traits::Zero;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use simba::scalar::{FixedI48F16, RealField};
 use tokio::task;
+use clap::Parser;
+use starknet::{
+    core::types::{BlockId, BlockTag, Felt, FunctionCall},
+    macros::{felt, selector},
+    providers::{
+        jsonrpc::{HttpTransport, JsonRpcClient},
+        Provider, Url,
+    },
+};
 
 fn hex_string_to_f64(hex_str: &String) -> Result<f64> {
     let stripped = hex_str.trim_start_matches("0x");
@@ -84,41 +94,14 @@ async fn run_host(
     Ok((volatility, twap, reserve_price))
 }
 
-async fn run_host_reserve_price(start_block: i64, end_block: i64) -> Result<f64, sqlx::Error> {
+
+async fn run_host_reserve_price(block_headers: Vec<ContractBlockHeader>) -> f64 {
     dotenv().ok();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
-    let db = DbConnection::new().await?;
-    let block_headers = get_block_headers_by_block_range(&db.pool, start_block, end_block).await?;
-
-    let _base_fee_per_gases_hex: Vec<Option<String>> = block_headers
-        .iter()
-        .map(|header| header.base_fee_per_gas.clone())
-        .collect();
-
-    let mut reserve_price_inputs: Vec<(i64, f64)> = block_headers
-        .iter()
-        .map(|header| {
-            let timestamp = i64::from_str_radix(
-                header
-                    .timestamp
-                    .clone()
-                    .unwrap()
-                    .strip_prefix("0x")
-                    .unwrap(),
-                16,
-            )
-            .unwrap();
-
-            let base_fee = hex_string_to_f64(&header.base_fee_per_gas.clone().unwrap()).unwrap();
-
-            return (timestamp * 1000, base_fee);
-        })
-        .collect();
-
-    reserve_price_inputs.sort_by(|a, b| a.0.cmp(&b.0));
+    let reserve_price_inputs: Vec<(i64, f64)>  = block_headers.iter().map(|head| (head.timestamp * 1000, head.base_fee as f64)).collect();
 
     let prove_info = task::spawn_blocking(move || {
         let env = ExecutorEnv::builder()
@@ -134,7 +117,7 @@ async fn run_host_reserve_price(start_block: i64, end_block: i64) -> Result<f64,
 
     let receipt = prove_info.receipt;
     let reserve_price: f64 = receipt.journal.decode().unwrap();
-    Ok(reserve_price)
+    reserve_price
 }
 
 async fn run_host_twap(start_block: i64, end_block: i64) -> Result<FixedI48F16, sqlx::Error> {
@@ -243,14 +226,54 @@ async fn run_host_volatility_fixed_point(
     Ok(volatility)
 }
 
+
+#[derive(clap::Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, default_value = "http://localhost:5050")]
+    provider_url: String,
+
+    contract_address: String,
+    start_block_timestamp: i64,
+    end_block_timestamp: i64,
+}
+
+async fn fetch_fees(url: &str, contract: String, start_timestamp: i64, end_timestamp: i64) -> Vec<ContractBlockHeader> {
+    let provider = JsonRpcClient::new(HttpTransport::new(Url::parse(url).unwrap()));
+    let contract_address = Felt::from_hex(&contract).unwrap();
+    let args = vec![start_timestamp.into(), end_timestamp.into()];
+
+    let call_result =
+        provider
+            .call(
+                FunctionCall {
+                    contract_address: contract_address,
+                    entry_point_selector: selector!("get_avg_fees_in_range"),
+                    calldata: args,
+                },
+                BlockId::Tag(BlockTag::Latest),
+            )
+            .await
+            .expect("failed to call contract");
+
+    call_result.iter().enumerate().map(|(i, &value)| {
+        ContractBlockHeader {timestamp: start_timestamp + i as i64 * 60 * 60, base_fee: value.try_into().unwrap(),}
+    }).collect()
+}
+
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
+    // block no.: 20000000, timestamp: 1717281407
+    // block no.: 20000168, timestamp: 1717283435
     // run_host(20000000, 20000170).await?;
     // run_host(20000000, 20000200).await?;
     // 3 months data
     // run_host(20000000, 20700000).await?;
     // run_host_volatility_fixed_point(20000000, 20002000).await?;
     // run_host_twap(20000000, 20002000).await?;
-    run_host_reserve_price(20000000, 20000168).await?;
+
+    let args = Args::parse();
+    let block_headers = fetch_fees(&args.provider_url, args.contract_address, args.start_block_timestamp, args.end_block_timestamp).await;
+    run_host_reserve_price(block_headers).await;
     Ok(())
 }
