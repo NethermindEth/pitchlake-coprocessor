@@ -1,4 +1,3 @@
-pub mod fixed_point;
 pub mod floating_point;
 #[cfg(feature = "original")]
 pub mod original;
