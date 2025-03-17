@@ -23,7 +23,7 @@ fn main() {
         tolerance: 0.00001, // 0.00001%
     };
 
-    let (receipt, res) = remove_seasonality_error_bound(input);
+    let (receipt, _res) = remove_seasonality_error_bound(input);
 
     receipt
         .verify(REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ID)

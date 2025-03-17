@@ -1,9 +1,6 @@
 use common::{
     original::{calculate_reserve_price, convert_array1_to_dvec},
-    tests::mock::{
-        convert_data_to_vec_of_tuples, get_5760_avg_base_fees_felt, get_first_period_data,
-        get_max_return_input_data,
-    },
+    tests::mock::{convert_data_to_vec_of_tuples, get_5760_avg_base_fees_felt},
 };
 use simulate_price_verify_position_floating::simulate_price_verify_position;
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
@@ -16,7 +13,7 @@ fn main() {
     // get only first period of (timestamp avg_gas_fee)
     // let data = get_first_period_data();
     let inputs_felt = get_5760_avg_base_fees_felt();
-    let (hashing_receipt, hashing_res) = hash_felts(HashingFeltInput {
+    let (_hashing_receipt, hashing_res) = hash_felts(HashingFeltInput {
         inputs: inputs_felt,
     });
 
@@ -63,7 +60,7 @@ fn main() {
         data_length: data.len(),
     };
 
-    let (receipt, simulate_price_res) = simulate_price_verify_position(input);
+    let (receipt, _simulate_price_res) = simulate_price_verify_position(input);
 
     receipt
         .verify(SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID)

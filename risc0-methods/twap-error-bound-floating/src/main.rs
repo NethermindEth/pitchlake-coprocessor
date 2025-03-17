@@ -32,7 +32,7 @@ fn main() {
         twap_result: twap_original,
     };
 
-    let (receipt, res) = calculate_twap(input);
+    let (receipt, _res) = calculate_twap(input);
 
     receipt.verify(TWAP_ERROR_BOUND_FLOATING_GUEST_ID).unwrap();
 }
