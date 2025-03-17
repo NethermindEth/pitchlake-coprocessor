@@ -1,4 +1,4 @@
-use benchmark::floating_point::calculate_max_returns;
+use common::floating_point::calculate_max_returns;
 use max_return_floating_core::MaxReturnInput;
 use risc0_zkvm::guest::env;
 

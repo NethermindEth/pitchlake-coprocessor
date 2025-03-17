@@ -1,4 +1,4 @@
-use benchmark::floating_point::{calculate_twap, error_bound_f64};
+use common::floating_point::{calculate_twap, error_bound_f64};
 use risc0_zkvm::guest::env;
 use twap_error_bound_floating_core::TwapErrorBoundInput;
 

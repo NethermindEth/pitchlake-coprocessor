@@ -11,6 +11,6 @@ risc0-zkvm = { version = "=1.2.4", default-features = false, features = [
     'getrandom',
     'heap-embedded-alloc',
 ] }
-benchmark = { path = "../../../../benchmark" }
+common = { path = "../../../../common" }
 nalgebra = { version = "0.33.2", features = ["serde-serialize"] }
 simulate-price-verify-position-floating-core = { path = "../../core" }

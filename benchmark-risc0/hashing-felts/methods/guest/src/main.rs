@@ -1,4 +1,4 @@
-use benchmark::{convert_felt_to_f64, generate_batched_hash_for_all_avg_base_fees};
+use common::{convert_felt_to_f64, generate_batched_hash_for_all_avg_base_fees};
 use hashing_felts_core::{HashingFeltInput, HashingFeltOutput};
 use risc0_zkvm::guest::env;
 

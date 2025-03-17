@@ -1,4 +1,4 @@
-use benchmark::floating_point::{error_bound_dvec, pre_minimize};
+use common::floating_point::{error_bound_dvec, pre_minimize};
 use calculate_pt_pt1_error_bound_floating_core::CalculatePtPt1ErrorBoundFloatingInput;
 use risc0_zkvm::guest::env;
 

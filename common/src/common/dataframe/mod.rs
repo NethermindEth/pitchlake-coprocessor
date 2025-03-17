@@ -37,7 +37,7 @@ pub fn add_df_property(df: DataFrame) -> DataFrame {
 /// * The rolling mean calculation fails.
 /// * The final collection of the lazy DataFrame fails.
 ///
-/// TODO: To import this from 'benchmark' crate.
+/// TODO: To import this from 'common' crate.
 fn add_twap_7d(df: DataFrame) -> Result<DataFrame> {
     let required_window_size = 24 * 7;
 

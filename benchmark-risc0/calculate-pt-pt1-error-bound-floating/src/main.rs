@@ -1,4 +1,4 @@
-use benchmark::{
+use common::{
     original::{self, convert_array1_to_dvec},
     tests::mock::get_first_period_data,
 };

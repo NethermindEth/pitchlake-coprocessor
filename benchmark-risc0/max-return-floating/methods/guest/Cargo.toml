@@ -11,5 +11,5 @@ risc0-zkvm = { version = "=1.2.4", default-features = false, features = [
     'getrandom',
     'heap-embedded-alloc',
 ] }
-benchmark = { path = "../../../../benchmark" }
+common = { path = "../../../../common" }
 max-return-floating-core = { path = "../../core" }

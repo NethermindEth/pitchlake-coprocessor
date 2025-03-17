@@ -1,4 +1,4 @@
-use benchmark::floating_point::{
+use common::floating_point::{
     calculate_reserve_price, error_bound_f64, simulate_price_verify_position,
 };
 use risc0_zkvm::guest::env;
