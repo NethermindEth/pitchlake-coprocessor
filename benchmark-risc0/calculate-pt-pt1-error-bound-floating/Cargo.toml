@@ -7,4 +7,4 @@ edition = "2021"
 risc0-zkvm = { version = "=1.2.4" }
 calculate-pt-pt1-error-bound-floating-methods = { path = "methods" }
 calculate-pt-pt1-error-bound-floating-core = { path = "core" }
-benchmark = { path = "../../benchmark", features = ["original"] }
+common = { path = "../../common", features = ["original"] }

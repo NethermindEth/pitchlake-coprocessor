@@ -1,4 +1,4 @@
-use benchmark::{convert_felt_to_f64, tests::mock::get_5760_avg_base_fees_felt};
+use common::{convert_felt_to_f64, tests::mock::get_5760_avg_base_fees_felt};
 use hashing_felts::hash_felts;
 use hashing_felts_core::HashingFeltInput;
 use hashing_felts_methods::HASHING_FELTS_GUEST_ID;

@@ -1,0 +1,49 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eyre = "0.6"
+nalgebra = "0.33.2"
+fixed = { version = "=1.28.0", features = ["serde"] }
+num-traits = "0.2.19"
+simba = { version = "0.9.0", features = [
+    "partial_fixed_point_support",
+    "serde_serialize",
+] }
+approx = { version = "0.5", default-features = false }
+
+chrono = { version = "0.4", features = ["serde"] }
+# for reserve price simulation
+lstsq = "0.6.0"
+ndarray-rand = { version = "0.15.0", optional = true } # Update ndarray-linalg to use a specific version known to work with LAPACKlstsq = "0.6.0"
+statrs = { version = "0.17", default-features = false }
+rand = "0.8.5"
+rand_distr = "0.4.3"
+polars = { version = "0.43", features = [
+    "lazy",
+    "dynamic_group_by",
+    "rolling_window",
+    "ndarray",
+], optional = true }
+ndarray = { version = "0.15", optional = true }
+linfa = { version = "0.7.0", optional = true }
+ndarray-linalg = { version = "0.15", features = [
+    "openblas-system",
+], default-features = false, optional = true }
+linfa-linear = { version = "0.7.0", optional = true }
+csv = { version = "1.3.1" }
+sha2 = { git = "https://github.com/risc0/RustCrypto-hashes", tag = "sha2-v0.10.8-risczero.0" }
+starknet-core = "=0.12.1"
+
+
+[features]
+original = [
+    "polars",
+    "ndarray",
+    "ndarray-rand",
+    "ndarray-linalg",
+    "linfa",
+    "linfa-linear",
+]

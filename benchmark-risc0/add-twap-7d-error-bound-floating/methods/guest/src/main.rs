@@ -1,5 +1,5 @@
 use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
-use benchmark::floating_point::{add_twap_7d, error_bound_vec};
+use common::floating_point::{add_twap_7d, error_bound_vec};
 use risc0_zkvm::guest::env;
 
 fn main() {

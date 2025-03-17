@@ -1,4 +1,4 @@
-use benchmark::floating_point::{calculate_remove_seasonality, error_bound_dvec, error_bound_f64};
+use common::floating_point::{calculate_remove_seasonality, error_bound_dvec, error_bound_f64};
 use remove_seasonality_error_bound_floating_core::RemoveSeasonalityErrorBoundFloatingInput;
 use risc0_zkvm::guest::env;
 
