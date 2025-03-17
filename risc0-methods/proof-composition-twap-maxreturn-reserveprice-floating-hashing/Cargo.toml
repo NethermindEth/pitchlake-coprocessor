@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-risc0-zkvm = { version = "=1.2.4" }
+risc0-zkvm = { version = "=1.2.5" }
 common = { path = "../../common", features = ["original"] }
 
 proof-composition-twap-maxreturn-reserveprice-floating-hashing-core = { path = "core" }
