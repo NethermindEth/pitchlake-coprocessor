@@ -130,6 +130,7 @@ fn main() {
         reserve_price: data.reserve_price,
         floating_point_tolerance: data.floating_point_tolerance,
         reserve_price_tolerance: data.reserve_price_tolerance,
+        gradient_tolerance: data.gradient_tolerance,
         twap_tolerance: data.twap_tolerance,
         twap_result: data.twap_result,
         max_return: data.max_return,

@@ -17,6 +17,14 @@ risc0-methods
 
 `risc0-methods` - consist of guest programs to run various sub functions
 (to run `twap_error_bound_floating` we will need to have `data.csv` in the `twap_error_bound_floating` directory)
+(to run `proof-composition-twap-maxreturn-reserveprice-floating-hashing` we will need to have `data.csv` in the `proof-composition-twap-maxreturn-reserveprice-floating-hashing` directory)
+
+## To obtain `data.csv`
+Unzip `data.csv.gz` and place it the folders that might require them
+
+```
+gunzip -c data.csv.gz > data.csv
+```
 
 ## Running each methods
 To run each methods, we will need to `cd` into the methods that we are interested in running (eg. risc0-methods/proof-composition-twap-maxreturn-reserveprice-floating-hashing)

@@ -35,6 +35,7 @@ pub struct ProofCompositionOutput {
     pub floating_point_tolerance: f64,
     pub reserve_price_tolerance: f64,
     pub twap_tolerance: f64,
+    pub gradient_tolerance: f64,
     pub twap_result: f64,
     pub max_return: f64,
 }
