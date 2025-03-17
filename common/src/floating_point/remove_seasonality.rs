@@ -63,8 +63,6 @@ fn remove_seasonality(
 pub fn calculate_remove_seasonality(
     data: &Vec<f64>,
 ) -> Result<(f64, f64, DVector<f64>, DVector<f64>)> {
-    // let fees: Vec<&f64> = data.iter().map(|x| &x.1).collect();
-
     let log_base_fee = compute_log_of_base_fees(data)?;
     let (slope, intercept, trend_values) = discover_trend(&log_base_fee)?;
 

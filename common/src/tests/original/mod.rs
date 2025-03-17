@@ -162,7 +162,6 @@ mod tests {
         println!("original_reserve_price: {:?}", original_reserve_price);
         // original_reserve_price: 1735924412.5244353
 
-        // todo: constraint reserve price to be within tolerance
     }
 
     #[test]
@@ -300,6 +299,7 @@ mod tests {
             floating_point::calculate_max_returns(&data.iter().map(|x| x.1).collect::<Vec<f64>>());
         // max_return: 1.544626972559826
         println!("max_return: {:?}", max_return);
+        assert!((max_return - 1.544).abs() < 0.001);
     }
 
     #[test]

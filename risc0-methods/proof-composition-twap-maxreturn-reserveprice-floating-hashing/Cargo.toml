@@ -1,0 +1,32 @@
+[package]
+name = "proof-composition-twap-maxreturn-reserveprice-floating-hashing"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "=1.2.5" }
+common = { path = "../../common", features = ["original"] }
+
+proof-composition-twap-maxreturn-reserveprice-floating-hashing-core = { path = "core" }
+proof-composition-twap-maxreturn-reserveprice-floating-hashing-methods = { path = "methods" }
+
+simulate-price-verify-position-floating = { path = "../simulate-price-verify-position-floating" }
+simulate-price-verify-position-floating-core = { path = "../simulate-price-verify-position-floating/core" }
+
+add-twap-7d-error-bound-floating = { path = "../add-twap-7d-error-bound-floating" }
+add-twap-7d-error-bound-floating-core = { path = "../add-twap-7d-error-bound-floating/core" }
+
+remove-seasonality-error-bound-floating = { path = "../remove-seasonality-error-bound-floating" }
+remove-seasonality-error-bound-floating-core = { path = "../remove-seasonality-error-bound-floating/core" }
+
+calculate-pt-pt1-error-bound-floating = { path = "../calculate-pt-pt1-error-bound-floating" }
+calculate-pt-pt1-error-bound-floating-core = { path = "../calculate-pt-pt1-error-bound-floating/core" }
+
+twap-error-bound-floating = { path = "../twap-error-bound-floating" }
+twap-error-bound-floating-core = { path = "../twap-error-bound-floating/core" }
+
+max-return-floating = { path = "../max-return-floating" }
+max-return-floating-core = { path = "../max-return-floating/core" }
+
+hashing-felts = { path = "../hashing-felts" }
+hashing-felts-core = { path = "../hashing-felts/core" }
