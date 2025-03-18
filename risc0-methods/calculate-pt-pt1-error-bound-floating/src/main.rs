@@ -1,10 +1,10 @@
+use calculate_pt_pt1_error_bound_floating::calculate_pt_pt1_error_bound_floating;
+use calculate_pt_pt1_error_bound_floating_core::CalculatePtPt1ErrorBoundFloatingInput;
+use calculate_pt_pt1_error_bound_floating_methods::CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ID;
 use common::{
     original::{self, convert_array1_to_dvec},
     tests::mock::get_first_period_data,
 };
-use calculate_pt_pt1_error_bound_floating::calculate_pt_pt1_error_bound_floating;
-use calculate_pt_pt1_error_bound_floating_core::CalculatePtPt1ErrorBoundFloatingInput;
-use calculate_pt_pt1_error_bound_floating_methods::CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ID;
 
 fn main() {
     // get only first period of (timestamp avg_gas_fee)
@@ -22,7 +22,7 @@ fn main() {
         tolerance: 0.00001, // 0.00001%
     };
 
-    let (receipt, res) = calculate_pt_pt1_error_bound_floating(input);
+    let (receipt, _res) = calculate_pt_pt1_error_bound_floating(input);
 
     receipt
         .verify(CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ID)

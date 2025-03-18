@@ -1,4 +1,4 @@
-use eyre::{anyhow as err, Result};
+use eyre::Result;
 use nalgebra::{DMatrix, DVector};
 
 use super::season_matrix;

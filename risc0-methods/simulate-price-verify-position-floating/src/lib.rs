@@ -1,4 +1,3 @@
-use nalgebra::{DMatrix, DVector};
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 use simulate_price_verify_position_floating_core::SimulatePriceVerifyPositionInput;
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF;

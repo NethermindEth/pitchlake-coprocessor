@@ -9,6 +9,7 @@ members = [
     "max-return-floating",
     "proof-composition-twap-maxreturn-reserveprice-floating-hashing",
     "hashing-felts",
+    "mock-proof-composition",
 ]
 
 # Always optimize; otherwise tests take excessively long.

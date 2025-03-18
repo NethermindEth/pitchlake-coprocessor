@@ -1,8 +1,10 @@
 # Pitchlake coprocessor
+
 Contains all the necessary functions,benchmarks, guest programs to run the pitchlake zkvm process
 
 ## File structure
-```
+
+```bash
 common
 ├── src
 │   ├── fixed_point
@@ -20,31 +22,34 @@ risc0-methods
 (to run `proof-composition-twap-maxreturn-reserveprice-floating-hashing` we will need to have `data.csv` in the `proof-composition-twap-maxreturn-reserveprice-floating-hashing` directory)
 
 ## To obtain `data.csv`
+
 Unzip `data.csv.gz` and place it the folders that might require them
 
-```
+```bash
 gunzip -c data.csv.gz > data.csv
 ```
 
 ## Running each methods
+
 To run each methods, we will need to `cd` into the methods that we are interested in running (eg. risc0-methods/proof-composition-twap-maxreturn-reserveprice-floating-hashing)
 
 with command
 
-```
+```bash
 RISC0_DEV_MODE=1 cargo run
 ```
 
-
 or from `risc0-methods` folder
 
-```
+```bash
 RISC0_DEV_MODE=1 cargo run -p <proof-composition-twap-maxreturn-reserveprice-floating-hashing>
 ```
 
 ## Journal
+
 The output of the journal will look like:
-```
+
+```bash
 pub struct ProofCompositionOutput {
     pub data_8_months_hash: [u32; 8],
     pub start_timestamp: i64,

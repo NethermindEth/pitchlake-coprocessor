@@ -16,7 +16,7 @@ fn main() {
         tolerance: 0.00001, // 0.00001%
     };
 
-    let (receipt, res) = add_twap_7d_error_bound(input);
+    let (receipt, _res) = add_twap_7d_error_bound(input);
 
     receipt
         .verify(ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ID)

@@ -1,16 +1,10 @@
 use add_twap_7d_error_bound_floating::add_twap_7d_error_bound;
 use add_twap_7d_error_bound_floating_core::AddTwap7dErrorBoundFloatingInput;
 use common::{
-    common::dataframe::{
-        convert_to_timestamp_base_fee_int_tuple, filter_dataframe_by_date_range,
-        read_data_from_file, replace_timestamp_with_date, split_dataframe_into_periods,
-    },
+    common::dataframe::{read_data_from_file, replace_timestamp_with_date},
     floating_point,
     original::{self, convert_array1_to_dvec},
-    tests::mock::{
-        convert_data_to_vec_of_tuples, get_5760_avg_base_fees_felt, get_first_period_data,
-        get_max_return_input_data,
-    },
+    tests::mock::{convert_data_to_vec_of_tuples, get_5760_avg_base_fees_felt},
 };
 use max_return_floating::max_return;
 use max_return_floating_core::MaxReturnInput;
@@ -53,7 +47,7 @@ fn main() {
     // comparing twap using actual data from each block (host)
     // vs twap from using average hourly gas fee (zkvm)
     let df = read_data_from_file("data.csv");
-    let df = replace_timestamp_with_date(df).unwrap();
+    let _df = replace_timestamp_with_date(df).unwrap();
 
     let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
 

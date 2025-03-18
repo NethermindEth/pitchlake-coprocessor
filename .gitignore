@@ -26,3 +26,5 @@ methods/guest/Cargo.lock
 *.txt
 data.csv
 benchmark-risc0/error_bound_diff.csv
+
+starknet-verifier/.snfoundry_cache/
