@@ -60,7 +60,7 @@ pub fn calculate_reserve_price_sobol(
     for i in 0..num_paths {
         let probs = sequence.by_ref().take(n_periods);
         let random_shocks: Vec<f64> = probs
-            .map(|mut prob| normal.inverse_cdf(prob.pop().unwrap()))
+            .map(|mut prob| normal.inverse_cdf(1.0 - prob.pop().unwrap()))
             .collect();
         let mut cumsum = 0.0;
         for j in 0..n_periods {
