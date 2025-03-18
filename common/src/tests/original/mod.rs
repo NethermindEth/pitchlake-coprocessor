@@ -98,7 +98,7 @@ mod tests {
 
         let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
 
-        let start_timestamp = 1708833600;  
+        let start_timestamp = 1708833600;
         let end_timestamp = 1708833600 + (3600 * 24 * 30 * 3); // as long as start to end timestamp is 90 days
         let data = convert_data_to_vec_of_tuples(data.clone(), start_timestamp);
 
@@ -133,7 +133,7 @@ mod tests {
         let reserve_price = floating_point::calculate_reserve_price(
             data[0].0,
             data[data.len() - 1].0,
-            &convert_array1_to_dvec(res.season_param),
+            &convert_array1_to_dvec(res.season_param.clone()),
             &simulated_price,
             &res.twap_7d,
             res.slope,
@@ -146,9 +146,29 @@ mod tests {
 
         println!("reserve_price: {:?}", reserve_price);
 
+        let reserve_price_sobol = floating_point::calculate_reserve_price_sobol(
+            data[0].0,
+            data[data.len() - 1].0,
+            &convert_array1_to_dvec(res.season_param),
+            &simulated_price,
+            &res.twap_7d,
+            res.slope,
+            res.intercept,
+            data.len(),
+            num_paths,
+            n_periods,
+        )
+        .unwrap();
+
+        println!("reserve_price_sobol: {:?}", reserve_price_sobol);
+
         let is_within_tolerance_reserve_price =
             error_bound_f64(reserve_price, res.reserve_price, 5.0);
         assert!(is_within_tolerance_reserve_price);
+
+        let is_within_tolerance_reserve_price_sobol =
+            error_bound_f64(reserve_price_sobol, res.reserve_price, 5.0);
+        assert!(is_within_tolerance_reserve_price_sobol);
         // reserve_price: 1765847736.6691935 (num_paths: 15,000)
         // reserve_price: 1710956542.6769266 (num_paths: 4,000)
 
@@ -161,7 +181,6 @@ mod tests {
 
         println!("original_reserve_price: {:?}", original_reserve_price);
         // original_reserve_price: 1735924412.5244353
-
     }
 
     #[test]
