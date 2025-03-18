@@ -33,3 +33,5 @@ max-return-floating-methods = { path = "../../../max-return-floating/methods" }
 
 hashing-felts-core = { path = "../../../hashing-felts/core" }
 hashing-felts-methods = { path = "../../../hashing-felts/methods" }
+
+guest-fixed-utils = { git = "https://github.com/OilerNetwork/fossil-light-client.git", branch = "sepolia-deployment", package = "guest-fixed-utils" }
