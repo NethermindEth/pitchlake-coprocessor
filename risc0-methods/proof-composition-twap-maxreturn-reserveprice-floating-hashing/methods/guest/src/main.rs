@@ -24,6 +24,14 @@ use max_return_floating_methods::MAX_RETURN_FLOATING_GUEST_ID;
 use hashing_felts_core::HashingFeltOutput;
 use hashing_felts_methods::HASHING_FELTS_GUEST_ID;
 
+use guest_fixed_utils::{UFixedPoint123x128, StorePacking};
+
+/// Helper function to convert a floating point value to a hex string representation
+/// of a fixed-point packednumber using the UFixedPoint123x128 type
+fn to_fixed_packed_hex(value: f64) -> String {
+    UFixedPoint123x128::pack(UFixedPoint123x128::from(value)).to_hex_string()
+}
+
 fn main() {
     let data: ProofCompositionInput = env::read();
 
@@ -127,13 +135,13 @@ fn main() {
         data_8_months_hash: data.data_8_months_hash,
         start_timestamp: data.start_timestamp,
         end_timestamp: data.end_timestamp,
-        reserve_price: data.reserve_price,
-        floating_point_tolerance: data.floating_point_tolerance,
-        reserve_price_tolerance: data.reserve_price_tolerance,
-        gradient_tolerance: data.gradient_tolerance,
-        twap_tolerance: data.twap_tolerance,
-        twap_result: data.twap_result,
-        max_return: data.max_return,
+        reserve_price: to_fixed_packed_hex(data.reserve_price),
+        floating_point_tolerance: to_fixed_packed_hex(data.floating_point_tolerance),
+        reserve_price_tolerance: to_fixed_packed_hex(data.reserve_price_tolerance),
+        gradient_tolerance: to_fixed_packed_hex(data.gradient_tolerance),
+        twap_tolerance: to_fixed_packed_hex(data.twap_tolerance),
+        twap_result: to_fixed_packed_hex(data.twap_result),
+        max_return: to_fixed_packed_hex(data.max_return),
     };
 
     env::commit(&output);
