@@ -1,0 +1,19 @@
+[package]
+name = "proof-composition-twap-maxreturn-reserveprice-floating-hashing"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "=1.2.5" }
+common = { path = "../../common", features = ["original"] }
+core = { path = "../../methods/core" }
+
+proof-composition-twap-maxreturn-reserveprice-floating-hashing-methods = { path = "../../methods/proof-composition-twap-maxreturn-reserveprice-floating-hashing-methods" }
+
+simulate-price-verify-position-floating = { path = "../simulate-price-verify-position-floating" }
+add-twap-7d-error-bound-floating = { path = "../add-twap-7d-error-bound-floating" }
+remove-seasonality-error-bound-floating = { path = "../remove-seasonality-error-bound-floating" }
+calculate-pt-pt1-error-bound-floating = { path = "../calculate-pt-pt1-error-bound-floating" }
+twap-error-bound-floating = { path = "../twap-error-bound-floating" }
+max-return-floating = { path = "../max-return-floating" }
+hashing-felts = { path = "../hashing-felts" }

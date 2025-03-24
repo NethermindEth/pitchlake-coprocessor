@@ -1,0 +1,10 @@
+[package]
+name = "max-return-floating"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "=1.2.5" }
+max-return-floating-methods = { path = "../../methods/max-return-floating-methods" }
+core = { path = "../../methods/core" }
+common = { path = "../../common", features = ["original"] }
