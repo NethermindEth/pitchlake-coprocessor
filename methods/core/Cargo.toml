@@ -1,0 +1,9 @@
+[package]
+name = "core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", default-features = false }
+nalgebra = { version = "0.33.2", features = ["serde-serialize"] }
+starknet-core = "=0.12.1"

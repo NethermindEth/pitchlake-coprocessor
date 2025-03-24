@@ -1,8 +1,0 @@
-[package]
-name = "hashing-felts-core"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-starknet-core = "=0.12.1"
-serde = { version = "1.0", default-features = false }

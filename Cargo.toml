@@ -1,0 +1,27 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "common",
+    "methods/core",
+    "methods/add-twap-7d-error-bound-floating-methods",
+    "methods/calculate-pt-pt1-error-bound-floating-methods",
+    "methods/remove-seasonality-error-bound-floating-methods",
+    "methods/simulate-price-verify-position-floating-methods",
+    "methods/twap-error-bound-floating-methods",
+    "methods/max-return-floating-methods",
+    "methods/proof-composition-twap-maxreturn-reserveprice-floating-hashing-methods",
+    "methods/hashing-felts-methods",
+
+    "mains/add-twap-7d-error-bound-floating",
+    "mains/calculate-pt-pt1-error-bound-floating",
+    "mains/remove-seasonality-error-bound-floating",
+    "mains/simulate-price-verify-position-floating",
+    "mains/twap-error-bound-floating",
+    "mains/max-return-floating",
+    "mains/proof-composition-twap-maxreturn-reserveprice-floating-hashing",
+    "mains/hashing-felts",
+]
+
+[profile.dev]
+opt-level = 3
