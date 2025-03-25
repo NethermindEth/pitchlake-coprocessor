@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
-
 use nalgebra::{DMatrix, DVector};
+use sobol::{params::JoeKuoD6, Sobol};
 
 pub mod remove_seasonality;
 pub use remove_seasonality::*;
@@ -16,6 +16,11 @@ pub mod calculate_twap;
 pub use calculate_twap::*;
 pub mod max_return;
 pub use max_return::*;
+
+pub fn sobol() -> Sobol<f64> {
+    let params = JoeKuoD6::minimal();
+    Sobol::<f64>::new(1, &params)
+}
 
 pub fn mrjpdf(params: &[f64], pt: &DVector<f64>, pt_1: &DVector<f64>) -> DVector<f64> {
     let (a, phi, mu_j, sigma_sq, sigma_sq_j, lambda) = (
