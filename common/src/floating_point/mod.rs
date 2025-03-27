@@ -70,7 +70,7 @@ pub struct AllInputsToReservePrice {
     pub twap_7d: Vec<f64>,
     pub slope: f64,
     pub intercept: f64,
-    pub reserve_price: f64,
+    pub reserve_price: u64,
 }
 
 pub fn calculate_reserve_price_full(
@@ -265,5 +265,17 @@ pub fn error_bound_f64(target: f64, calculated: f64, tolerance: f64) -> bool {
         0.0 // Both are 0, no difference
     };
 
+    percentage_diff < tolerance
+}
+
+pub fn error_bound_u64(target: u64, calculated: u64, tolerance: f64) -> bool {
+    let diff: f64 = (target as f64 - calculated as f64).abs();
+    let percentage_diff = if target != 0 {
+        (diff / target as f64) * 100.0
+    } else if calculated != 0 {
+        100.0 // If target is 0 but calc isn't, that's 100% error
+    } else {
+        0.0 // Both are 0, no difference
+    };
     percentage_diff < tolerance
 }

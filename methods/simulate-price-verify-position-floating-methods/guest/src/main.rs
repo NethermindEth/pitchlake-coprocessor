@@ -1,5 +1,5 @@
 use common::floating_point::{
-    calculate_reserve_price, error_bound_f64, simulate_price_verify_position,
+    calculate_reserve_price, error_bound_u64, simulate_price_verify_position,
 };
 use core::SimulatePriceVerifyPositionInput;
 use risc0_zkvm::guest::env;
@@ -36,7 +36,7 @@ fn main() {
     .unwrap();
 
     let is_within_tolerance_reserve_price =
-        error_bound_f64(reserve_price, data.reserve_price, data.tolerance);
+        error_bound_u64(reserve_price, data.reserve_price, data.tolerance);
     assert!(is_within_tolerance_reserve_price);
 
     env::commit(&data);

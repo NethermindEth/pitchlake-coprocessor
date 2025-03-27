@@ -198,7 +198,7 @@ pub struct AllInputsToReservePrice {
     pub twap_7d: Vec<f64>,
     pub slope: f64,
     pub intercept: f64,
-    pub reserve_price: f64,
+    pub reserve_price: u64,
     pub positions: Vec<f64>,
     pub pt: Array1<f64>,
     pub pt_1: Array1<f64>,
@@ -342,6 +342,8 @@ pub fn calculate_reserve_price(
     let average_payoff = payoffs.mean().unwrap_or(0.0);
     let reserve_price = f64::exp(-risk_free_rate) * average_payoff;
 
+    let reserve_price_scaled = (reserve_price * 10_000.0).trunc() as u64;
+
     AllInputsToReservePrice {
         season_param,
         de_seasonalised_detrended_log_base_fee,
@@ -350,7 +352,7 @@ pub fn calculate_reserve_price(
         twap_7d: twap,
         slope: trend_model.params()[0],
         intercept: trend_model.params()[1],
-        reserve_price,
+        reserve_price: reserve_price_scaled,
         pt,
         pt_1,
         simulated_log_prices,

@@ -4,8 +4,7 @@ mod tests {
 
     use crate::{
         floating_point::{
-            error_bound_dvec, error_bound_f64, error_bound_matrix,
-            error_bound_simulated_log_prices, error_bound_vec, mrjpdf, neg_log_likelihood,
+            error_bound_dvec, error_bound_f64, error_bound_matrix, error_bound_simulated_log_prices, error_bound_u64, error_bound_vec, mrjpdf, neg_log_likelihood
         },
         tests::mock::generate_inputs,
     };
@@ -232,6 +231,24 @@ mod tests {
         let calculated = 1.1;
         let tolerance = 1.0;
         let result = error_bound_f64(target, calculated, tolerance);
+        assert!(!result);
+    }
+
+    #[test]
+    fn test_error_bound_u64_within_tolerance() {
+        let target = 10000;
+        let calculated = 10001;
+        let tolerance = 1.0;
+        let result = error_bound_u64(target, calculated, tolerance);
+        assert!(result);
+    }
+
+    #[test]
+    fn test_error_bound_u64_outside_tolerance() {
+        let target = 10000;
+        let calculated = 11001;
+        let tolerance = 1.0;
+        let result = error_bound_u64(target, calculated, tolerance);
         assert!(!result);
     }
 }
