@@ -9,10 +9,7 @@ mod tests {
         },
         convert_felt_to_f64,
         floating_point::{
-            self, add_twap_7d, calculate_remove_seasonality,
-            calculate_twap as calculate_twap_floating,
-            calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64,
-            error_bound_vec, pre_minimize,
+            self, add_twap_7d, calculate_remove_seasonality, calculate_twap as calculate_twap_floating, calculated_reserve_price_from_simulated_log_prices, error_bound_dvec, error_bound_f64, error_bound_u64, error_bound_vec, pre_minimize
         },
         original::{
             calculate_reserve_price, calculate_twap::calculate_twap, convert_array1_to_dvec,
@@ -99,7 +96,7 @@ mod tests {
         let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
 
         let start_timestamp = 1708833600;  
-        let end_timestamp = 1708833600 + (3600 * 24 * 30 * 3); // as long as start to end timestamp is 90 days
+        // let end_timestamp = 1708833600 + (3600 * 24 * 30 * 3); // as long as start to end timestamp is 90 days
         let data = convert_data_to_vec_of_tuples(data.clone(), start_timestamp);
 
         let res = calculate_reserve_price(&data, 15000, 720);
@@ -147,7 +144,7 @@ mod tests {
         println!("reserve_price: {:?}", reserve_price);
 
         let is_within_tolerance_reserve_price =
-            error_bound_f64(reserve_price, res.reserve_price, 5.0);
+            error_bound_u64(reserve_price, res.reserve_price, 5.0);
         assert!(is_within_tolerance_reserve_price);
         // reserve_price: 1765847736.6691935 (num_paths: 15,000)
         // reserve_price: 1710956542.6769266 (num_paths: 4,000)

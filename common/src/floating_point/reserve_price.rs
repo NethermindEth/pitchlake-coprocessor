@@ -24,7 +24,7 @@ pub fn calculate_reserve_price(
     log_base_fee_len: usize,
     num_paths: usize,
     n_periods: usize,
-) -> Result<f64> {
+) -> Result<u64> {
     // timestamps are assumed to be in milliseconds for this calculation
     let total_hours = (period_end_timestamp * 1000 - period_start_timestamp * 1000) / 3600 / 1000;
 
@@ -91,7 +91,8 @@ pub fn calculate_reserve_price(
 
     let reserve_price = f64::exp(-0.05) * average_payoff;
 
-    Ok(reserve_price)
+    let reserve_price_scaled = (reserve_price * 10_000.0).trunc() as u64;
+    Ok(reserve_price_scaled)
 }
 
 pub fn calculate_simulated_log_prices(

@@ -50,7 +50,7 @@ pub struct ProofCompositionInput {
     pub twap_7d: Vec<f64>,
     pub slope: f64,
     pub intercept: f64,
-    pub reserve_price: f64,
+    pub reserve_price: u64,
     pub floating_point_tolerance: f64,
     pub reserve_price_tolerance: f64,
     pub twap_tolerance: f64,
@@ -63,7 +63,7 @@ pub struct ProofCompositionOutput {
     pub data_8_months_hash: [u32; 8],
     pub start_timestamp: i64,
     pub end_timestamp: i64,
-    pub reserve_price: String,
+    pub reserve_price: u64,
     pub floating_point_tolerance: String,
     pub reserve_price_tolerance: String,
     pub twap_tolerance: String,
@@ -97,7 +97,7 @@ pub struct SimulatePriceVerifyPositionInput {
     pub twap_7d: Vec<f64>,
     pub slope: f64,
     pub intercept: f64,
-    pub reserve_price: f64,
+    pub reserve_price: u64,
     pub tolerance: f64,
     pub data_length: usize, // should always be 2160 . TODO: can remove
 }

@@ -1,18 +1,17 @@
 use core::{
     AddTwap7dErrorBoundFloatingInput, CalculatePtPt1ErrorBoundFloatingInput, HashingFeltOutput,
-    ProofCompositionInput, ProofCompositionOutput,
-    RemoveSeasonalityErrorBoundFloatingInput, SimulatePriceVerifyPositionInput,
-    TwapErrorBoundInput,
+    ProofCompositionInput, ProofCompositionOutput, RemoveSeasonalityErrorBoundFloatingInput,
+    SimulatePriceVerifyPositionInput, TwapErrorBoundInput,
 };
 use risc0_zkvm::{guest::env, serde};
 
 use add_twap_7d_error_bound_floating_methods::ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ID;
-use remove_seasonality_error_bound_floating_methods::REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ID;
 use calculate_pt_pt1_error_bound_floating_methods::CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ID;
+use hashing_felts_methods::HASHING_FELTS_GUEST_ID;
+use max_return_floating_methods::MAX_RETURN_FLOATING_GUEST_ID;
+use remove_seasonality_error_bound_floating_methods::REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ID;
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID;
 use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ID;
-use max_return_floating_methods::MAX_RETURN_FLOATING_GUEST_ID;
-use hashing_felts_methods::HASHING_FELTS_GUEST_ID;
 
 use guest_fixed_utils::{StorePacking, UFixedPoint123x128};
 
@@ -125,7 +124,7 @@ fn main() {
         data_8_months_hash: data.data_8_months_hash,
         start_timestamp: data.start_timestamp,
         end_timestamp: data.end_timestamp,
-        reserve_price: to_fixed_packed_hex(data.reserve_price),
+        reserve_price: data.reserve_price,
         floating_point_tolerance: to_fixed_packed_hex(data.floating_point_tolerance),
         reserve_price_tolerance: to_fixed_packed_hex(data.reserve_price_tolerance),
         gradient_tolerance: to_fixed_packed_hex(data.gradient_tolerance),
