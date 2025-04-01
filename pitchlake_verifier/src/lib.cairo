@@ -2,7 +2,8 @@ pub mod groth16_verifier;
 mod groth16_verifier_constants;
 pub mod universal_ecip;
 use core::num::traits::{Bounded, WideMul};
-use fp::{UFixedPoint123x128, UFixedPoint123x128StorePacking, UFixedPointTrait};
+use fp::UFixedPoint123x128StorePacking;
+pub mod pitchlake_verifier;
 
 // Constants for byte sizes and offsets
 const U64_SIZE: usize = 8;
@@ -18,13 +19,13 @@ pub struct Journal {
     pub data_8_months_hash: [u32; 8],
     pub start_timestamp: u64,
     pub end_timestamp: u64,
-    pub reserve_price: UFixedPoint123x128,
-    pub floating_point_tolerance: UFixedPoint123x128,
-    pub reserve_price_tolerance: UFixedPoint123x128,
-    pub twap_tolerance: UFixedPoint123x128,
-    pub gradient_tolerance: UFixedPoint123x128,
-    pub twap_result: UFixedPoint123x128,
-    pub max_return: UFixedPoint123x128,
+    pub reserve_price: felt252,
+    pub floating_point_tolerance: felt252,
+    pub reserve_price_tolerance: felt252,
+    pub twap_tolerance: felt252,
+    pub gradient_tolerance: felt252,
+    pub twap_result: felt252,
+    pub max_return: felt252,
 }
 
 #[derive(Drop, Debug, Copy, PartialEq, Serde)]
@@ -152,9 +153,7 @@ pub fn decode_journal(journal_bytes: Span<u8>) -> Journal {
 }
 
 // Helper function to parse 8 bytes into a UFixedPoint123x128 value
-fn parse_packed_fixed_point(
-    journal_bytes: Span<u8>, mut byte_offset: usize,
-) -> (UFixedPoint123x128, usize) {
+fn parse_packed_fixed_point(journal_bytes: Span<u8>, mut byte_offset: usize) -> (felt252, usize) {
     byte_offset += U32_SIZE; // Skip length indicator (66, 0, 0, 0)
     byte_offset += HEX_PREFIX_SIZE; // Skip "0x" prefix
     let mut value: u256 = 0;
@@ -176,7 +175,9 @@ fn parse_packed_fixed_point(
         hex_idx += 1;
     };
     byte_offset += HEX_HASH_WITH_PREFIX_SIZE;
-    (UFixedPoint123x128StorePacking::unpack(value.try_into().unwrap()), byte_offset)
+
+    let felt_value: felt252 = value.try_into().unwrap();
+    (felt_value, byte_offset)
 }
 
 trait BitShift<T> {
@@ -242,6 +243,7 @@ fn pow<T, +Sub<T>, +Mul<T>, +Div<T>, +Rem<T>, +PartialEq<T>, +Into<u8, T>, +Drop
 
 #[cfg(test)]
 mod tests {
+    use fp::{UFixedPoint123x128StorePacking as SP, UFixedPointTrait};
     use super::*;
 
     #[derive(Drop, Debug, Copy, PartialEq, Serde)]
@@ -273,36 +275,58 @@ mod tests {
 
         // For the floating point values, we would need to check the bit representation
         // or approximate values, depending on how UFixedPoint123x128 stores values
-        assert_eq!(journal.reserve_price.get_integer(), expected_journal.reserve_price.high);
-        assert_eq!(journal.reserve_price.get_fractional(), expected_journal.reserve_price.low);
         assert_eq!(
-            journal.floating_point_tolerance.get_integer(),
+            SP::unpack(journal.reserve_price).get_integer(), expected_journal.reserve_price.high,
+        );
+        assert_eq!(
+            SP::unpack(journal.reserve_price).get_fractional(), expected_journal.reserve_price.low,
+        );
+        assert_eq!(
+            SP::unpack(journal.floating_point_tolerance).get_integer(),
             expected_journal.floating_point_tolerance.high,
         );
         assert_eq!(
-            journal.floating_point_tolerance.get_fractional(),
+            SP::unpack(journal.floating_point_tolerance).get_fractional(),
             expected_journal.floating_point_tolerance.low,
         );
         assert_eq!(
-            journal.reserve_price_tolerance.get_integer(),
+            SP::unpack(journal.reserve_price_tolerance).get_integer(),
             expected_journal.reserve_price_tolerance.high,
         );
         assert_eq!(
-            journal.reserve_price_tolerance.get_fractional(),
+            SP::unpack(journal.reserve_price_tolerance).get_fractional(),
             expected_journal.reserve_price_tolerance.low,
         );
-        assert_eq!(journal.twap_tolerance.get_integer(), expected_journal.twap_tolerance.high);
-        assert_eq!(journal.twap_tolerance.get_fractional(), expected_journal.twap_tolerance.low);
         assert_eq!(
-            journal.gradient_tolerance.get_integer(), expected_journal.gradient_tolerance.high,
+            SP::unpack(journal.twap_tolerance).get_integer(), expected_journal.twap_tolerance.high,
         );
         assert_eq!(
-            journal.gradient_tolerance.get_fractional(), expected_journal.gradient_tolerance.low,
+            SP::unpack(journal.twap_tolerance).get_fractional(),
+            expected_journal.twap_tolerance.low,
         );
-        assert_eq!(journal.twap_result.get_integer(), expected_journal.twap_result.high);
-        assert_eq!(journal.twap_result.get_fractional(), expected_journal.twap_result.low);
-        assert_eq!(journal.max_return.get_integer(), expected_journal.max_return.high);
-        assert_eq!(journal.max_return.get_fractional(), expected_journal.max_return.low);
+        assert_eq!(
+            SP::unpack(journal.gradient_tolerance).get_integer(),
+            expected_journal.gradient_tolerance.high,
+        );
+        assert_eq!(
+            SP::unpack(journal.gradient_tolerance).get_fractional(),
+            expected_journal.gradient_tolerance.low,
+        );
+        assert_eq!(
+            SP::unpack(journal.twap_result).get_integer(), expected_journal.twap_result.high,
+        );
+        assert_eq!(
+            UFixedPoint123x128StorePacking::unpack(journal.twap_result).get_fractional(),
+            expected_journal.twap_result.low,
+        );
+        assert_eq!(
+            UFixedPoint123x128StorePacking::unpack(journal.max_return).get_integer(),
+            expected_journal.max_return.high,
+        );
+        assert_eq!(
+            UFixedPoint123x128StorePacking::unpack(journal.max_return).get_fractional(),
+            expected_journal.max_return.low,
+        );
     }
 
     fn get_expected_results() -> TestJournal {

@@ -1,12 +1,12 @@
 [package]
-name = "verifier"
+name = "pitchlake_verifier"
 version = "0.1.0"
 edition = "2023_11"
 
 # See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
 
 [dependencies]
-garaga = { git = "https://github.com/keep-starknet-strange/garaga.git", branch = "main" }
+garaga = { git = "https://github.com/keep-starknet-strange/garaga.git", rev = "d23e117" }
 starknet = "2.9.4"
 assert_macros = "2.9.4"
 openzeppelin_upgrades = "1.0.0"
@@ -14,7 +14,7 @@ openzeppelin_access = "1.0.0"
 fp = "0.1.4"
 
 [dev-dependencies]
-snforge_std = "0.37.0"
+snforge_std = "0.38.3"
 assert_macros = "2.9.4"
 
 [workspace.tool.fmt]
