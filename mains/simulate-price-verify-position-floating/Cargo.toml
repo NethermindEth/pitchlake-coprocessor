@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-risc0-zkvm = { version = "=2.0.0" }
+risc0-zkvm.workspace = true
 simulate-price-verify-position-floating-methods = { path = "../../methods/simulate-price-verify-position-floating-methods" }
 core = { path = "../../methods/core" }
 nalgebra = { version = "0.33.2", features = ["serde-serialize"] }

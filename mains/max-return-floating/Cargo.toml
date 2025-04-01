@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-risc0-zkvm = { version = "=2.0.0" }
+risc0-zkvm.workspace = true
 max-return-floating-methods = { path = "../../methods/max-return-floating-methods" }
 core = { path = "../../methods/core" }
 common = { path = "../../common", features = ["original"] }
