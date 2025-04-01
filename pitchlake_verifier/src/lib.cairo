@@ -14,6 +14,15 @@ const HEX_HASH_WITH_PREFIX_SIZE: usize = 66; // "0x" + 64 hex chars
 const ASCII_0: u256 = 48;
 const ASCII_A_OFFSET: u256 = 87; // 'a' - 10 = 97 - 10 = 87
 
+#[derive(Copy, Drop, Serde)]
+pub struct PitchLakeJobRequest {
+    pub vault_address: starknet::ContractAddress, // Which vault is this request for
+    // The timestamp the results are for
+    pub timestamp: u64,
+    // 'PITCH_LAKE_V1' (or program hash when proving ?)
+    pub program_id: felt252 // 'PITCH_LAKE_V1'}
+}
+
 #[derive(Drop, Debug, Copy, PartialEq, Serde)]
 pub struct Journal {
     pub data_8_months_hash: [u32; 8],

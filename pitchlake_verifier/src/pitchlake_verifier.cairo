@@ -1,7 +1,9 @@
+use pitchlake_verifier::PitchLakeJobRequest;
+
 #[starknet::interface]
 pub trait IPitchLakeVerifier<TContractState> {
     fn verify_proof(
-        ref self: TContractState, proof: Span<felt252>, ipfs_hash: ByteArray, is_build: bool,
+        ref self: TContractState, proof: Span<felt252>, pitchlake_job_request: PitchLakeJobRequest,
     );
     fn update_verifier_address(
         ref self: TContractState, new_verifier_address: starknet::ContractAddress,
@@ -13,7 +15,7 @@ pub trait IPitchLakeVerifier<TContractState> {
 
 #[starknet::interface]
 pub trait IFossilClient<TContractState> {
-    fn fossil_callback(ref self: TContractState, result: Span<felt252>);
+    fn fossil_callback(ref self: TContractState, job_request: Span<felt252>, result: Span<felt252>);
 }
 
 #[starknet::contract]
@@ -24,7 +26,7 @@ mod PitchLakeVerifier {
     use pitchlake_verifier::groth16_verifier::{
         IRisc0Groth16VerifierBN254Dispatcher, IRisc0Groth16VerifierBN254DispatcherTrait,
     };
-    use super::{IFossilClientDispatcher, IFossilClientDispatcherTrait};
+    use super::{IFossilClientDispatcher, IFossilClientDispatcherTrait, PitchLakeJobRequest};
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -91,7 +93,9 @@ mod PitchLakeVerifier {
     #[abi(embed_v0)]
     impl PitchLakeVerifierImpl of super::IPitchLakeVerifier<ContractState> {
         fn verify_proof(
-            ref self: ContractState, mut proof: Span<felt252>, ipfs_hash: ByteArray, is_build: bool,
+            ref self: ContractState,
+            mut proof: Span<felt252>,
+            pitchlake_job_request: PitchLakeJobRequest,
         ) {
             let _ = proof.pop_front();
             let journal = self
@@ -102,14 +106,27 @@ mod PitchLakeVerifier {
 
             let journal = decode_journal(journal);
 
-            let mut calldata: Array<felt252> = array![];
+            let mut proof_data: Array<felt252> = array![];
 
             // TODO: review the Journal fields that need to be sent to pitchlake client
-            journal.start_timestamp.serialize(ref calldata);
+            journal.start_timestamp.serialize(ref proof_data);
+            journal.end_timestamp.serialize(ref proof_data);
+            journal.reserve_price.serialize(ref proof_data);
+            journal.floating_point_tolerance.serialize(ref proof_data);
+            journal.reserve_price_tolerance.serialize(ref proof_data);
+            journal.twap_tolerance.serialize(ref proof_data);
+            journal.gradient_tolerance.serialize(ref proof_data);
+            journal.twap_result.serialize(ref proof_data);
+            journal.max_return.serialize(ref proof_data);
+
+            let mut job_request_data: Array<felt252> = array![];
+            pitchlake_job_request.vault_address.serialize(ref job_request_data);
+            pitchlake_job_request.timestamp.serialize(ref job_request_data);
+            pitchlake_job_request.program_id.serialize(ref job_request_data);
 
             let pitchlake_client = self.pitchlake_client.read();
 
-            pitchlake_client.fossil_callback(calldata.span());
+            pitchlake_client.fossil_callback(proof_data.span(), job_request_data.span());
 
             self
                 .emit(
