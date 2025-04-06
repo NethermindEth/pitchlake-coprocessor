@@ -1,5 +1,5 @@
-use core::AddTwap7dErrorBoundFloatingInput;
 use add_twap_7d_error_bound_floating_methods::ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ELF;
+use core::AddTwap7dErrorBoundFloatingInput;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 
 pub fn add_twap_7d_error_bound(

@@ -6,8 +6,8 @@ use core::SimulatePriceVerifyPositionInput;
 use simulate_price_verify_position_floating::simulate_price_verify_position;
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ID;
 
-use hashing_felts::hash_felts;
 use core::HashingFeltInput;
+use hashing_felts::hash_felts;
 
 fn main() {
     // get only first period of (timestamp avg_gas_fee)

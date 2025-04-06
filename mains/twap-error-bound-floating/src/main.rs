@@ -6,8 +6,8 @@ use common::{
     original,
     tests::mock::get_first_period_data,
 };
-use twap_error_bound_floating::calculate_twap;
 use core::TwapErrorBoundInput;
+use twap_error_bound_floating::calculate_twap;
 use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ID;
 
 fn main() {

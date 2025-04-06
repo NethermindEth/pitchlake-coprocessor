@@ -29,3 +29,5 @@ data.csv
 benchmark-risc0/error_bound_diff.csv
 
 starknet-verifier/.snfoundry_cache/
+
+mains/mock-proof-composition/profile.pb

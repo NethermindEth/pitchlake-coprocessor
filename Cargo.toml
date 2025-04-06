@@ -12,6 +12,7 @@ members = [
     "methods/max-return-floating-methods",
     "methods/proof-composition-twap-maxreturn-reserveprice-floating-hashing-methods",
     "methods/hashing-felts-methods",
+    "methods/mock-proof-composition",
 
     "mains/add-twap-7d-error-bound-floating",
     "mains/calculate-pt-pt1-error-bound-floating",
@@ -21,6 +22,7 @@ members = [
     "mains/max-return-floating",
     "mains/proof-composition-twap-maxreturn-reserveprice-floating-hashing",
     "mains/hashing-felts",
+    "mains/mock-proof-composition",
 ]
 
 [profile.dev]
