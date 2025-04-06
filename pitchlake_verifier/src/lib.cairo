@@ -3,7 +3,11 @@ mod groth16_verifier_constants;
 pub mod universal_ecip;
 use core::num::traits::{Bounded, WideMul};
 use fp::UFixedPoint123x128StorePacking;
+pub mod fixtures;
 pub mod pitchlake_verifier;
+pub mod mocks {
+    pub mod pitchlake_client;
+}
 
 // Constants for byte sizes and offsets
 const U64_SIZE: usize = 8;
@@ -106,7 +110,7 @@ pub fn decode_journal(journal_bytes: Span<u8>) -> Journal {
         let shifted_byte: u64 = BitShift::shl(current_byte, (8 * byte_idx).into());
         start_timestamp += shifted_byte;
         byte_idx += 1;
-    };
+    }
 
     // Parse end_timestamp (8 bytes)
     byte_offset += U64_SIZE;
@@ -117,7 +121,7 @@ pub fn decode_journal(journal_bytes: Span<u8>) -> Journal {
         let shifted_byte: u64 = BitShift::shl(current_byte, (8 * byte_idx).into());
         end_timestamp += shifted_byte;
         byte_idx += 1;
-    };
+    }
 
     // Parse all floating point values
     byte_offset += U64_SIZE;
@@ -182,7 +186,7 @@ fn parse_packed_fixed_point(journal_bytes: Span<u8>, mut byte_offset: usize) -> 
         };
         value = shifted_hash + hex_byte - hex_base;
         hex_idx += 1;
-    };
+    }
     byte_offset += HEX_HASH_WITH_PREFIX_SIZE;
 
     let felt_value: felt252 = value.try_into().unwrap();

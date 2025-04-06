@@ -13,20 +13,17 @@ pub trait IPitchLakeVerifier<TContractState> {
     fn upgrade(ref self: TContractState, new_class_hash: starknet::ClassHash);
 }
 
-#[starknet::interface]
-pub trait IFossilClient<TContractState> {
-    fn fossil_callback(ref self: TContractState, job_request: Span<felt252>, result: Span<felt252>);
-}
-
 #[starknet::contract]
 mod PitchLakeVerifier {
     use openzeppelin_access::ownable::OwnableComponent;
     use openzeppelin_upgrades::UpgradeableComponent;
-    use pitchlake_verifier::decode_journal;
     use pitchlake_verifier::groth16_verifier::{
         IRisc0Groth16VerifierBN254Dispatcher, IRisc0Groth16VerifierBN254DispatcherTrait,
     };
-    use super::{IFossilClientDispatcher, IFossilClientDispatcherTrait, PitchLakeJobRequest};
+    use pitchlake_verifier::mocks::pitchlake_client::{
+        IFossilClientDispatcher, IFossilClientDispatcherTrait,
+    };
+    use pitchlake_verifier::{PitchLakeJobRequest, decode_journal};
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -78,7 +75,7 @@ mod PitchLakeVerifier {
     fn constructor(
         ref self: ContractState,
         verifier_address: starknet::ContractAddress,
-        fossil_store_address: starknet::ContractAddress,
+        pitchlake_client_address: starknet::ContractAddress,
         owner: starknet::ContractAddress,
     ) {
         self
@@ -86,7 +83,7 @@ mod PitchLakeVerifier {
             .write(IRisc0Groth16VerifierBN254Dispatcher { contract_address: verifier_address });
         self
             .pitchlake_client
-            .write(IFossilClientDispatcher { contract_address: fossil_store_address });
+            .write(IFossilClientDispatcher { contract_address: pitchlake_client_address });
         self.ownable.initializer(owner);
     }
 

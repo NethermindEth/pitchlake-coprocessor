@@ -11,8 +11,8 @@ pub trait IRisc0Groth16VerifierBN254<TContractState> {
 mod Risc0Groth16VerifierBN254 {
     use garaga::definitions::{G1G2Pair, G1Point};
     use garaga::ec_ops::{G1PointTrait, ec_safe_add};
-    use garaga::ec_ops_g2::{G2PointTrait};
-    use garaga::groth16::{multi_pairing_check_bn254_3P_2F_with_extra_miller_loop_result};
+    use garaga::ec_ops_g2::G2PointTrait;
+    use garaga::groth16::multi_pairing_check_bn254_3P_2F_with_extra_miller_loop_result;
     use garaga::utils::calldata::deserialize_full_proof_with_hints_risc0;
     use garaga::utils::risc0::{compute_receipt_claim, journal_sha256};
     use starknet::SyscallResultTrait;
@@ -72,7 +72,7 @@ mod Risc0Groth16VerifierBN254 {
             // to obtain claim0 * IC[3] + claim1 * IC[4].
             let mut _msm_result_serialized = starknet::syscalls::library_call_syscall(
                 self.ecip_ops_class_hash.read().try_into().unwrap(),
-                selector!("msm_g1_u128"),
+                selector!("msm_g1_u128_u288"),
                 msm_calldata.span(),
             )
                 .unwrap_syscall();
