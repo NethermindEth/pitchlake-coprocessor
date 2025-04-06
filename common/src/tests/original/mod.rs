@@ -99,7 +99,7 @@ mod tests {
         let data = data_8_months[data_8_months.len().saturating_sub(2160)..].to_vec();
 
         let start_timestamp = 1708833600;
-        let end_timestamp = 1708833600 + (3600 * 24 * 30 * 3); // as long as start to end timestamp is 90 days
+        let _end_timestamp = 1708833600 + (3600 * 24 * 30 * 3); // as long as start to end timestamp is 90 days
         let data = convert_data_to_vec_of_tuples(data.clone(), start_timestamp);
 
         let res = calculate_reserve_price(&data, 15000, 720);

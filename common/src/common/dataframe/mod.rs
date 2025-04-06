@@ -272,15 +272,15 @@ mod tests {
             .get(periods[1].height() - 1)
             .unwrap();
 
-        let zzzz = periods[2].column("date").unwrap().get(0).unwrap();
-        let zzzz_last = periods[2]
+        let _zzzz = periods[2].column("date").unwrap().get(0).unwrap();
+        let _zzzz_last = periods[2]
             .column("date")
             .unwrap()
             .get(periods[2].height() - 1)
             .unwrap();
 
-        let aaaa = periods[3].column("date").unwrap().get(0).unwrap();
-        let aaaa_last = periods[3]
+        let _aaaa = periods[3].column("date").unwrap().get(0).unwrap();
+        let _aaaa_last = periods[3]
             .column("date")
             .unwrap()
             .get(periods[3].height() - 1)
