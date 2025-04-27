@@ -1,4 +1,5 @@
 use eyre::{anyhow as err, Result};
+use statrs::statistics::Statistics;
 
 pub fn add_twap_30d(data: &Vec<f64>) -> Result<Vec<f64>> {
     let required_window_size = 24 * 30;
@@ -51,10 +52,7 @@ pub fn calculate_max_returns(data: &Vec<f64>) -> f64 {
     let twap_30d = add_twap_30d(data).unwrap();
     let returns = calculate_30d_returns(&twap_30d).unwrap();
 
-    let max_return = returns
-        .iter()
-        .max_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap_or(&0.0);
+    let std_dev = returns.std_dev();
 
-    *max_return
+    std_dev
 }
