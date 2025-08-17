@@ -8,7 +8,7 @@ pub trait IRisc0Groth16VerifierBN254<TContractState> {
 }
 
 #[starknet::contract]
-mod Risc0Groth16VerifierBN254 {
+pub mod Risc0Groth16VerifierBN254 {
     use garaga::definitions::{G1G2Pair, G1Point};
     use garaga::ec_ops::{G1PointTrait, ec_safe_add};
     use garaga::ec_ops_g2::G2PointTrait;
@@ -29,7 +29,7 @@ mod Risc0Groth16VerifierBN254 {
     }
 
     #[abi(embed_v0)]
-    impl IRisc0Groth16VerifierBN254 of super::IRisc0Groth16VerifierBN254<ContractState> {
+    impl Risc0Groth16VerifierBN254Impl of super::IRisc0Groth16VerifierBN254<ContractState> {
         fn verify_groth16_proof_bn254(
             self: @ContractState, full_proof_with_hints: Span<felt252>,
         ) -> Option<Span<u8>> {

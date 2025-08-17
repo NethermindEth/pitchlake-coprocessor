@@ -14,7 +14,7 @@ pub trait IPitchLakeVerifier<TContractState> {
 }
 
 #[starknet::contract]
-mod PitchLakeVerifier {
+pub mod PitchLakeVerifier {
     use openzeppelin_access::ownable::OwnableComponent;
     use openzeppelin_upgrades::UpgradeableComponent;
     use pitchlake_verifier::groth16_verifier::{

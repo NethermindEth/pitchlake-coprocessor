@@ -4,7 +4,7 @@ pub trait IFossilClient<TContractState> {
 }
 
 #[starknet::contract]
-mod MockPitchLakeClient {
+pub mod MockPitchLakeClient {
     #[storage]
     struct Storage {}
 

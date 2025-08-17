@@ -46,7 +46,7 @@ trait IUniversalECIP<TContractState> {
 }
 
 #[starknet::contract]
-mod UniversalECIP {
+pub mod UniversalECIP {
     use garaga::core::circuit::u288IntoCircuitInputValue;
     use garaga::definitions::G1Point;
     use garaga::ec_ops::{

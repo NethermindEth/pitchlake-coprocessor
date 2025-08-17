@@ -1,13 +1,17 @@
 pub mod groth16_verifier;
+pub use groth16_verifier::Risc0Groth16VerifierBN254;
 mod groth16_verifier_constants;
 pub mod universal_ecip;
+pub use universal_ecip::UniversalECIP;
 use core::num::traits::{Bounded, WideMul};
 use fp::UFixedPoint123x128StorePacking;
 pub mod fixtures;
 pub mod pitchlake_verifier;
+pub use pitchlake_verifier::PitchLakeVerifier;
 pub mod mocks {
     pub mod pitchlake_client;
 }
+pub use mocks::pitchlake_client::MockPitchLakeClient;
 
 // Constants for byte sizes and offsets
 const U64_SIZE: usize = 8;
@@ -18,7 +22,7 @@ const HEX_HASH_WITH_PREFIX_SIZE: usize = 66; // "0x" + 64 hex chars
 const ASCII_0: u256 = 48;
 const ASCII_A_OFFSET: u256 = 87; // 'a' - 10 = 97 - 10 = 87
 
-#[derive(Copy, Drop, Serde)]
+#[derive(Copy, Debug, Drop, Serde)]
 pub struct PitchLakeJobRequest {
     pub vault_address: starknet::ContractAddress, // Which vault is this request for
     // The timestamp the results are for
