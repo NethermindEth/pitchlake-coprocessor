@@ -3,6 +3,19 @@ name = "mock-proof-composition-methods"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+full = ["guest/full"]
+remove-seasonality = ["guest/remove-seasonality"]
+simulate-price = ["guest/simulate-price"]
+twap = ["guest/twap"]
+calculate-pt = ["guest/calculate-pt"]
+max-return = ["guest/max-return"]
+hashing = ["guest/hashing"]
+
+[dependencies]
+guest = { path = "guest", package = "mock-proof-composition-guest" }
+
 [build-dependencies]
 risc0-build.workspace = true
 
