@@ -11,6 +11,8 @@ use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{compute_image_id, default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 
 fn main() {
+    dotenv::dotenv().ok();
+    
     let data = ProofCompositionInput {
         data_8_months: vec![0.1, 0.2, 0.3, 0.4, 0.5],
         data_8_months_hash: [

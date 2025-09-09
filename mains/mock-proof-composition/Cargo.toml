@@ -17,3 +17,4 @@ mock-proof-composition-methods = { path = "../../methods/mock-proof-composition"
 nalgebra = "0.33.2"
 garaga_rs = { git = "https://github.com/keep-starknet-strange/garaga.git", branch = "main" }
 risc0-ethereum-contracts = { git = "https://github.com/risc0/risc0-ethereum", tag = "v2.0.2" }
+dotenv = "0.15"

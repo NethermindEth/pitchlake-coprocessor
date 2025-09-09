@@ -98,7 +98,7 @@ pub mod PitchLakeVerifier {
             let journal = self
                 .bn254_verifier
                 .read()
-                .verify_groth16_proof_bn254(proof)
+                .verify_r0_groth16_proof_bn254(proof)
                 .expect('Failed to verify proof');
 
             let journal = decode_journal(journal);

@@ -1,10 +1,10 @@
 pub mod groth16_verifier;
-pub use groth16_verifier::Risc0Groth16VerifierBN254;
+//pub use groth16_verifier::Risc0Groth16VerifierBN254;
 mod groth16_verifier_constants;
 pub mod universal_ecip;
-pub use universal_ecip::UniversalECIP;
 use core::num::traits::{Bounded, WideMul};
 use fp::UFixedPoint123x128StorePacking;
+pub use universal_ecip::UniversalECIP;
 pub mod fixtures;
 pub mod pitchlake_verifier;
 pub use pitchlake_verifier::PitchLakeVerifier;

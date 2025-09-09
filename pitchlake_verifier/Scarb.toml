@@ -7,14 +7,14 @@ edition = "2023_11"
 
 [dependencies]
 garaga = { git = "https://github.com/keep-starknet-strange/garaga.git", branch = "main" }
-starknet = "2.11.2"
+starknet = "2.12.0"
 openzeppelin_upgrades = "1.0.0"
 openzeppelin_access = "1.0.0"
 fp = "0.1.4"
 
 [dev-dependencies]
-snforge_std = "0.40.0"
-assert_macros = "2.11.2"
+snforge_std = "0.48.0"
+assert_macros = "2.12.0"
 
 [workspace.tool.fmt]
 sort-module-level-items = true
