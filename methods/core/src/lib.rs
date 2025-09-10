@@ -37,6 +37,8 @@ pub struct MaxReturnInput {
 pub struct ProofCompositionInput {
     pub data_8_months: Vec<f64>,
     pub data_8_months_hash: [u32; 8],
+    pub data_8_months_start_timestamp: i64,
+    pub data_8_months_end_timestamp: i64,
     pub start_timestamp: i64,
     pub end_timestamp: i64,
     pub positions: Vec<f64>,
@@ -63,13 +65,19 @@ pub struct ProofCompositionOutput {
     pub data_8_months_hash: [u32; 8],
     pub start_timestamp: i64,
     pub end_timestamp: i64,
+    pub reserve_price_start_timestamp: i64,
+    pub reserve_price_end_timestamp: i64,
     pub reserve_price: String,
+    pub twap_start_timestamp: i64,
+    pub twap_end_timestamp: i64,
+    pub twap_result: String,
+    pub max_return_start_timestamp: i64,
+    pub max_return_end_timestamp: i64,
+    pub max_return: String,
     pub floating_point_tolerance: String,
     pub reserve_price_tolerance: String,
     pub twap_tolerance: String,
     pub gradient_tolerance: String,
-    pub twap_result: String,
-    pub max_return: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]

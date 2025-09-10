@@ -134,6 +134,8 @@ fn main() {
     let input = ProofCompositionInput {
         data_8_months_hash: hashing_res.hash,
         data_8_months,
+        data_8_months_start_timestamp: start_timestamp - (3600 * 24 * 30 * 5), // 5 months earlier than 3-month period
+        data_8_months_end_timestamp: end_timestamp,
         start_timestamp,
         end_timestamp,
         positions: res.positions,
