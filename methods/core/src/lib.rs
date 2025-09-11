@@ -41,6 +41,13 @@ pub struct ProofCompositionInput {
     pub data_8_months_end_timestamp: i64,
     pub start_timestamp: i64,
     pub end_timestamp: i64,
+    // Specific timestamp ranges for each calculation type
+    pub twap_start_timestamp: i64,
+    pub twap_end_timestamp: i64,
+    pub reserve_price_start_timestamp: i64,
+    pub reserve_price_end_timestamp: i64,
+    pub max_return_start_timestamp: i64,
+    pub max_return_end_timestamp: i64,
     pub positions: Vec<f64>,
     pub pt: DVector<f64>,
     pub pt_1: DVector<f64>,
