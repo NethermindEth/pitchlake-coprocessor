@@ -3,6 +3,11 @@ use max_return_floating_methods::MAX_RETURN_FLOATING_GUEST_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 
 pub fn max_return(input: MaxReturnInput) -> (Receipt, (MaxReturnInput, f64)) {
+    eprintln!(
+        "max_return: Received {} data points for max return calculation",
+        input.data.len()
+    );
+
     let env = ExecutorEnv::builder()
         .write(&input)
         .unwrap()
