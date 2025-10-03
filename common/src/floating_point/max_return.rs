@@ -44,9 +44,18 @@ pub fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
     Ok(returns)
 }
 
-// expects 210 days (5,040 hours) of data
+// DEVELOPER NOTE: Data Length Configuration
+// ==========================================
+// Production expects 8 months of data: 24 * 30 * 8 = 5760 hours
+// POC expects 2 months of data: 24 * 30 * 2 = 1440 hours
+//
+// This assertion must align with:
+// - methods/hashing-felts-methods/guest/src/main.rs (input length)
+// - methods/core/src/lib.rs (ProofCompositionInput data volume)
 pub fn calculate_max_returns(data: &Vec<f64>) -> f64 {
-    assert!(data.len() == 24 * 30 * 8);
+    // POC configuration: 2 months of data
+    assert!(data.len() == 24 * 30 * 2,
+        "Expected 1440 hours (2 months) for POC. Production requires 5760 hours (8 months).");
 
     let twap_30d = add_twap_30d(data).unwrap();
     let returns = calculate_30d_returns(&twap_30d).unwrap();
