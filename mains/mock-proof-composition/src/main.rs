@@ -23,6 +23,12 @@ fn main() {
         data_8_months_end_timestamp: 1704067200,   // 2024-01-01
         start_timestamp: 1672531200,               // 2023-01-01 (3 months)
         end_timestamp: 1704067200,                 // 2024-01-01
+        twap_start_timestamp: 1672531200,          // 2023-01-01
+        twap_end_timestamp: 1704067200,            // 2024-01-01
+        reserve_price_start_timestamp: 1672531200, // 2023-01-01
+        reserve_price_end_timestamp: 1704067200,   // 2024-01-01
+        max_return_start_timestamp: 1672531200,    // 2023-01-01
+        max_return_end_timestamp: 1704067200,      // 2024-01-01
         positions: vec![1.0, 2.0, 3.0, 4.0, 5.0],
         pt: DVector::from_vec(vec![0.1, 0.2, 0.3]),
         pt_1: DVector::from_vec(vec![0.2, 0.3, 0.4]),
