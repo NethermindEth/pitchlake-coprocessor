@@ -7,12 +7,6 @@ use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSIT
 pub fn simulate_price_verify_position(
     input: SimulatePriceVerifyPositionInput,
 ) -> (Receipt, SimulatePriceVerifyPositionInput) {
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
     let prover = default_prover();
 
     const MAX_RETRIES: u32 = 5;
@@ -20,7 +14,13 @@ pub fn simulate_price_verify_position(
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        match prover.prove(env.clone(), SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: SimulatePriceVerifyPositionInput = receipt.journal.decode().unwrap();

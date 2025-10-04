@@ -7,12 +7,6 @@ use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 pub fn calculate_pt_pt1_error_bound_floating(
     input: CalculatePtPt1ErrorBoundFloatingInput,
 ) -> (Receipt, CalculatePtPt1ErrorBoundFloatingInput) {
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
     let prover = default_prover();
 
     const MAX_RETRIES: u32 = 5;
@@ -20,7 +14,13 @@ pub fn calculate_pt_pt1_error_bound_floating(
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        match prover.prove(env.clone(), CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, CALCULATE_PT_PT1_ERROR_BOUND_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: CalculatePtPt1ErrorBoundFloatingInput = receipt.journal.decode().unwrap();

@@ -7,12 +7,6 @@ use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 pub fn remove_seasonality_error_bound(
     input: RemoveSeasonalityErrorBoundFloatingInput,
 ) -> (Receipt, RemoveSeasonalityErrorBoundFloatingInput) {
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
     let prover = default_prover();
 
     const MAX_RETRIES: u32 = 5;
@@ -20,7 +14,13 @@ pub fn remove_seasonality_error_bound(
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        match prover.prove(env.clone(), REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: RemoveSeasonalityErrorBoundFloatingInput = receipt.journal.decode().unwrap();
