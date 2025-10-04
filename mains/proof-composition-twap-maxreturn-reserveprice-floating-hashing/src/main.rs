@@ -39,6 +39,8 @@ use remove_seasonality_error_bound_floating::remove_seasonality_error_bound;
 
 // Import RISC Zero ZK-VM utilities for proof generation
 use risc0_zkvm::{default_prover, ExecutorEnv};
+use std::thread;
+use std::time::Duration;
 
 // Import price simulation function that verifies option positions are within bounds
 use simulate_price_verify_position_floating::simulate_price_verify_position as simulate_price_verify_position_receipt;
@@ -297,13 +299,61 @@ fn main() {
     // ========== STEP 12: GENERATE THE COMPOSED ZK PROOF ==========
     // Execute the guest program (RISC Zero ZK-VM) to generate the proof
     // The guest program will verify all assumptions and produce a cryptographic receipt
-    let prove_info = default_prover()
-        .prove(
-            env, // Execution environment with all assumptions and inputs
+
+    const MAX_RETRIES: u32 = 10;
+    const INITIAL_DELAY_MS: u64 = 5000;
+
+    let prover = default_prover();
+    let mut last_error = None;
+    let mut prove_info = None;
+
+    for attempt in 1..=MAX_RETRIES {
+        eprintln!(
+            "proof_composition: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
+
+        match prover.prove(
+            env.clone(), // Execution environment with all assumptions and inputs
             // The compiled guest ELF binary that runs in the ZK-VM
             PROOF_COMPOSITION_TWAP_MAXRETURN_RESERVEPRICE_FLOATING_HASHING_GUEST_ELF,
+        ) {
+            Ok(info) => {
+                eprintln!(
+                    "proof_composition: Proof generation succeeded on attempt {}",
+                    attempt
+                );
+                prove_info = Some(info);
+                break;
+            }
+            Err(e) => {
+                eprintln!(
+                    "proof_composition: Attempt {}/{} failed: {}",
+                    attempt, MAX_RETRIES, e
+                );
+
+                last_error = Some(e);
+
+                if attempt == MAX_RETRIES {
+                    // Final attempt - fail
+                    break;
+                }
+
+                // Exponential backoff: 5s, 10s, 20s, 40s, etc.
+                let delay = INITIAL_DELAY_MS * 2u64.pow(attempt - 1);
+                eprintln!("proof_composition: Retrying in {}ms...", delay);
+                thread::sleep(Duration::from_millis(delay));
+            }
+        }
+    }
+
+    let prove_info = prove_info.unwrap_or_else(|| {
+        panic!(
+            "proof_composition: Failed after {} attempts. Last error: {:?}",
+            MAX_RETRIES,
+            last_error.unwrap()
         )
-        .unwrap();
+    });
 
     // ========== STEP 13: VERIFY THE PROOF ==========
     // Extract the receipt (the ZK proof) from the proving result

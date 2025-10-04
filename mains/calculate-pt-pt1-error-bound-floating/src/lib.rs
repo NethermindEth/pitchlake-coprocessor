@@ -14,6 +14,11 @@ pub fn calculate_pt_pt1_error_bound_floating(
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
+        eprintln!(
+            "calculate_pt_pt1_error_bound_floating: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
+
         let env = ExecutorEnv::builder()
             .write(&input)
             .unwrap()
@@ -24,6 +29,10 @@ pub fn calculate_pt_pt1_error_bound_floating(
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: CalculatePtPt1ErrorBoundFloatingInput = receipt.journal.decode().unwrap();
+                eprintln!(
+                    "calculate_pt_pt1_error_bound_floating: Proof generation succeeded on attempt {}",
+                    attempt
+                );
                 return (receipt, res);
             }
             Err(e) => {

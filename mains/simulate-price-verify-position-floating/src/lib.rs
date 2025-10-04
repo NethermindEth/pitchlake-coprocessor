@@ -14,6 +14,11 @@ pub fn simulate_price_verify_position(
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
+        eprintln!(
+            "simulate_price_verify_position: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
+
         let env = ExecutorEnv::builder()
             .write(&input)
             .unwrap()
@@ -24,6 +29,10 @@ pub fn simulate_price_verify_position(
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: SimulatePriceVerifyPositionInput = receipt.journal.decode().unwrap();
+                eprintln!(
+                    "simulate_price_verify_position: Proof generation succeeded on attempt {}",
+                    attempt
+                );
                 return (receipt, res);
             }
             Err(e) => {

@@ -12,6 +12,11 @@ pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInp
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
+        eprintln!(
+            "calculate_twap: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
+
         let env = ExecutorEnv::builder()
             .write(&input)
             .unwrap()
@@ -22,6 +27,10 @@ pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInp
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: TwapErrorBoundInput = receipt.journal.decode().unwrap();
+                eprintln!(
+                    "calculate_twap: Proof generation succeeded on attempt {}",
+                    attempt
+                );
                 return (receipt, res);
             }
             Err(e) => {

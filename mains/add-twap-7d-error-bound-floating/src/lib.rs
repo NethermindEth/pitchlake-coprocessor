@@ -14,6 +14,11 @@ pub fn add_twap_7d_error_bound(
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
+        eprintln!(
+            "add_twap_7d_error_bound: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
+
         let env = ExecutorEnv::builder()
             .write(&input)
             .unwrap()
@@ -24,6 +29,10 @@ pub fn add_twap_7d_error_bound(
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: AddTwap7dErrorBoundFloatingInput = receipt.journal.decode().unwrap();
+                eprintln!(
+                    "add_twap_7d_error_bound: Proof generation succeeded on attempt {}",
+                    attempt
+                );
                 return (receipt, res);
             }
             Err(e) => {
