@@ -5,12 +5,6 @@ use std::time::Duration;
 use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ELF;
 
 pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInput) {
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
     let prover = default_prover();
 
     const MAX_RETRIES: u32 = 5;
@@ -18,7 +12,13 @@ pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInp
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        match prover.prove(env.clone(), TWAP_ERROR_BOUND_FLOATING_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, TWAP_ERROR_BOUND_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: TwapErrorBoundInput = receipt.journal.decode().unwrap();

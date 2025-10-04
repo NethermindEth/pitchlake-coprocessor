@@ -234,6 +234,13 @@ fn main() {
         // Timestamp range for the 3-month reserve price calculation
         start_timestamp,
         end_timestamp,
+        // Specific timestamp ranges for each calculation type
+        twap_start_timestamp: start_timestamp,
+        twap_end_timestamp: end_timestamp,
+        reserve_price_start_timestamp: start_timestamp,
+        reserve_price_end_timestamp: end_timestamp,
+        max_return_start_timestamp: start_timestamp - (3600 * 24 * 30 * 5),
+        max_return_end_timestamp: end_timestamp,
         // Results from reserve price calculation
         positions: res.positions,               // Optimized option positions
         pt: convert_array1_to_dvec(res.pt),     // Markov transition matrix t

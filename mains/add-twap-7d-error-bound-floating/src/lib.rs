@@ -7,21 +7,20 @@ use std::time::Duration;
 pub fn add_twap_7d_error_bound(
     input: AddTwap7dErrorBoundFloatingInput,
 ) -> (Receipt, AddTwap7dErrorBoundFloatingInput) {
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
     let prover = default_prover();
 
-    // Retry logic for Bonsai API calls
     const MAX_RETRIES: u32 = 5;
     const INITIAL_DELAY_MS: u64 = 2000;
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        match prover.prove(env.clone(), ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, ADD_TWAP_7D_ERROR_BOUND_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: AddTwap7dErrorBoundFloatingInput = receipt.journal.decode().unwrap();
