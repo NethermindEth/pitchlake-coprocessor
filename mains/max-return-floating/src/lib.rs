@@ -12,8 +12,8 @@ pub fn max_return(input: MaxReturnInput) -> (Receipt, (MaxReturnInput, f64)) {
 
     let prover = default_prover();
 
-    const MAX_RETRIES: u32 = 5;
-    const INITIAL_DELAY_MS: u64 = 2000;
+    const MAX_RETRIES: u32 = 10;
+    const INITIAL_DELAY_MS: u64 = 5000;
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {

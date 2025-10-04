@@ -7,8 +7,8 @@ use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ELF;
 pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInput) {
     let prover = default_prover();
 
-    const MAX_RETRIES: u32 = 5;
-    const INITIAL_DELAY_MS: u64 = 2000;
+    const MAX_RETRIES: u32 = 10;
+    const INITIAL_DELAY_MS: u64 = 5000;
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
