@@ -27,19 +27,24 @@ pub fn calculate_pt_pt1_error_bound_floating(
                 return (receipt, res);
             }
             Err(e) => {
-                let error_msg = e.to_string();
-                let is_retryable = error_msg.contains("dns error")
-                    || error_msg.contains("client error")
-                    || error_msg.contains("error sending request")
-                    || error_msg.contains("Connection refused")
-                    || error_msg.contains("timeout");
+                eprintln!(
+                    "calculate_pt_pt1_error_bound_floating: Attempt {}/{} failed: {}",
+                    attempt, MAX_RETRIES, e
+                );
 
-                if !is_retryable || attempt == MAX_RETRIES {
-                    last_error = Some(e);
+                last_error = Some(e);
+
+                if attempt == MAX_RETRIES {
+                    // Final attempt - fail
                     break;
                 }
 
+                // Exponential backoff: 5s, 10s, 20s, 40s, etc.
                 let delay = INITIAL_DELAY_MS * 2u64.pow(attempt - 1);
+                eprintln!(
+                    "calculate_pt_pt1_error_bound_floating: Retrying in {}ms...",
+                    delay
+                );
                 thread::sleep(Duration::from_millis(delay));
             }
         }

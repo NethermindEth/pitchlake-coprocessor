@@ -39,26 +39,19 @@ pub fn max_return(input: MaxReturnInput) -> (Receipt, (MaxReturnInput, f64)) {
                 return (receipt, (input, max_return));
             }
             Err(e) => {
-                let error_msg = e.to_string();
                 eprintln!(
                     "max_return: Attempt {}/{} failed: {}",
-                    attempt, MAX_RETRIES, error_msg
+                    attempt, MAX_RETRIES, e
                 );
 
-                // Check if it's a retryable error (network issues)
-                let is_retryable = error_msg.contains("dns error")
-                    || error_msg.contains("client error")
-                    || error_msg.contains("error sending request")
-                    || error_msg.contains("Connection refused")
-                    || error_msg.contains("timeout");
+                last_error = Some(e);
 
-                if !is_retryable || attempt == MAX_RETRIES {
-                    // Non-retryable error or final attempt - fail
-                    last_error = Some(e);
+                if attempt == MAX_RETRIES {
+                    // Final attempt - fail
                     break;
                 }
 
-                // Exponential backoff: 2s, 4s, 8s, 16s
+                // Exponential backoff: 5s, 10s, 20s, 40s, etc.
                 let delay = INITIAL_DELAY_MS * 2u64.pow(attempt - 1);
                 eprintln!("max_return: Retrying in {}ms...", delay);
                 thread::sleep(Duration::from_millis(delay));
