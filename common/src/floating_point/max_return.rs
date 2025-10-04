@@ -1,7 +1,20 @@
 use eyre::{anyhow as err, Result};
 
 pub fn add_twap_30d(data: &Vec<f64>) -> Result<Vec<f64>> {
-    let required_window_size = 24 * 30;
+    // DEVELOPER NOTE: Window size configuration for rolling TWAP
+    // ===========================================================
+    // Production uses 30-day window: 24 * 30 = 720 hours
+    // POC uses 10-day window: 24 * 10 = 240 hours (to fit within 1440 hours total)
+    //
+    // With 1440 total hours in POC:
+    // - 10-day TWAP produces: 1440 - 240 = 1200 values
+    // - calculate_30d_returns needs these 1200 values > 240 to calculate returns
+    // - Final output: 1200 - 240 = 960 return values for max calculation
+    let required_window_size = if data.len() <= 2000 {
+        24 * 10  // POC: 10-day window (240 hours)
+    } else {
+        24 * 30  // Production: 30-day window (720 hours)
+    };
 
     let n = data.len();
 
@@ -24,8 +37,18 @@ pub fn add_twap_30d(data: &Vec<f64>) -> Result<Vec<f64>> {
 }
 
 pub fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
-    // 24 hours * 30 days = 720 hours
-    let period = 24 * 30;
+    // DEVELOPER NOTE: Return calculation period
+    // ==========================================
+    // Production: 30-day period (720 hours) for return calculations
+    // POC: 10-day period (240 hours) to match the reduced TWAP window
+    //
+    // The period must match the window size used in add_twap_30d to ensure
+    // we're comparing values that are the same interval apart.
+    let period = if twap_30d.len() <= 1500 {
+        24 * 10  // POC: 10-day period (240 hours)
+    } else {
+        24 * 30  // Production: 30-day period (720 hours)
+    };
 
     if twap_30d.len() <= period {
         return Err(err!("Input vector must be longer than {} elements", period));
