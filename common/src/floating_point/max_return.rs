@@ -11,9 +11,9 @@ pub fn add_twap_30d(data: &Vec<f64>) -> Result<Vec<f64>> {
     // - calculate_30d_returns needs these 1200 values > 240 to calculate returns
     // - Final output: 1200 - 240 = 960 return values for max calculation
     let required_window_size = if data.len() <= 2000 {
-        24 * 10  // POC: 10-day window (240 hours)
+        24 * 10 // POC: 10-day window (240 hours)
     } else {
-        24 * 30  // Production: 30-day window (720 hours)
+        24 * 30 // Production: 30-day window (720 hours)
     };
 
     let n = data.len();
@@ -45,9 +45,9 @@ pub fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
     // The period must match the window size used in add_twap_30d to ensure
     // we're comparing values that are the same interval apart.
     let period = if twap_30d.len() <= 1500 {
-        24 * 10  // POC: 10-day period (240 hours)
+        24 * 10 // POC: 10-day period (240 hours)
     } else {
-        24 * 30  // Production: 30-day period (720 hours)
+        24 * 30 // Production: 30-day period (720 hours)
     };
 
     if twap_30d.len() <= period {
@@ -77,8 +77,10 @@ pub fn calculate_30d_returns(twap_30d: &Vec<f64>) -> Result<Vec<f64>> {
 // - methods/core/src/lib.rs (ProofCompositionInput data volume)
 pub fn calculate_max_returns(data: &Vec<f64>) -> f64 {
     // POC configuration: 2 months of data
-    assert!(data.len() == 24 * 30 * 2,
-        "Expected 1440 hours (2 months) for POC. Production requires 5760 hours (8 months).");
+    assert!(
+        data.len() == 24 * 30 * 2,
+        "Expected 1440 hours (2 months) for POC. Production requires 5760 hours (8 months)."
+    );
 
     let twap_30d = add_twap_30d(data).unwrap();
     let returns = calculate_30d_returns(&twap_30d).unwrap();

@@ -1,8 +1,8 @@
 use core::SimulatePriceVerifyPositionInput;
-use std::thread;
-use std::time::Duration;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF;
+use std::thread;
+use std::time::Duration;
 
 pub fn simulate_price_verify_position(
     input: SimulatePriceVerifyPositionInput,
@@ -45,5 +45,9 @@ pub fn simulate_price_verify_position(
         }
     }
 
-    panic!("simulate_price_verify_position: Failed after {} attempts. Last error: {:?}", MAX_RETRIES, last_error.unwrap());
+    panic!(
+        "simulate_price_verify_position: Failed after {} attempts. Last error: {:?}",
+        MAX_RETRIES,
+        last_error.unwrap()
+    );
 }

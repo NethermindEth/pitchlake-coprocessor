@@ -46,5 +46,9 @@ pub fn add_twap_7d_error_bound(
         }
     }
 
-    panic!("add_twap_7d_error_bound: Failed after {} attempts. Last error: {:?}", MAX_RETRIES, last_error.unwrap());
+    panic!(
+        "add_twap_7d_error_bound: Failed after {} attempts. Last error: {:?}",
+        MAX_RETRIES,
+        last_error.unwrap()
+    );
 }

@@ -1,8 +1,8 @@
 use core::TwapErrorBoundInput;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
-use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ELF;
 use std::thread;
 use std::time::Duration;
+use twap_error_bound_floating_methods::TWAP_ERROR_BOUND_FLOATING_GUEST_ELF;
 
 pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInput) {
     let env = ExecutorEnv::builder()
@@ -43,5 +43,9 @@ pub fn calculate_twap(input: TwapErrorBoundInput) -> (Receipt, TwapErrorBoundInp
         }
     }
 
-    panic!("calculate_twap: Failed after {} attempts. Last error: {:?}", MAX_RETRIES, last_error.unwrap());
+    panic!(
+        "calculate_twap: Failed after {} attempts. Last error: {:?}",
+        MAX_RETRIES,
+        last_error.unwrap()
+    );
 }

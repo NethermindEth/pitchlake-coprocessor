@@ -6,33 +6,40 @@ use std::time::Duration;
 use core::{HashingFeltInput, HashingFeltOutput};
 
 pub fn hash_felts(input: HashingFeltInput) -> (Receipt, HashingFeltOutput) {
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    // Obtain the default prover.
     let prover = default_prover();
 
-    // Retry logic for Bonsai API calls with exponential backoff
     const MAX_RETRIES: u32 = 5;
     const INITIAL_DELAY_MS: u64 = 2000;
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        eprintln!("hash_felts: Proof generation attempt {}/{}", attempt, MAX_RETRIES);
+        eprintln!(
+            "hash_felts: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
 
-        match prover.prove(env.clone(), HASHING_FELTS_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, HASHING_FELTS_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: HashingFeltOutput = receipt.journal.decode().unwrap();
-                eprintln!("hash_felts: Proof generation succeeded on attempt {}", attempt);
+                eprintln!(
+                    "hash_felts: Proof generation succeeded on attempt {}",
+                    attempt
+                );
                 return (receipt, res);
             }
             Err(e) => {
                 let error_msg = e.to_string();
-                eprintln!("hash_felts: Attempt {}/{} failed: {}", attempt, MAX_RETRIES, error_msg);
+                eprintln!(
+                    "hash_felts: Attempt {}/{} failed: {}",
+                    attempt, MAX_RETRIES, error_msg
+                );
 
                 // Check if it's a retryable error (network issues)
                 let is_retryable = error_msg.contains("dns error")
@@ -56,5 +63,9 @@ pub fn hash_felts(input: HashingFeltInput) -> (Receipt, HashingFeltOutput) {
     }
 
     // All retries failed
-    panic!("hash_felts: Failed after {} attempts. Last error: {:?}", MAX_RETRIES, last_error.unwrap());
+    panic!(
+        "hash_felts: Failed after {} attempts. Last error: {:?}",
+        MAX_RETRIES,
+        last_error.unwrap()
+    );
 }

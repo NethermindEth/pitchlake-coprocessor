@@ -10,33 +10,40 @@ pub fn max_return(input: MaxReturnInput) -> (Receipt, (MaxReturnInput, f64)) {
         input.data.len()
     );
 
-    let env = ExecutorEnv::builder()
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    // Obtain the default prover.
     let prover = default_prover();
 
-    // Retry logic for Bonsai API calls with exponential backoff
     const MAX_RETRIES: u32 = 5;
     const INITIAL_DELAY_MS: u64 = 2000;
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
-        eprintln!("max_return: Proof generation attempt {}/{}", attempt, MAX_RETRIES);
+        eprintln!(
+            "max_return: Proof generation attempt {}/{}",
+            attempt, MAX_RETRIES
+        );
 
-        match prover.prove(env.clone(), MAX_RETURN_FLOATING_GUEST_ELF) {
+        let env = ExecutorEnv::builder()
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        match prover.prove(env, MAX_RETURN_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let (input, max_return): (MaxReturnInput, f64) = receipt.journal.decode().unwrap();
-                eprintln!("max_return: Proof generation succeeded on attempt {}", attempt);
+                eprintln!(
+                    "max_return: Proof generation succeeded on attempt {}",
+                    attempt
+                );
                 return (receipt, (input, max_return));
             }
             Err(e) => {
                 let error_msg = e.to_string();
-                eprintln!("max_return: Attempt {}/{} failed: {}", attempt, MAX_RETRIES, error_msg);
+                eprintln!(
+                    "max_return: Attempt {}/{} failed: {}",
+                    attempt, MAX_RETRIES, error_msg
+                );
 
                 // Check if it's a retryable error (network issues)
                 let is_retryable = error_msg.contains("dns error")
@@ -60,5 +67,9 @@ pub fn max_return(input: MaxReturnInput) -> (Receipt, (MaxReturnInput, f64)) {
     }
 
     // All retries failed
-    panic!("max_return: Failed after {} attempts. Last error: {:?}", MAX_RETRIES, last_error.unwrap());
+    panic!(
+        "max_return: Failed after {} attempts. Last error: {:?}",
+        MAX_RETRIES,
+        last_error.unwrap()
+    );
 }

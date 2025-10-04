@@ -1,8 +1,8 @@
 use core::RemoveSeasonalityErrorBoundFloatingInput;
-use std::thread;
-use std::time::Duration;
 use remove_seasonality_error_bound_floating_methods::REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
+use std::thread;
+use std::time::Duration;
 
 pub fn remove_seasonality_error_bound(
     input: RemoveSeasonalityErrorBoundFloatingInput,
@@ -23,7 +23,8 @@ pub fn remove_seasonality_error_bound(
         match prover.prove(env, REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF) {
             Ok(prove_info) => {
                 let receipt = prove_info.receipt;
-                let res: RemoveSeasonalityErrorBoundFloatingInput = receipt.journal.decode().unwrap();
+                let res: RemoveSeasonalityErrorBoundFloatingInput =
+                    receipt.journal.decode().unwrap();
                 return (receipt, res);
             }
             Err(e) => {
@@ -45,5 +46,9 @@ pub fn remove_seasonality_error_bound(
         }
     }
 
-    panic!("remove_seasonality_error_bound: Failed after {} attempts. Last error: {:?}", MAX_RETRIES, last_error.unwrap());
+    panic!(
+        "remove_seasonality_error_bound: Failed after {} attempts. Last error: {:?}",
+        MAX_RETRIES,
+        last_error.unwrap()
+    );
 }
