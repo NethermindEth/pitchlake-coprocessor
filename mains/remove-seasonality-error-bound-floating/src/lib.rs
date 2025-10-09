@@ -1,7 +1,6 @@
 use core::RemoveSeasonalityErrorBoundFloatingInput;
 use remove_seasonality_error_bound_floating_methods::REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
-use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
@@ -10,7 +9,6 @@ pub fn remove_seasonality_error_bound(
 ) -> (Receipt, RemoveSeasonalityErrorBoundFloatingInput) {
     const MAX_RETRIES: u32 = 10;
     const INITIAL_DELAY_MS: u64 = 5000;
-    const PROOF_TIMEOUT_SECS: u64 = 1800; // 30 minutes timeout per attempt
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
@@ -28,18 +26,9 @@ pub fn remove_seasonality_error_bound(
             .build()
             .unwrap();
 
-        // Spawn proof generation in a separate thread with timeout
-        let (tx, rx) = mpsc::channel();
-        let input_clone = input.clone();
-
-        thread::spawn(move || {
-            let result = prover.prove(env, REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF);
-            let _ = tx.send(result);
-        });
-
-        // Wait for result with timeout
-        match rx.recv_timeout(Duration::from_secs(PROOF_TIMEOUT_SECS)) {
-            Ok(Ok(prove_info)) => {
+        // Attempt proof generation (ExecutorEnv and Prover are not Send, so we can't use threads)
+        match prover.prove(env, REMOVE_SEASONALITY_ERROR_BOUND_FLOATING_GUEST_ELF) {
+            Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: RemoveSeasonalityErrorBoundFloatingInput =
                     receipt.journal.decode().unwrap();
@@ -49,19 +38,12 @@ pub fn remove_seasonality_error_bound(
                 );
                 return (receipt, res);
             }
-            Ok(Err(e)) => {
+            Err(e) => {
                 eprintln!(
                     "remove_seasonality_error_bound: Attempt {}/{} failed: {}",
                     attempt, MAX_RETRIES, e
                 );
                 last_error = Some(format!("{}", e));
-            }
-            Err(_) => {
-                eprintln!(
-                    "remove_seasonality_error_bound: Attempt {}/{} timed out after {}s",
-                    attempt, MAX_RETRIES, PROOF_TIMEOUT_SECS
-                );
-                last_error = Some(format!("Timeout after {}s", PROOF_TIMEOUT_SECS));
             }
         }
 

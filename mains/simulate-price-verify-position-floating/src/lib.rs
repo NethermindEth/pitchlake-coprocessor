@@ -1,7 +1,6 @@
 use core::SimulatePriceVerifyPositionInput;
 use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 use simulate_price_verify_position_floating_methods::SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF;
-use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
@@ -10,7 +9,6 @@ pub fn simulate_price_verify_position(
 ) -> (Receipt, SimulatePriceVerifyPositionInput) {
     const MAX_RETRIES: u32 = 10;
     const INITIAL_DELAY_MS: u64 = 5000;
-    const PROOF_TIMEOUT_SECS: u64 = 1800; // 30 minutes timeout per attempt
 
     let mut last_error = None;
     for attempt in 1..=MAX_RETRIES {
@@ -28,18 +26,9 @@ pub fn simulate_price_verify_position(
             .build()
             .unwrap();
 
-        // Spawn proof generation in a separate thread with timeout
-        let (tx, rx) = mpsc::channel();
-        let input_clone = input.clone();
-
-        thread::spawn(move || {
-            let result = prover.prove(env, SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF);
-            let _ = tx.send(result);
-        });
-
-        // Wait for result with timeout
-        match rx.recv_timeout(Duration::from_secs(PROOF_TIMEOUT_SECS)) {
-            Ok(Ok(prove_info)) => {
+        // Attempt proof generation (ExecutorEnv and Prover are not Send, so we can't use threads)
+        match prover.prove(env, SIMULATE_PRICE_VERIFY_POSITION_FLOATING_GUEST_ELF) {
+            Ok(prove_info) => {
                 let receipt = prove_info.receipt;
                 let res: SimulatePriceVerifyPositionInput = receipt.journal.decode().unwrap();
                 eprintln!(
@@ -48,19 +37,12 @@ pub fn simulate_price_verify_position(
                 );
                 return (receipt, res);
             }
-            Ok(Err(e)) => {
+            Err(e) => {
                 eprintln!(
                     "simulate_price_verify_position: Attempt {}/{} failed: {}",
                     attempt, MAX_RETRIES, e
                 );
                 last_error = Some(format!("{}", e));
-            }
-            Err(_) => {
-                eprintln!(
-                    "simulate_price_verify_position: Attempt {}/{} timed out after {}s",
-                    attempt, MAX_RETRIES, PROOF_TIMEOUT_SECS
-                );
-                last_error = Some(format!("Timeout after {}s", PROOF_TIMEOUT_SECS));
             }
         }
 
