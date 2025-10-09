@@ -271,32 +271,7 @@ fn main() {
         max_return: max_return_res.1, // Maximum return from historical data
     };
 
-    // ========== STEP 11: BUILD EXECUTION ENVIRONMENT WITH PROOF ASSUMPTIONS ==========
-    // The ExecutorEnv bundles all the individual proof receipts as "assumptions"
-    // This enables proof composition: the final proof assumes the correctness of sub-proofs
-    // without re-executing them, making the final proof smaller and faster to verify
-    let env = ExecutorEnv::builder()
-        // Assumption 1: Data hashing was performed correctly
-        .add_assumption(hashing_receipt)
-        // Assumption 2: TWAP calculation is within tolerance
-        .add_assumption(calculate_twap_receipt)
-        // Assumption 3: Maximum return was calculated correctly
-        .add_assumption(max_return_receipt)
-        // Assumption 4: Seasonality removal (time series decomposition) is correct
-        .add_assumption(remove_seasonality_error_bound_receipt)
-        // Assumption 5: 7-day TWAP calculation is within tolerance
-        .add_assumption(add_twap_7d_error_bound_receipt)
-        // Assumption 6: Markov transition probabilities (pt, pt_1) are correct
-        .add_assumption(calculate_pt_pt1_error_bound_receipt)
-        // Assumption 7: Price simulation and position verification are correct
-        .add_assumption(simulate_price_verify_position_receipt)
-        // Write the composed input data to the ZK-VM environment
-        .write(&input)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    // ========== STEP 12: GENERATE THE COMPOSED ZK PROOF ==========
+    // ========== STEP 11 & 12: GENERATE THE COMPOSED ZK PROOF WITH RETRY ==========
     // Execute the guest program (RISC Zero ZK-VM) to generate the proof
     // The guest program will verify all assumptions and produce a cryptographic receipt
 
@@ -313,8 +288,33 @@ fn main() {
             attempt, MAX_RETRIES
         );
 
+        // Build ExecutorEnv on each attempt (ExecutorEnv doesn't implement Clone)
+        // The ExecutorEnv bundles all the individual proof receipts as "assumptions"
+        // This enables proof composition: the final proof assumes the correctness of sub-proofs
+        // without re-executing them, making the final proof smaller and faster to verify
+        let env = ExecutorEnv::builder()
+            // Assumption 1: Data hashing was performed correctly
+            .add_assumption(hashing_receipt.clone())
+            // Assumption 2: TWAP calculation is within tolerance
+            .add_assumption(calculate_twap_receipt.clone())
+            // Assumption 3: Maximum return was calculated correctly
+            .add_assumption(max_return_receipt.clone())
+            // Assumption 4: Seasonality removal (time series decomposition) is correct
+            .add_assumption(remove_seasonality_error_bound_receipt.clone())
+            // Assumption 5: 7-day TWAP calculation is within tolerance
+            .add_assumption(add_twap_7d_error_bound_receipt.clone())
+            // Assumption 6: Markov transition probabilities (pt, pt_1) are correct
+            .add_assumption(calculate_pt_pt1_error_bound_receipt.clone())
+            // Assumption 7: Price simulation and position verification are correct
+            .add_assumption(simulate_price_verify_position_receipt.clone())
+            // Write the composed input data to the ZK-VM environment
+            .write(&input)
+            .unwrap()
+            .build()
+            .unwrap();
+
         match prover.prove(
-            env.clone(), // Execution environment with all assumptions and inputs
+            env, // Execution environment with all assumptions and inputs
             // The compiled guest ELF binary that runs in the ZK-VM
             PROOF_COMPOSITION_TWAP_MAXRETURN_RESERVEPRICE_FLOATING_HASHING_GUEST_ELF,
         ) {
