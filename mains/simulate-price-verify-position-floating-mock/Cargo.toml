@@ -1,0 +1,12 @@
+[package]
+name = "simulate-price-verify-position-floating-mock"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm.workspace = true
+simulate-price-verify-position-floating-mock-methods = { path = "../../methods/simulate-price-verify-position-floating-mock-methods" }
+core = { path = "../../methods/core" }
+nalgebra = { version = "0.33.2", features = ["serde-serialize"] }
+common = { path = "../../common", features = ["original"] }
+hashing-felts = { path = "../hashing-felts" }
