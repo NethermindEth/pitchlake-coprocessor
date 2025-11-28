@@ -1,7 +1,6 @@
 use eyre::{anyhow as err, Result};
 use polars::prelude::*;
 
-// seems to be incorrect
 pub fn calculate_max_return(df: DataFrame) -> Result<f64> {
     let mut df = add_twap_30d(df)?;
     df = drop_nulls(&df, "TWAP_30d")?;
@@ -11,10 +10,10 @@ pub fn calculate_max_return(df: DataFrame) -> Result<f64> {
     let max_return = df
         .column("30d_returns")?
         .f64()?
-        .max()
-        .ok_or_else(|| err!("30d returns series is empty"))?;
-
-    Ok(max_return)
+        .std_reduce(1)
+        .value()
+        .try_extract::<f64>();
+    Ok(max_return?)
 }
 
 pub fn calculate_30d_returns(df: DataFrame) -> Result<DataFrame> {
